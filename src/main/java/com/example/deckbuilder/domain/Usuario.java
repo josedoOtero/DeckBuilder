@@ -50,4 +50,6 @@ public class Usuario {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "imagen_usuario_id")
     private ImagenUsuario imagenUsuario;
+
+    private String rol;
 }

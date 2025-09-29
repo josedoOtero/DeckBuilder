@@ -12,4 +12,16 @@ public class SideDeckService {
     SideDeckService(SideDeckRepository sideDeckRepository) {
         this.sideDeckRepository = sideDeckRepository;
     }
+
+    public SideDeck save(SideDeck sideDeck) {
+        return sideDeckRepository.save(sideDeck);
+    }
+
+    public SideDeck findById(Long id) {
+        return sideDeckRepository.findById(id).orElse(null);
+    }
+
+    public void delete(Long id) {
+        sideDeckRepository.deleteById(id);
+    }
 }
