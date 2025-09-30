@@ -13,7 +13,6 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-
 public class CartaMazo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,7 +27,8 @@ public class CartaMazo {
     private Carta carta;
 
     @NotNull
-    @Min(value = 1, message = "La cantidad debe ser al menos 1")
-    @Max(value = 3, message = "La cantidad debe ser menos de 4")
+    @Min(value = 1)
+    @Max(value = 3)
     private Integer cantidad;
 }
+

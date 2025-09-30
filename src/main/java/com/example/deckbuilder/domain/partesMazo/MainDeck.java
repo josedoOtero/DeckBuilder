@@ -19,6 +19,7 @@ public class MainDeck {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy = "mainDeck", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "main_deck_id")
     private List<CartaMazo> cartas;
 }

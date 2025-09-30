@@ -4,6 +4,8 @@ import com.example.deckbuilder.domain.ImagenUsuario;
 import com.example.deckbuilder.repository.ImagenUsuarioRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 
 public class ImagenUsuarioService {
@@ -15,6 +17,10 @@ public class ImagenUsuarioService {
 
     public ImagenUsuario save(ImagenUsuario imagenUsuario) {
         return imagenUsuarioRepository.save(imagenUsuario);
+    }
+
+    public List<ImagenUsuario> findAll() {
+        return imagenUsuarioRepository.findAll();
     }
 
     public ImagenUsuario findById(Long id) {
