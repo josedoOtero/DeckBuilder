@@ -1,6 +1,6 @@
 package com.example.deckbuilder.domain.partesMazo;
 
-import com.example.deckbuilder.domain.CartaMazo;
+import com.example.deckbuilder.domain.Carta;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,6 +20,6 @@ public class ExtraDeck {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "extra_deck_id")
-    private List<CartaMazo> cartas;
+    private List<Carta> cartas;
 }
 

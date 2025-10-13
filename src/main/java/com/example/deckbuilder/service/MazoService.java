@@ -1,8 +1,13 @@
 package com.example.deckbuilder.service;
 
 import com.example.deckbuilder.domain.Mazo;
+import com.example.deckbuilder.domain.Usuario;
 import com.example.deckbuilder.repository.MazoRepository;
+import com.example.deckbuilder.repository.UsuarioRepository;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -10,9 +15,12 @@ import java.util.List;
 
 public class MazoService {
     MazoRepository mazoRepository;
+    UsuarioRepository usuarioRepository;
 
-    MazoService (MazoRepository mazoRepository) {
+    MazoService (MazoRepository mazoRepository, UsuarioRepository usuarioRepository) {
+
         this.mazoRepository = mazoRepository;
+        this.usuarioRepository = usuarioRepository;
     }
 
     public Mazo save(Mazo mazo) {
@@ -27,9 +35,45 @@ public class MazoService {
         return mazoRepository.findAll();
     }
 
-    public void delete(Long id) {
-        mazoRepository.deleteById(id);
+    public Mazo replace(Long id, Mazo nuevoMazo) {
+        return mazoRepository.findById(id)
+                .map(mazoExistente -> {
+                    mazoExistente.setEstado(nuevoMazo.getEstado());
+                    mazoExistente.setVistas(nuevoMazo.getVistas());
+                    mazoExistente.setImagenCartaDestacada(nuevoMazo.getImagenCartaDestacada());
+                    mazoExistente.setCreador(nuevoMazo.getCreador());
+                    mazoExistente.setMainDeck(nuevoMazo.getMainDeck());
+                    mazoExistente.setExtraDeck(nuevoMazo.getExtraDeck());
+                    mazoExistente.setSideDeck(nuevoMazo.getSideDeck());
+                    return mazoRepository.save(mazoExistente);
+                })
+                .orElseGet(() -> {
+                    nuevoMazo.setId(id);
+                    return mazoRepository.save(nuevoMazo);
+                });
     }
+
+
+    @Transactional
+    public Mazo delete(Long id) {
+        Mazo mazo = mazoRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Mazo no encontrado con id: " + id));
+
+        List<Usuario> usuariosConFavorito = usuarioRepository.findByMazosFavoritosContaining(mazo);
+        usuariosConFavorito.forEach(usuario -> usuario.getMazosFavoritos().remove(mazo));
+        usuarioRepository.saveAll(usuariosConFavorito);
+
+        if (mazo.getCreador() != null) {
+            Usuario creador = mazo.getCreador();
+            creador.getMazos().remove(mazo);
+            usuarioRepository.save(creador);
+            mazo.setCreador(null);
+        }
+
+        mazoRepository.delete(mazo);
+        return mazo;
+    }
+
 
 
 }

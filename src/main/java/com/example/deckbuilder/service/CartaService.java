@@ -1,9 +1,13 @@
 package com.example.deckbuilder.service;
 
 import com.example.deckbuilder.domain.Carta;
-import com.example.deckbuilder.domain.CartaMazo;
-import com.example.deckbuilder.repository.CartaMazoRepository;
+import com.example.deckbuilder.domain.partesMazo.ExtraDeck;
+import com.example.deckbuilder.domain.partesMazo.MainDeck;
+import com.example.deckbuilder.domain.partesMazo.SideDeck;
 import com.example.deckbuilder.repository.CartaRepository;
+import com.example.deckbuilder.repository.partesMazo.ExtraDeckRepository;
+import com.example.deckbuilder.repository.partesMazo.MainDeckRepository;
+import com.example.deckbuilder.repository.partesMazo.SideDeckRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,11 +18,17 @@ import java.util.List;
 
 public class CartaService {
     CartaRepository cartaRepository;
-    CartaMazoRepository cartaMazoRepository;
+    MainDeckRepository mainDeckRepository;
+    ExtraDeckRepository extraDeckRepository;
+    SideDeckRepository sideDeckRepository;
 
-    CartaService(CartaRepository cartaRepository, CartaMazoRepository cartaMazoRepository) {
+
+    CartaService(CartaRepository cartaRepository, MainDeckRepository mainDeckRepository, ExtraDeckRepository extraDeckRepository, SideDeckRepository sideDeckRepository) {
         this.cartaRepository = cartaRepository;
-        this.cartaMazoRepository = cartaMazoRepository;
+        this.mainDeckRepository = mainDeckRepository;
+        this.extraDeckRepository = extraDeckRepository;
+        this.sideDeckRepository = sideDeckRepository;
+
     }
 
     public Carta save(Carta carta) {
@@ -34,24 +44,8 @@ public class CartaService {
     }
 
     public Carta replace(Integer idKonami, Carta nuevaCarta) {
-        return cartaRepository.findById(idKonami)
-                .map(cartaExistente -> {
-                    cartaExistente.setNombre(nuevaCarta.getNombre());
-                    cartaExistente.setTipo(nuevaCarta.getTipo());
-                    cartaExistente.setDescripcion(nuevaCarta.getDescripcion());
-                    cartaExistente.setAtk(nuevaCarta.getAtk());
-                    cartaExistente.setDef(nuevaCarta.getDef());
-                    cartaExistente.setNivel(nuevaCarta.getNivel());
-                    cartaExistente.setAtributo(nuevaCarta.getAtributo());
-                    cartaExistente.setRaza(nuevaCarta.getRaza());
-                    cartaExistente.setImagen(nuevaCarta.getImagen());
-                    return cartaRepository.save(cartaExistente);
-                })
-                .orElseGet(() -> {
-                    // si no existe, creamos una nueva con el id recibido
-                    nuevaCarta.setIdKonami(idKonami);
-                    return cartaRepository.save(nuevaCarta);
-                });
+        nuevaCarta.setIdKonami(idKonami);
+        return cartaRepository.save(nuevaCarta);
     }
 
 
@@ -61,24 +55,28 @@ public class CartaService {
 
     @Transactional
     public Carta delete(Integer idKonami) {
-        // 1. Buscar la carta
         Carta carta = cartaRepository.findById(idKonami)
                 .orElseThrow(() -> new EntityNotFoundException("Carta no encontrada con idKonami: " + idKonami));
 
-        // 2. Buscar todas las relaciones en CartaMazo
-        List<CartaMazo> cartasEnMazos = cartaMazoRepository.findByCarta(carta);
+        // Buscar decks que contienen la carta y eliminar la referencia
+        List<MainDeck> mains = mainDeckRepository.findByCartasContaining(carta);
+        mains.forEach(d -> {
+            d.getCartas().remove(carta);
+        });
+        mainDeckRepository.saveAll(mains);
 
-        // 3. Quitar relación
-        cartasEnMazos.forEach(cartaMazo -> cartaMazo.setCarta(null));
+        List<ExtraDeck> extras = extraDeckRepository.findByCartasContaining(carta);
+        extras.forEach(d -> d.getCartas().remove(carta));
+        extraDeckRepository.saveAll(extras);
 
-        // 4. Guardar las relaciones modificadas
-        cartaMazoRepository.saveAll(cartasEnMazos);
+        List<SideDeck> sides = sideDeckRepository.findByCartasContaining(carta);
+        sides.forEach(d -> d.getCartas().remove(carta));
+        sideDeckRepository.saveAll(sides);
 
-        // 5. Eliminar la carta
         cartaRepository.delete(carta);
-
-        // 6. Retornar la carta eliminada
         return carta;
     }
+
+
 
 }

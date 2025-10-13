@@ -1,11 +1,15 @@
 package com.example.deckbuilder.repository.partesMazo;
 
+import com.example.deckbuilder.domain.Carta;
 import com.example.deckbuilder.domain.partesMazo.ExtraDeck;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 
 public interface ExtraDeckRepository extends JpaRepository<ExtraDeck, Long> {
 
+    List<ExtraDeck> findByCartasContaining(Carta carta);
 }

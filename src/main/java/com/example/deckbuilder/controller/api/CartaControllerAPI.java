@@ -19,6 +19,8 @@ public class CartaControllerAPI {
         this.cartaService = cartaService;
     }
 
+    //*FUNCIONES DEL CRUD*//
+
     @GetMapping(value = {"","/"})
     public List<Carta> all(){
         return cartaService.findAll();
