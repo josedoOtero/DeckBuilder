@@ -28,6 +28,7 @@ public class Usuario {
     @Column(unique = true)
     private String nombre;
 
+    @NotBlank
     private String password;
 
     @NotBlank(message = "El email no puede estar vacío")

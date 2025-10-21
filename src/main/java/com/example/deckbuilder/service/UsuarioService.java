@@ -4,6 +4,7 @@ import com.example.deckbuilder.domain.Mazo;
 import com.example.deckbuilder.domain.Usuario;
 import com.example.deckbuilder.repository.UsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,9 +15,11 @@ import java.util.Set;
 
 public class UsuarioService {
     UsuarioRepository usuarioRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    UsuarioService(UsuarioRepository usuarioRepository) {
+    UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public Usuario save(Usuario usuario) {
@@ -75,6 +78,20 @@ public class UsuarioService {
 
         usuarioRepository.delete(usuario);
         return usuario;
+    }
+
+    public Usuario findByNombre(String nombre) {
+        return usuarioRepository.findByNombre(nombre).orElse(null);
+    }
+
+    public boolean exitByNombre(String nombre) {
+        return usuarioRepository.findByNombre(nombre).isPresent();
+    }
+
+    public Usuario registrarUsuario(Usuario usuario) {
+        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+        usuario.setRol("USER");
+        return usuarioRepository.save(usuario);
     }
 
 }

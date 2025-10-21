@@ -48,11 +48,6 @@ public class CartaService {
         return cartaRepository.save(nuevaCarta);
     }
 
-
-    public Carta findByNombre(String nombre) {
-        return cartaRepository.findByNombre(nombre);
-    }
-
     @Transactional
     public Carta delete(Integer idKonami) {
         Carta carta = cartaRepository.findById(idKonami)
