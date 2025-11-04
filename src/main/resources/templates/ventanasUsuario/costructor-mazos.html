@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Crear Mazo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            background-color: #f8f9fa;
+        }
+
+        #pantalla {
+            display: flex;
+            height: 100vh;
+            width: 100%;
+        }
+
+        #zona_cartas {
+            flex: 3;
+            display: flex;
+            flex-direction: column;
+            border-right: 2px solid #dee2e6;
+            background-color: #ffffff;
+        }
+
+        #filtros_cartas_div {
+            flex: 1;
+            border-bottom: 2px solid #dee2e6;
+            padding: 0.75rem 1rem;
+            background-color: #f1f3f5;
+            box-shadow: inset 0 -2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        #lista_cartas {
+            flex: 3;
+            padding: 1rem;
+            overflow-y: auto;
+            background-color: #ffffff;
+        }
+
+        #zona_mazo {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            border-left: 2px solid #dee2e6;
+            padding: 1rem;
+            background-color: #fff;
+            overflow-y: auto;
+        }
+
+        #main_deck, #extra_deck, #side_deck {
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            padding: 0.5rem;
+            background-color: #f8f9fa;
+            overflow-y: auto;
+        }
+
+        #main_deck { flex: 2; }
+        #extra_deck, #side_deck { flex: 1; }
+
+        h5, h6 {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-control, .form-select {
+            height: 32px;
+            font-size: 0.9rem;
+        }
+
+        .btn {
+            font-size: 0.85rem;
+            padding: 0.4rem 0.8rem;
+        }
+
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        #lista_cartas::-webkit-scrollbar, #zona_mazo::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #lista_cartas::-webkit-scrollbar-thumb, #zona_mazo::-webkit-scrollbar-thumb {
+            background-color: #ccc;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="fragments/header :: header"></div>
+
+<div id="pantalla">
+
+    <div id="zona_cartas">
+        <div id="filtros_cartas_div">
+            <h5 class="mb-3 text-center">Card Filters</h5>
+            <form id="filtros_cartas">
+
+                <div class="row g-2 mb-2">
+                    <div class="col-md-6">
+                        <input type="text" class="form-control" name="q" placeholder="Search by text">
+                    </div>
+                    <div class="col-md-6">
+                        <select class="form-select" name="tipo">
+                            <option value="">Card Type</option>
+                            <option value="Normal Monster">Normal Monster</option>
+                            <option value="Effect Monster">Effect Monster</option>
+                            <option value="Fusion Monster">Fusion Monster</option>
+                            <option value="Ritual Monster">Ritual Monster</option>
+                            <option value="Synchro Monster">Synchro Monster</option>
+                            <option value="XYZ Monster">XYZ Monster</option>
+                            <option value="Link Monster">Link Monster</option>
+                            <option value="Pendulum Monster">Pendulum Monster</option>
+                            <option value="Spell Card">Spell Card</option>
+                            <option value="Trap Card">Trap Card</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row g-2 mb-2">
+                    <div class="col-md-4">
+                        <select class="form-select" name="tipoCarta">
+                            <option value="">Monster Race</option>
+                            <option value="Warrior">Warrior</option>
+                            <option value="Spellcaster">Spellcaster</option>
+                            <option value="Dragon">Dragon</option>
+                            <option value="Zombie">Zombie</option>
+                            <option value="Machine">Machine</option>
+                            <option value="Beast">Beast</option>
+                            <option value="Beast-Warrior">Beast-Warrior</option>
+                            <option value="Fairy">Fairy</option>
+                            <option value="Fiend">Fiend</option>
+                            <option value="Rock">Rock</option>
+                            <option value="Aqua">Aqua</option>
+                            <option value="Pyro">Pyro</option>
+                            <option value="Thunder">Thunder</option>
+                            <option value="Plant">Plant</option>
+                            <option value="Dinosaur">Dinosaur</option>
+                            <option value="Insect">Insect</option>
+                            <option value="Fish">Fish</option>
+                            <option value="Sea Serpent">Sea Serpent</option>
+                            <option value="Reptile">Reptile</option>
+                            <option value="Psychic">Psychic</option>
+                            <option value="Cyberse">Cyberse</option>
+                            <option value="Divine-Beast">Divine-Beast</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" name="arquetipo" placeholder="Archetype">
+                    </div>
+                    <div class="col-md-4">
+                        <select class="form-select" name="atributo">
+                            <option value="">Attribute</option>
+                            <option value="LIGHT">LIGHT</option>
+                            <option value="DARK">DARK</option>
+                            <option value="FIRE">FIRE</option>
+                            <option value="WATER">WATER</option>
+                            <option value="EARTH">EARTH</option>
+                            <option value="WIND">WIND</option>
+                            <option value="DIVINE">DIVINE</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row g-2 mb-3">
+                    <div class="col-md-3">
+                        <input type="number" class="form-control" name="nivel" placeholder="Level">
+                    </div>
+                    <div class="col-md-3 d-flex gap-2">
+                        <input type="number" class="form-control" name="atkMin" placeholder="ATK min">
+                        <input type="number" class="form-control" name="atkMax" placeholder="ATK max">
+                    </div>
+                    <div class="col-md-3 d-flex gap-2">
+                        <input type="number" class="form-control" name="defMin" placeholder="DEF min">
+                        <input type="number" class="form-control" name="defMax" placeholder="DEF max">
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" name="familia">
+                            <option value="">Race</option>
+                            <option value="Dragon">Dragon</option>
+                            <option value="Warrior">Warrior</option>
+                            <option value="Spellcaster">Spellcaster</option>
+                            <option value="Zombie">Zombie</option>
+                            <option value="Beast">Beast</option>
+                            <option value="Fiend">Fiend</option>
+                            <option value="Fairy">Fairy</option>
+                            <option value="Machine">Machine</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="d-grid">
+                    <button name="botonFiltro" type="submit" class="btn btn-primary">Apply Filters</button>
+                </div>
+            </form>
+        </div>
+
+        <div id="lista_cartas">
+            <h6 class="text-center mb-3">Card List</h6>
+            <div class="row row-cols-2 row-cols-md-3 g-3"></div>
+        </div>
+    </div>
+
+    <div id="zona_mazo">
+        <h5 class="text-center mb-3">Your Deck</h5>
+
+        <div id="main_deck" class="mb-3 flex-grow-2">
+            <h6 class="text-center text-muted">Main Deck </h6>
+        </div>
+
+        <div id="extra_deck" class="mb-3 flex-grow-1">
+            <h6 class="text-center text-muted">Extra Deck </h6>
+        </div>
+
+        <div id="side_deck" class="flex-grow-1">
+            <h6 class="text-center text-muted">Side Deck </h6>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/JS/funcionesFundamentales.js}"></script>
+<script th:src="@{/JS/crearMazo.js}"></script>
+</body>
+</html>

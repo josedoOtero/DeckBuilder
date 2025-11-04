@@ -1,0 +1,36 @@
+package com.example.deckbuilder.controller.templete;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@Controller
+@RequestMapping("/user")
+public class UsuarioController {
+
+
+    @GetMapping("/home")
+    public String home() {
+        return "ventanasUsuario/user-home";
+    }
+
+    @GetMapping("/cartas")
+    public String verCartas() {
+        return "ventanasUsuario/ver-cartas";
+    }
+
+    @GetMapping("/mazos")
+    public String verMazos() {
+        return "ventanasUsuario/ver-mazos";
+    }
+
+    @GetMapping("/misMazos")
+    public String misMazos() {
+        return "ventanasUsuario/mis-mazos";
+    }
+
+    @GetMapping("/costructorMazos")
+    public String costructorMazo() {
+        return "ventanasUsuario/costructor-mazos";
+    }
+}

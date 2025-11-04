@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Set;
 
 @Service
-
 public class UsuarioService {
     UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
@@ -90,8 +89,9 @@ public class UsuarioService {
 
     public Usuario registrarUsuario(Usuario usuario) {
         usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
-        usuario.setRol("USER");
+        usuario.setRol("ROLE_USER");
         return usuarioRepository.save(usuario);
     }
+
 
 }

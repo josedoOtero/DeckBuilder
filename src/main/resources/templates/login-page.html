@@ -1,22 +1,28 @@
-<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Inicio</title>
+    <title>Iniciar sesión</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-TvDRh4DhiG9fT+Gq8QZghHgRns1roXv+oI0wZy8e5MfvR7e8xDzT+4KYNl0sHcYI" crossorigin="anonymous">
 </head>
 <body>
+<h2>Login</h2>
+
 <form th:action="@{/login}" method="post">
-    <label>Usuario:</label>
-    <input type="text" name="username" required />
+    <label for="username">Usuario:</label>
+    <input type="text" id="username" name="username" required />
     <br>
-    <label>Contraseña:</label>
-    <input type="password" name="password" required />
+
+    <label for="password">Contraseña:</label>
+    <input type="password" id="password" name="password" required />
     <br>
+
     <button type="submit">Entrar</button>
 </form>
 
 <p th:if="${param.error}">❌ Usuario o contraseña incorrectos</p>
 <p th:if="${param.logout}">✅ Has cerrado sesión correctamente</p>
-</body>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Cp6iYfWyY+V+zPENQqzYVYK0iVbG2gkPQpWvVwKZ5XtqkqldXEb3Sxq5zFzA+7lb" crossorigin="anonymous"></script>
 </body>
+</html>

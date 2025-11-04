@@ -22,10 +22,16 @@ public class UsuarioDetailsService implements UserDetailsService {
         Usuario usuario = usuarioRepository.findByNombre(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
 
+        String role = usuario.getRol();
+        if (role.startsWith("ROLE_")) {
+            role = role.substring(5);
+        }
+
         return User.builder()
                 .username(usuario.getNombre())
                 .password(usuario.getPassword())
-                .roles(usuario.getRol())
+                .roles(role)
                 .build();
     }
 }
+

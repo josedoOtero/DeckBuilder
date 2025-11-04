@@ -52,8 +52,6 @@ public class CartaService {
     public Carta delete(Integer idKonami) {
         Carta carta = cartaRepository.findById(idKonami)
                 .orElseThrow(() -> new EntityNotFoundException("Carta no encontrada con idKonami: " + idKonami));
-
-        // Buscar decks que contienen la carta y eliminar la referencia
         List<MainDeck> mains = mainDeckRepository.findByCartasContaining(carta);
         mains.forEach(d -> {
             d.getCartas().remove(carta);
@@ -71,7 +69,4 @@ public class CartaService {
         cartaRepository.delete(carta);
         return carta;
     }
-
-
-
 }

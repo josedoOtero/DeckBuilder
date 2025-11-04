@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<header>
+    <nav>
+        <ul>
+            <li><a th:href="@{/user/home}">Home</a></li>
+            <li><a th:href="@{/user/cartas}">Cartas</a></li>
+            <li><a th:href="@{/user/mazos}">Mazos</a></li>
+            <li><a th:href="@{/user/misMazos}">Mis Mazos</a></li>
+            <li><a th:href="@{/user/costructorMazos}">Constructor de Mazos</a></li>
+        </ul>
+
+        <div>
+                <span th:if="${usuarioLogueado != null}">
+                    Bienvenido, <b th:text="${usuarioLogueado.nombre}">Usuario</b>
+                    <span th:text="${usuarioLogueado.rol}">ROL</span>
+                    <a th:href="@{/logout}">Cerrar sesión</a>
+                </span>
+            <span th:if="${usuarioLogueado == null}">
+                    Invitado | <a th:href="@{/login/iniciarSesion}">Iniciar sesión</a>
+                    | <a th:href="@{/login/crearCuenta}">Registrarse</a>
+                </span>
+        </div>
+    </nav>
+</header>
+</body>
+</html>

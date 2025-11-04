@@ -1,16 +1,14 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Index</title>
+    <title>Title</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-TvDRh4DhiG9fT+Gq8QZghHgRns1roXv+oI0wZy8e5MfvR7e8xDzT+4KYNl0sHcYI" crossorigin="anonymous">
 </head>
 <body>
 <div th:replace="fragments/header :: header"></div>
 
-<h1>Bienvenido a DeckBuilder</h1>
-<a th:href="@{/login/iniciarSesion}">Iniciar sesión</a> |
-<a th:href="@{/login/crearCuenta}">Registrarse</a>
+<a th:href="@{/user/costructorMazos}">Crear mazo</a>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Cp6iYfWyY+V+zPENQqzYVYK0iVbG2gkPQpWvVwKZ5XtqkqldXEb3Sxq5zFzA+7lb" crossorigin="anonymous"></script>
 </body>
