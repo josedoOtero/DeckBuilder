@@ -91,6 +91,23 @@
             background-color: #ccc;
             border-radius: 10px;
         }
+
+.active-zone {
+    background-color: #0d6efd !important; /* Azul predeterminado Bootstrap */
+    color: #fff !important;
+    border-color: #0d6efd !important;
+}
+
+#btnExtra.active-zone {
+    background-color: #6c757d !important; /* Gris */
+    border-color: #6c757d !important;
+}
+
+#btnSide.active-zone {
+    background-color: #198754 !important; /* Verde */
+    border-color: #198754 !important;
+}
+
     </style>
 </head>
 <body>
@@ -211,18 +228,25 @@
     <div id="zona_mazo">
         <h5 class="text-center mb-3">Your Deck</h5>
 
+        <div class="d-flex justify-content-around mb-3">
+            <button id="btnMain" class="btn btn-outline-primary btn-sm">Main Deck</button>
+            <button id="btnExtra" class="btn btn-outline-secondary btn-sm">Extra Deck</button>
+            <button id="btnSide" class="btn btn-outline-success btn-sm">Side Deck</button>
+        </div>
+
         <div id="main_deck" class="mb-3 flex-grow-2">
-            <h6 class="text-center text-muted">Main Deck </h6>
+            <h6 class="text-center text-muted">Main Deck</h6>
         </div>
 
         <div id="extra_deck" class="mb-3 flex-grow-1">
-            <h6 class="text-center text-muted">Extra Deck </h6>
+            <h6 class="text-center text-muted">Extra Deck</h6>
         </div>
 
         <div id="side_deck" class="flex-grow-1">
-            <h6 class="text-center text-muted">Side Deck </h6>
+            <h6 class="text-center text-muted">Side Deck</h6>
         </div>
     </div>
+
 </div>
 
 <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
