@@ -24,21 +24,31 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+
+                        .requestMatchers("/", "/login/**", "/css/**", "/js/**", "/images/**").permitAll()
+
                         .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/login/**", "/css/**", "/js/**", "/images/**").permitAll()
                         .anyRequest().authenticated()
                 )
+
                 .formLogin(form -> form
                         .loginPage("/login/iniciarSesion")
                         .loginProcessingUrl("/login")
                         .defaultSuccessUrl("/user/home", true)
                         .permitAll()
                 )
+
                 .logout(logout -> logout
                         .logoutUrl("/logout")
-                        .logoutSuccessUrl("/login/iniciarSesion?logout")
+                        .logoutSuccessUrl("/")
                         .permitAll()
+                )
+
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.sendRedirect("/");
+                        })
                 );
 
         return http.build();
@@ -58,6 +68,7 @@ public class SecurityConfig {
         return authBuilder.build();
     }
 }
+
 
 
 
