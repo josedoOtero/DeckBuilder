@@ -130,8 +130,8 @@ document.addEventListener("DOMContentLoaded", () => {
         document.querySelectorAll(".agregar-mazo").forEach(btn => {
             btn.addEventListener("click", e => {
                 const id = e.target.getAttribute("data-id");
-                const carta = cartasFiltradas.find(c => c.id == id);
-                if (!carta) return;
+                const cartaOriginal = cartasFiltradas.find(c => c.id == id);
+                if (!cartaOriginal) return;
 
                 const zona = zonaSeleccionada || "main";
                 if (mazo[zona].length >= 60) {
@@ -139,10 +139,25 @@ document.addEventListener("DOMContentLoaded", () => {
                     return;
                 }
 
-                mazo[zona].push(carta);
+                const cartaConID = {
+                    ...cartaOriginal,
+                    idKonami: cartaOriginal.id || cartaOriginal.konami_id || null
+                };
+
+                const totalCopias = [...mazo.main, ...mazo.extra, ...mazo.side]
+                    .filter(c => c.idKonami === cartaConID.idKonami).length;
+
+                if (totalCopias >= 3) {
+                    alert("No puedes tener más de 3 copias de la misma carta en tu mazo (Main, Extra y Side combinados).");
+                    return;
+                }
+
+                mazo[zona].push(cartaConID);
                 mostrarMazo();
             });
         });
+
+
     }
 
     function mostrarMazo() {
@@ -173,7 +188,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         <button class="btn btn-sm btn-danger w-100 quitar-carta"
                                 data-zona="${zona}"
                                 data-index="${index}"
-                                style="font-size:0.7rem;">Quitar</button>
+                                style="font-size:4px;">Quitar</button>
                     </div>
                 </div>
             `;
