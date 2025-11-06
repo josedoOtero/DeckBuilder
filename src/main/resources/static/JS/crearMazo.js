@@ -194,4 +194,3 @@ document.addEventListener("DOMContentLoaded", () => {
 
     actualizarBotones();
 });
-
