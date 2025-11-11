@@ -1,6 +1,5 @@
 package com.example.deckbuilder.controller.api;
 
-import com.example.deckbuilder.domain.ImagenUsuario;
 import com.example.deckbuilder.domain.Mazo;
 import com.example.deckbuilder.service.MazoService;
 import lombok.extern.slf4j.Slf4j;
@@ -20,8 +19,6 @@ public class MazoControllerAPI {
         this.mazoService = mazoService;
     }
 
-    //*FUNCIONES DEL CRUD*//
-
     @GetMapping(value = {"","/"})
     public List<Mazo> all(){
         return mazoService.findAll();
@@ -29,7 +26,7 @@ public class MazoControllerAPI {
 
     @PostMapping({"","/"})
     public Mazo newMazo(@RequestBody Mazo mazo) {
-        return this.mazoService.save(mazo);
+        return mazoService.save(mazo);
     }
 
     @GetMapping("/{id}")

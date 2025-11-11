@@ -77,7 +77,6 @@ document.addEventListener("DOMContentLoaded", () => {
             const data = await response.json();
             let cartas = data.data;
 
-            // Aplicar filtros de ataque/defensa localmente
             cartas = cartas.filter(c => {
                 if (atkMin !== null && c.atk < atkMin) return false;
                 if (atkMax !== null && c.atk > atkMax) return false;
@@ -106,7 +105,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function mostrarCartas(cartas, listaCartas) {
-    listaCartas.className = "row row-cols-2 row-cols-md-5 g-0";
+    listaCartas.className = "row row-cols-2 row-cols-md-6 g-1";
     listaCartas.innerHTML = "";
 
     if (!cartas || cartas.length === 0) {
@@ -121,28 +120,23 @@ function mostrarCartas(cartas, listaCartas) {
         const idKonami = carta.misc_info?.[0]?.konami_id ?? "Unknown";
 
         col.innerHTML = `
-            <div class="card border-0 text-center" style="width:180px; background:transparent;">
-                <img src="${carta.card_images[0].image_url}"
-                     alt="${carta.name}"
-                     class="card-img-top"
-                     style="height:255px; object-fit:contain;">
-                <div class="card-body p-1">
-                    <button class="btn btn-sm btn-primary ver-mas"
-                            data-id="${carta.id}"
-                            data-idkonami="${idKonami}"
-                            style="font-size:0.7rem; padding:2px 6px;">View more</button>
+            <div class="card border-0 text-center w-100 d-flex flex-column" style="background:transparent;">
+                <div style="height:240px; width:100%; flex-shrink:0;">
+                    <img src="${carta.card_images[0].image_url}"
+                         alt="${carta.name}"
+                         style="width:100%; height:100%; object-fit:contain; cursor:pointer;">
+                </div>
+                <div class="card-body p-1 flex-grow-1 d-flex flex-column justify-content-start">
+                    <!-- Puedes añadir info mínima aquí si quieres -->
                 </div>
             </div>
         `;
 
         listaCartas.appendChild(col);
-    });
 
-    listaCartas.querySelectorAll(".ver-mas").forEach(boton => {
-        boton.addEventListener("click", (e) => {
-            const id = e.target.getAttribute("data-id");
-            const idKonami = e.target.getAttribute("data-idkonami");
-            mostrarDetallesCarta(id, idKonami, document.querySelector("#zona_info"));
+        // Click en la imagen para ver detalles
+        col.querySelector("img").addEventListener("click", () => {
+            mostrarDetallesCarta(carta.id, idKonami, document.querySelector("#zona_info"));
         });
     });
 }
@@ -155,27 +149,34 @@ async function mostrarDetallesCarta(id, idKonami, zonaDetalles) {
         const data = await response.json();
         const carta = data.data[0];
 
-        zonaDetalles.innerHTML = `
+        let html = `
             <div class="card mb-3 border-0" style="max-width: 700px;">
-                <div class="row g-0">
-                    <div class="col-md-4 d-flex align-items-center justify-content-center">
-                        <img src="${carta.card_images[0].image_url}" class="img-fluid rounded-start" alt="${carta.name}">
+                <div class="d-flex flex-column align-items-center">
+                    <div style="width:240px; height:240px; flex-shrink:0;">
+                        <img src="${carta.card_images[0].image_url}" class="img-fluid" alt="${carta.name}" style="object-fit:contain; width:100%; height:100%;">
                     </div>
-                    <div class="col-md-8">
-                        <div class="card-body">
+                    <div class="w-100 mt-2">
+                        <div class="card-body p-2">
                             <h5 class="card-title">${carta.name}</h5>
                             <p><strong>Konami ID:</strong> ${idKonami}</p>
-                            <p><strong>Type:</strong> ${carta.type || "N/A"}</p>
-                            <p><strong>Archetype:</strong> ${carta.archetype || "N/A"}</p>
-                            <p><strong>Attribute:</strong> ${carta.attribute || "N/A"}</p>
-                            <p><strong>Level:</strong> ${carta.level || "N/A"}</p>
-                            <p><strong>ATK / DEF:</strong> ${carta.atk || "N/A"} / ${carta.def || "N/A"}</p>
-                            <p><strong>Description:</strong> ${carta.desc}</p>
+        `;
+
+        if (carta.type) html += `<p><strong>Type:</strong> ${carta.type}</p>`;
+        if (carta.archetype) html += `<p><strong>Archetype:</strong> ${carta.archetype}</p>`;
+        if (carta.attribute) html += `<p><strong>Attribute:</strong> ${carta.attribute}</p>`;
+        if (carta.level) html += `<p><strong>Level:</strong> ${carta.level}</p>`;
+        if (carta.atk != null || carta.def != null) html += `<p><strong>ATK / DEF:</strong> ${carta.atk != null ? carta.atk : ''} ${carta.def != null ? '/ ' + carta.def : ''}</p>`;
+        if (carta.desc) html += `<p><strong>Description:</strong> ${carta.desc}</p>`;
+
+        html += `
                         </div>
                     </div>
                 </div>
             </div>
         `;
+
+        zonaDetalles.innerHTML = html;
+
     } catch (error) {
         console.error(error);
         zonaDetalles.innerHTML = "<p class='text-danger'>Error showing card details.</p>";

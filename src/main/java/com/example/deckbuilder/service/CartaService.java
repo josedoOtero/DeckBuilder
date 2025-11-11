@@ -15,27 +15,33 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-
 public class CartaService {
-    CartaRepository cartaRepository;
-    MainDeckRepository mainDeckRepository;
-    ExtraDeckRepository extraDeckRepository;
-    SideDeckRepository sideDeckRepository;
 
+    private final CartaRepository cartaRepository;
+    private final MainDeckRepository mainDeckRepository;
+    private final ExtraDeckRepository extraDeckRepository;
+    private final SideDeckRepository sideDeckRepository;
 
-    CartaService(CartaRepository cartaRepository, MainDeckRepository mainDeckRepository, ExtraDeckRepository extraDeckRepository, SideDeckRepository sideDeckRepository) {
+    public CartaService(CartaRepository cartaRepository,
+                        MainDeckRepository mainDeckRepository,
+                        ExtraDeckRepository extraDeckRepository,
+                        SideDeckRepository sideDeckRepository) {
         this.cartaRepository = cartaRepository;
         this.mainDeckRepository = mainDeckRepository;
         this.extraDeckRepository = extraDeckRepository;
         this.sideDeckRepository = sideDeckRepository;
-
     }
 
+    // Guarda la carta si no existe con el mismo idKonami
     public Carta save(Carta carta) {
+        Carta existente = cartaRepository.findByIdKonami(carta.getIdKonami());
+        if (existente != null) {
+            return existente;
+        }
         return cartaRepository.save(carta);
     }
 
-    public Carta findById(Integer id) {
+    public Carta findById(Long id) {
         return cartaRepository.findById(id).orElse(null);
     }
 
@@ -44,18 +50,23 @@ public class CartaService {
     }
 
     public Carta replace(Integer idKonami, Carta nuevaCarta) {
-        nuevaCarta.setIdKonami(idKonami);
+        Carta existente = cartaRepository.findByIdKonami(idKonami);
+        if (existente != null) {
+            existente.setIdKonami(nuevaCarta.getIdKonami());
+            return cartaRepository.save(existente);
+        }
         return cartaRepository.save(nuevaCarta);
     }
 
     @Transactional
     public Carta delete(Integer idKonami) {
-        Carta carta = cartaRepository.findById(idKonami)
-                .orElseThrow(() -> new EntityNotFoundException("Carta no encontrada con idKonami: " + idKonami));
+        Carta carta = cartaRepository.findByIdKonami(idKonami);
+        if (carta == null) {
+            throw new EntityNotFoundException("Carta no encontrada con idKonami: " + idKonami);
+        }
+
         List<MainDeck> mains = mainDeckRepository.findByCartasContaining(carta);
-        mains.forEach(d -> {
-            d.getCartas().remove(carta);
-        });
+        mains.forEach(d -> d.getCartas().remove(carta));
         mainDeckRepository.saveAll(mains);
 
         List<ExtraDeck> extras = extraDeckRepository.findByCartasContaining(carta);

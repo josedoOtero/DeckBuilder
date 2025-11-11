@@ -5,11 +5,13 @@ import com.example.deckbuilder.domain.Usuario;
 import com.example.deckbuilder.repository.MazoRepository;
 import com.example.deckbuilder.repository.UsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 
@@ -24,6 +26,11 @@ public class MazoService {
     }
 
     public Mazo save(Mazo mazo) {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof UserDetails userDetails) {
+            Optional<Usuario> usuario = usuarioRepository.findByNombre(userDetails.getUsername());
+            mazo.setCreador(usuario.get());
+        }
         return mazoRepository.save(mazo);
     }
 

@@ -11,40 +11,43 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/CartaAPI")
-
 public class CartaControllerAPI {
-    CartaService cartaService;
 
-    CartaControllerAPI(CartaService cartaService) {
+    private final CartaService cartaService;
+
+    public CartaControllerAPI(CartaService cartaService) {
         this.cartaService = cartaService;
     }
 
-    //*FUNCIONES DEL CRUD*//
-
-    @GetMapping(value = {"","/"})
-    public List<Carta> all(){
+    //* CRUD *//
+    @GetMapping({"", "/"})
+    public List<Carta> all() {
         return cartaService.findAll();
     }
 
-    @PostMapping({"","/"})
+    @PostMapping({"", "/"})
     public Carta newCarta(@RequestBody Carta carta) {
         return this.cartaService.save(carta);
     }
 
+    // Buscar por ID autoincremental
     @GetMapping("/{id}")
-    public Carta one(@PathVariable("id") Integer id) {
+    public Carta one(@PathVariable Long id) {
         return this.cartaService.findById(id);
     }
 
-    @PutMapping("/{id}")
-    public Carta replaceCarta(@PathVariable("id") Integer id, @RequestBody Carta carta) {
-        return this.cartaService.replace(id, carta);
+    // Reemplazar carta por idKonami
+    @PutMapping("/{idKonami}")
+    public Carta replaceCarta(@PathVariable Integer idKonami, @RequestBody Carta carta) {
+        return this.cartaService.replace(idKonami, carta);
     }
 
+    // Eliminar carta por idKonami
     @ResponseBody
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping("/{id}")
-    public Carta deleteCarta(@PathVariable("id") Integer id) {
-        return this.cartaService.delete(id);
+    @DeleteMapping("/{idKonami}")
+    public void deleteCarta(@PathVariable Integer idKonami) {
+        this.cartaService.delete(idKonami);
     }
 }
+
