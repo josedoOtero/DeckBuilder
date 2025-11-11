@@ -223,6 +223,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         const nuevoMazo = {
+            nombre: nombreMazo.value || "Mazo sin título", // <-- aquí guardamos el nombre
             estado: estadoSelect.value,
             imagenCartaDestacada: cartaDestacada.value || null,
             mainDeck: { cartas: mazo.main.map(c => ({ idKonami: c.idKonami })) },
@@ -250,6 +251,7 @@ document.addEventListener("DOMContentLoaded", () => {
             alert("Error al guardar el mazo");
         }
     });
+
 
 
     // Eliminar mazo

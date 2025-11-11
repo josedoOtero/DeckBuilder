@@ -19,6 +19,8 @@ public class Mazo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String nombre;
+
     private String estado;
 
     private int vistas = 0;

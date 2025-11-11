@@ -1,10 +1,13 @@
 package com.example.deckbuilder.controller.api;
 
 import com.example.deckbuilder.domain.Mazo;
+import com.example.deckbuilder.domain.Usuario;
 import com.example.deckbuilder.service.MazoService;
+import com.example.deckbuilder.service.UsuarioService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
 
 import java.util.List;
 
@@ -13,10 +16,12 @@ import java.util.List;
 @RequestMapping("/MazoAPI")
 
 public class MazoControllerAPI {
-    MazoService mazoService;
+    private final MazoService mazoService;
+    private final UsuarioService usuarioService;
 
-    MazoControllerAPI(MazoService mazoService) {
+    MazoControllerAPI(MazoService mazoService, UsuarioService usuarioService) {
         this.mazoService = mazoService;
+        this.usuarioService = usuarioService;
     }
 
     @GetMapping(value = {"","/"})
@@ -44,5 +49,12 @@ public class MazoControllerAPI {
     @DeleteMapping("/{id}")
     public Mazo deleteCarta(@PathVariable("id") Long id) {
         return this.mazoService.delete(id);
+    }
+
+    @GetMapping("/usuario")
+    public List<Mazo> obtenerMazosUsuario(Authentication auth) {
+        String nombreUsuario = auth.getName();
+        Usuario usuario = usuarioService.findByNombre(nombreUsuario);
+        return mazoService.findByUsuario(usuario);
     }
 }

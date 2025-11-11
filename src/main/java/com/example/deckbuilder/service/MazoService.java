@@ -82,5 +82,7 @@ public class MazoService {
     }
 
 
-
+    public List<Mazo> findByUsuario(Usuario usuario) {
+        return mazoRepository.findAllByCreador(usuario);
+    }
 }

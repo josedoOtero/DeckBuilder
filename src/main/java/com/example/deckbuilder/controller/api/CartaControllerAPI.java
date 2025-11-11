@@ -19,7 +19,6 @@ public class CartaControllerAPI {
         this.cartaService = cartaService;
     }
 
-    //* CRUD *//
     @GetMapping({"", "/"})
     public List<Carta> all() {
         return cartaService.findAll();
@@ -30,19 +29,16 @@ public class CartaControllerAPI {
         return this.cartaService.save(carta);
     }
 
-    // Buscar por ID autoincremental
     @GetMapping("/{id}")
     public Carta one(@PathVariable Long id) {
         return this.cartaService.findById(id);
     }
 
-    // Reemplazar carta por idKonami
     @PutMapping("/{idKonami}")
     public Carta replaceCarta(@PathVariable Integer idKonami, @RequestBody Carta carta) {
         return this.cartaService.replace(idKonami, carta);
     }
 
-    // Eliminar carta por idKonami
     @ResponseBody
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{idKonami}")
