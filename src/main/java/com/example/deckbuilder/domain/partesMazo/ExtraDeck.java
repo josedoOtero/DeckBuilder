@@ -14,6 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ExtraDeck {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -22,4 +23,5 @@ public class ExtraDeck {
     @JoinColumn(name = "extra_deck_id")
     private List<Carta> cartas;
 }
+
 

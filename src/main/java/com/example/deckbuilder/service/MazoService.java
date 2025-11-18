@@ -2,6 +2,9 @@ package com.example.deckbuilder.service;
 
 import com.example.deckbuilder.domain.Mazo;
 import com.example.deckbuilder.domain.Usuario;
+import com.example.deckbuilder.domain.partesMazo.ExtraDeck;
+import com.example.deckbuilder.domain.partesMazo.MainDeck;
+import com.example.deckbuilder.domain.partesMazo.SideDeck;
 import com.example.deckbuilder.repository.MazoRepository;
 import com.example.deckbuilder.repository.UsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -10,17 +13,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
-
 public class MazoService {
     MazoRepository mazoRepository;
     UsuarioRepository usuarioRepository;
 
-    MazoService (MazoRepository mazoRepository, UsuarioRepository usuarioRepository) {
-
+    MazoService(MazoRepository mazoRepository, UsuarioRepository usuarioRepository) {
         this.mazoRepository = mazoRepository;
         this.usuarioRepository = usuarioRepository;
     }
@@ -28,9 +28,14 @@ public class MazoService {
     public Mazo save(Mazo mazo) {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (principal instanceof UserDetails userDetails) {
-            Optional<Usuario> usuario = usuarioRepository.findByNombre(userDetails.getUsername());
-            mazo.setCreador(usuario.get());
+            usuarioRepository.findByNombre(userDetails.getUsername())
+                    .ifPresent(mazo::setCreador);
         }
+
+        if (mazo.getMainDeck() == null) mazo.setMainDeck(new MainDeck());
+        if (mazo.getExtraDeck() == null) mazo.setExtraDeck(new ExtraDeck());
+        if (mazo.getSideDeck() == null) mazo.setSideDeck(new SideDeck());
+
         return mazoRepository.save(mazo);
     }
 
@@ -43,8 +48,15 @@ public class MazoService {
     }
 
     public Mazo replace(Long id, Mazo nuevoMazo) {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof UserDetails userDetails) {
+            usuarioRepository.findByNombre(userDetails.getUsername())
+                    .ifPresent(nuevoMazo::setCreador);
+        }
+
         return mazoRepository.findById(id)
                 .map(mazoExistente -> {
+                    mazoExistente.setNombre(nuevoMazo.getNombre());
                     mazoExistente.setEstado(nuevoMazo.getEstado());
                     mazoExistente.setVistas(nuevoMazo.getVistas());
                     mazoExistente.setImagenCartaDestacada(nuevoMazo.getImagenCartaDestacada());
@@ -62,27 +74,19 @@ public class MazoService {
 
 
     @Transactional
-    public Mazo delete(Long id) {
-        Mazo mazo = mazoRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Mazo no encontrado con id: " + id));
-
-        List<Usuario> usuariosConFavorito = usuarioRepository.findByMazosFavoritosContaining(mazo);
-        usuariosConFavorito.forEach(usuario -> usuario.getMazosFavoritos().remove(mazo));
-        usuarioRepository.saveAll(usuariosConFavorito);
-
-        if (mazo.getCreador() != null) {
-            Usuario creador = mazo.getCreador();
-            creador.getMazos().remove(mazo);
-            usuarioRepository.save(creador);
-            mazo.setCreador(null);
+    public void delete(Long id) {
+        if(mazoRepository.existsById(id)) {
+            mazoRepository.deleteById(id);
+        } else {
+            throw new RuntimeException("El mazo no existe");
         }
-
-        mazoRepository.delete(mazo);
-        return mazo;
     }
-
 
     public List<Mazo> findByUsuario(Usuario usuario) {
         return mazoRepository.findAllByCreador(usuario);
+    }
+
+    public List<Mazo> obtenerMazosPublicos() {
+        return mazoRepository.findByEstado("publico");
     }
 }

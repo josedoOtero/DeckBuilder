@@ -12,9 +12,49 @@ document.addEventListener("DOMContentLoaded", () => {
     const cartaDestacada = document.querySelector("#cartaDestacada");
     const estadoSelect = document.querySelector("#estadoMazo");
 
+    const currentUrl = window.location.pathname;
+    const match = currentUrl.match(/\/constructorMazos\/(\d+)/i);
+    const ID_MAZO = match ? match[1] : null;
+
     let cartasFiltradas = [];
     let zonaSeleccionada = "main";
     const mazo = { main: [], extra: [], side: [] };
+
+    async function cargarMazoSiExiste() {
+        if (!ID_MAZO) return;
+
+        try {
+            const response = await fetch(`/MazoAPI/${ID_MAZO}`);
+            if (!response.ok) throw new Error("No se pudo cargar el mazo");
+
+            const data = await response.json();
+
+            nombreMazo.value = data.nombre || "";
+            estadoSelect.value = data.estado || "publico";
+
+            mazo.main = data.mainDeck?.cartas?.map(c => ({ idKonami: c.idKonami })) || [];
+            mazo.extra = data.extraDeck?.cartas?.map(c => ({ idKonami: c.idKonami })) || [];
+            mazo.side = data.sideDeck?.cartas?.map(c => ({ idKonami: c.idKonami })) || [];
+
+            const ids = [...mazo.main, ...mazo.extra, ...mazo.side].map(c => c.idKonami);
+
+            if (ids.length > 0) {
+                const url = `https://db.ygoprodeck.com/api/v7/cardinfo.php?id=${ids.join(",")}`;
+                const res = await fetch(url);
+                const cartaData = await res.json();
+                cartasFiltradas = cartaData.data;
+            }
+
+            mostrarMazo();
+            actualizarCartaDestacada();
+
+            setTimeout(() => {
+                cartaDestacada.value = data.imagenCartaDestacada || "";
+            }, 200);
+        } catch (error) {
+            console.error("Error al cargar mazo existente:", error);
+        }
+    }
 
     document.querySelector("#btnMain").addEventListener("click", () => {
         zonaSeleccionada = "main";
@@ -91,7 +131,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Mostrar cartas filtradas
     function mostrarCartas(cartas) {
         listaCartas.className = "row row-cols-6 g-2";
         listaCartas.innerHTML = "";
@@ -110,14 +149,12 @@ document.addEventListener("DOMContentLoaded", () => {
             `;
 
             col.querySelector("img").addEventListener("click", () => agregarCartaAlMazo(carta, zonaSeleccionada));
-
             listaCartas.appendChild(col);
         });
     }
 
-    // Agregar carta a mazo
     function agregarCartaAlMazo(carta, zona) {
-        const idKonami = carta.id; // identificador único
+        const idKonami = carta.id;
         const totalCopias = [...mazo.main, ...mazo.extra, ...mazo.side]
             .filter(c => c.idKonami === idKonami).length;
 
@@ -131,16 +168,15 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        const tipo = carta.type || "";
         if (zona === "extra") {
             const tiposExtra = ["Fusion Monster", "Synchro Monster", "XYZ Monster", "Link Monster", "Pendulum Monster"];
-            if (!tiposExtra.includes(tipo)) {
+            if (!tiposExtra.includes(carta.type)) {
                 alert("Solo puedes agregar cartas del Extra Deck (Fusión, Synchro, XYZ, Link, Pendulum) a esta zona.");
                 return;
             }
         } else if (zona === "main") {
             const tiposExtra = ["Fusion Monster", "Synchro Monster", "XYZ Monster", "Link Monster"];
-            if (tiposExtra.includes(tipo)) {
+            if (tiposExtra.includes(carta.type)) {
                 alert("No puedes agregar cartas del Extra Deck al Main Deck.");
                 return;
             }
@@ -151,13 +187,9 @@ document.addEventListener("DOMContentLoaded", () => {
         actualizarCartaDestacada();
     }
 
-    // Render de cada zona del mazo
     function renderZona(container, cartas, zona) {
-        container.querySelectorAll(".row").forEach(r => r.remove());
-        if (cartas.length === 0) return;
-
-        const row = document.createElement("div");
-        row.className = "row row-cols-5 g-1";
+        const row = container.querySelector(".row");
+        row.innerHTML = "";
 
         cartas.forEach((carta, index) => {
             const cartaInfo = cartasFiltradas.find(c => c.id === carta.idKonami);
@@ -167,19 +199,17 @@ document.addEventListener("DOMContentLoaded", () => {
             const col = document.createElement("div");
             col.classList.add("col", "d-flex", "justify-content-center");
             col.innerHTML = `
-                <div class="card border-0 text-center w-100" style="background:transparent;">
-                    <div style="height:210px; width:100%;">
-                        <img src="${imgSrc}" alt="${name}" style="width:100%; height:100%; object-fit:contain;">
-                    </div>
-                    <div class="card-body p-0">
-                        <button class="btn btn-sm btn-danger w-100 quitar-carta" data-zona="${zona}" data-index="${index}" style="font-size:0.7rem;">Quitar</button>
-                    </div>
+            <div class="card border-0 text-center w-100" style="background:transparent;">
+                <div style="height:210px; width:100%;">
+                    <img src="${imgSrc}" alt="${name}" style="width:100%; height:100%; object-fit:contain;">
                 </div>
+                <div class="card-body p-0">
+                    <button class="btn btn-sm btn-danger w-100 quitar-carta" data-zona="${zona}" data-index="${index}" style="font-size:0.7rem;">Quitar</button>
+                </div>
+            </div>
             `;
             row.appendChild(col);
         });
-
-        container.appendChild(row);
 
         container.querySelectorAll(".quitar-carta").forEach(boton => {
             boton.addEventListener("click", e => {
@@ -192,77 +222,106 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Mostrar el mazo completo
     function mostrarMazo() {
         renderZona(mainDeck, mazo.main, "main");
         renderZona(extraDeck, mazo.extra, "extra");
         renderZona(sideDeck, mazo.side, "side");
     }
 
-    // Actualizar el selector de carta destacada
     function actualizarCartaDestacada() {
-        cartaDestacada.innerHTML = '<option value="">Featured card</option>';
-        const todasLasCartas = [...mazo.main, ...mazo.extra, ...mazo.side];
+        const todas = [...mazo.main, ...mazo.extra, ...mazo.side];
+        const idsUnicos = [...new Set(todas.map(c => c.idKonami))];
 
-        todasLasCartas.forEach(carta => {
-            const cartaInfo = cartasFiltradas.find(c => c.id === carta.idKonami);
+        cartaDestacada.innerHTML = '<option value="">Featured card</option>';
+
+        idsUnicos.forEach(id => {
+            const cartaInfo = cartasFiltradas.find(c => c.id === id);
             if (cartaInfo) {
-                const option = document.createElement("option");
-                option.value = cartaInfo.id;
-                option.textContent = cartaInfo.name;
-                cartaDestacada.appendChild(option);
+                const opt = document.createElement("option");
+                opt.value = cartaInfo.card_images[0].image_url;
+                opt.textContent = cartaInfo.name;
+                cartaDestacada.appendChild(opt);
             }
         });
     }
 
-    // Guardar mazo
     btnSave.addEventListener("click", async () => {
-        if (mazo.main.length === 0 && mazo.extra.length === 0 && mazo.side.length === 0) {
-            alert("No puedes guardar un mazo vacío.");
-            return;
-        }
-
-        const nuevoMazo = {
-            nombre: nombreMazo.value || "Mazo sin título", // <-- aquí guardamos el nombre
-            estado: estadoSelect.value,
-            imagenCartaDestacada: cartaDestacada.value || null,
-            mainDeck: { cartas: mazo.main.map(c => ({ idKonami: c.idKonami })) },
-            extraDeck: { cartas: mazo.extra.map(c => ({ idKonami: c.idKonami })) },
-            sideDeck: { cartas: mazo.side.map(c => ({ idKonami: c.idKonami })) }
+        const payload = {
+            nombre: nombreMazo.value,
+            estado: estadoSelect.value || "publico",
+            mainDeck: { cartas: mazo.main },
+            extraDeck: { cartas: mazo.extra },
+            sideDeck: { cartas: mazo.side },
+            imagenCartaDestacada: cartaDestacada.value
         };
 
         try {
-            const response = await fetch("/MazoAPI", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(nuevoMazo)
-            });
+            let response;
 
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.error("Respuesta del servidor:", errorText);
-                throw new Error("Error al guardar el mazo");
+            if (!ID_MAZO) {
+                response = await fetch("/MazoAPI", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`Error al crear el mazo: ${errorText}`);
+                }
+
+            } else {
+                response = await fetch(`/MazoAPI/${ID_MAZO}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`Error al actualizar el mazo: ${errorText}`);
+                }
             }
 
-            const data = await response.json();
-            alert(`Mazo guardado con éxito (ID: ${data.id})`);
+            window.location.href = "/user/misMazos";
+
         } catch (error) {
-            console.error("Error al guardar el mazo:", error);
-            alert("Error al guardar el mazo");
+            console.error("Error al guardar mazo:", error);
+            alert(error.message);
         }
     });
 
+    btnDelete.addEventListener("click", async () => {
+        if (!ID_MAZO) {
+            alert("No hay mazo seleccionado para eliminar.");
+            return;
+        }
 
-
-    // Eliminar mazo
-    btnDelete.addEventListener("click", () => {
         if (confirm("¿Seguro que quieres eliminar este mazo?")) {
-            Object.keys(mazo).forEach(k => mazo[k] = []);
-            mostrarMazo();
-            actualizarCartaDestacada();
-            nombreMazo.value = "";
+            try {
+                console.log(`/MazoAPI/${ID_MAZO}`)
+                const response = await fetch(`/MazoAPI/${ID_MAZO}`, { method: "DELETE" });
+                console.log(response)
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`Error al eliminar el mazo: ${errorText}`);
+                }
+
+                Object.keys(mazo).forEach(k => mazo[k] = []);
+                mostrarMazo();
+                actualizarCartaDestacada();
+                nombreMazo.value = "";
+
+                window.location.href = "/user/misMazos";
+
+            } catch (error) {
+                console.error(error);
+                alert(error.message);
+            }
         }
     });
 
     actualizarBotones();
+    cargarMazoSiExiste();
 });

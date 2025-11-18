@@ -1,7 +1,9 @@
 package com.example.deckbuilder.controller.templete;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
@@ -29,8 +31,15 @@ public class UsuarioController {
         return "ventanasUsuario/mis-mazos";
     }
 
-    @GetMapping("/costructorMazos")
-    public String costructorMazo() {
-        return "ventanasUsuario/costructor-mazos";
+    @GetMapping("/constructorMazos")
+    public String constructorMazo() {
+        return "ventanasUsuario/constructor-mazos";
     }
+
+    @GetMapping("/constructorMazos/{id}")
+    public String mostrarConstructorMazos(@PathVariable Long id, Model model) {
+        model.addAttribute("id", id);
+        return "ventanasUsuario/constructor-mazos";
+    }
+
 }

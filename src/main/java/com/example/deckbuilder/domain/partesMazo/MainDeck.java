@@ -9,12 +9,12 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Entity
-@Table(name="main_deck")
+@Table(name = "main_deck")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-
 public class MainDeck {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,3 +23,4 @@ public class MainDeck {
     @JoinColumn(name = "main_deck_id")
     private List<Carta> cartas;
 }
+

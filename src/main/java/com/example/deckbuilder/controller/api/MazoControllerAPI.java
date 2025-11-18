@@ -14,8 +14,8 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/MazoAPI")
-
 public class MazoControllerAPI {
+
     private final MazoService mazoService;
     private final UsuarioService usuarioService;
 
@@ -25,7 +25,7 @@ public class MazoControllerAPI {
     }
 
     @GetMapping(value = {"","/"})
-    public List<Mazo> all(){
+    public List<Mazo> all() {
         return mazoService.findAll();
     }
 
@@ -40,15 +40,15 @@ public class MazoControllerAPI {
     }
 
     @PutMapping("/{id}")
-    public Mazo replaceImagenUsuario(@PathVariable("id") Long id, @RequestBody Mazo mazo) {
+    public Mazo replaceMazo(@PathVariable("id") Long id, @RequestBody Mazo mazo) {
         return this.mazoService.replace(id, mazo);
     }
 
     @ResponseBody
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
-    public Mazo deleteCarta(@PathVariable("id") Long id) {
-        return this.mazoService.delete(id);
+    public void deleteCarta(@PathVariable("id") Long id) {
+        this.mazoService.delete(id);
     }
 
     @GetMapping("/usuario")
@@ -57,4 +57,11 @@ public class MazoControllerAPI {
         Usuario usuario = usuarioService.findByNombre(nombreUsuario);
         return mazoService.findByUsuario(usuario);
     }
+
+    @GetMapping("/publicos")
+    public List<Mazo> obtenerMazosPublicos() {
+        return mazoService.obtenerMazosPublicos();
+    }
 }
+
+

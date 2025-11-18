@@ -11,4 +11,6 @@ import java.util.List;
 
 public interface MazoRepository extends JpaRepository<Mazo, Long> {
     List<Mazo> findAllByCreador(Usuario usuario);
+
+    List<Mazo> findByEstado(String publico);
 }

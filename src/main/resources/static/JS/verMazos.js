@@ -1,14 +1,14 @@
 document.addEventListener("DOMContentLoaded", async () => {
     const listaMazos = document.querySelector("#lista_mazos");
 
-    async function obtenerMazosUsuario() {
+    async function obtenerMazosPublicos() {
         try {
-            const response = await fetch("/MazoAPI/usuario");
-            if (!response.ok) throw new Error("Error al obtener mazos del usuario");
+            const response = await fetch("/MazoAPI/publicos");
+            if (!response.ok) throw new Error("Error al obtener mazos públicos");
             return await response.json();
         } catch (error) {
             console.error(error);
-            listaMazos.innerHTML = '<p class="text-center text-danger">No se pudieron cargar tus mazos.</p>';
+            listaMazos.innerHTML = '<p class="text-center text-danger">No se pudieron cargar los mazos públicos.</p>';
             return [];
         }
     }
@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         listaMazos.innerHTML = "";
 
         if (mazos.length === 0) {
-            listaMazos.innerHTML = '<p class="text-center text-muted">No tienes mazos creados.</p>';
+            listaMazos.innerHTML = '<p class="text-center text-muted">No hay mazos públicos disponibles.</p>';
             return;
         }
 
@@ -35,8 +35,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             col.innerHTML = `
                 <div class="card border-0" style="background: none;">
                     <h5 class="mb-2">${mazo.nombre || "Mazo sin título"}</h5>
-
-                    <!-- 🔥 NUEVA URL CORRECTA -->
                     <a href="/user/constructorMazos/${mazo.id}">
                         <img src="${imagen}"
                              alt="Mazo ${mazo.id}"
@@ -57,6 +55,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         listaMazos.appendChild(row);
     }
 
-    const mazos = await obtenerMazosUsuario();
-    mostrarMazos(mazos);
+    const mazosPublicos = await obtenerMazosPublicos();
+    mostrarMazos(mazosPublicos);
 });

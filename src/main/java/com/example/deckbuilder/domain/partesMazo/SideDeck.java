@@ -7,14 +7,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
-
 @Entity
 @Table(name="side_deck")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-
 public class SideDeck {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,3 +22,4 @@ public class SideDeck {
     @JoinColumn(name = "side_deck_id")
     private List<Carta> cartas;
 }
+
