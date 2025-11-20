@@ -134,7 +134,6 @@ function mostrarCartas(cartas, listaCartas) {
 
         listaCartas.appendChild(col);
 
-        // Click en la imagen para ver detalles
         col.querySelector("img").addEventListener("click", () => {
             mostrarDetallesCarta(carta.id, idKonami, document.querySelector("#zona_info"));
         });

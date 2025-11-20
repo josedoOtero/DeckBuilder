@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             col.innerHTML = `
                 <div class="card border-0" style="background: none;">
                     <h5 class="mb-2">${mazo.nombre || "Mazo sin título"}</h5>
-                    <a href="/user/constructorMazos/${mazo.id}">
+                    <a href="/user/visualizadorMazos/${mazo.id}">
                         <img src="${imagen}"
                              alt="Mazo ${mazo.id}"
                              style="height: 240px; border-radius: 15px; 

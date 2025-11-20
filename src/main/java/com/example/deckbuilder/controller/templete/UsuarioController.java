@@ -42,4 +42,10 @@ public class UsuarioController {
         return "ventanasUsuario/constructor-mazos";
     }
 
+    @GetMapping("/visualizadorMazos/{id}")
+    public String mostrarrMazo(@PathVariable Long id, Model model) {
+        model.addAttribute("id", id);
+        return "ventanasUsuario/visualizador-mazos";
+    }
+
 }

@@ -36,12 +36,11 @@ document.addEventListener("DOMContentLoaded", async () => {
                 <div class="card border-0" style="background: none;">
                     <h5 class="mb-2">${mazo.nombre || "Mazo sin título"}</h5>
 
-                    <!-- 🔥 NUEVA URL CORRECTA -->
                     <a href="/user/constructorMazos/${mazo.id}">
                         <img src="${imagen}"
                              alt="Mazo ${mazo.id}"
-                             style="height: 240px; border-radius: 15px; 
-                             box-shadow: 0 4px 12px rgba(0,0,0,0.2); 
+                             style="height: 240px; border-radius: 15px;
+                             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
                              transition: transform 0.3s ease;">
                     </a>
                 </div>
