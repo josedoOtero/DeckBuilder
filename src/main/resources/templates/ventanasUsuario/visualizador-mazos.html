@@ -90,12 +90,6 @@
 
         <h4 class="text-center mb-3">Deck Viewer</h4>
 
-        <div class="d-flex justify-content-around mb-3">
-            <button class="btn btn-outline-primary btn-sm">Main Deck</button>
-            <button class="btn btn-outline-secondary btn-sm">Extra Deck</button>
-            <button class="btn btn-outline-danger btn-sm">Side Deck</button>
-        </div>
-
         <div id="main_deck" class="mb-3">
             <h6 class="text-center text-muted">Main Deck</h6>
             <div class="row row-cols-5 g-1"></div>
@@ -115,8 +109,10 @@
 </div>
 
 <script th:inline="javascript">
-    const ID_MAZO = /*[[${id}]]*/ null;
+    window.ID_MAZO = /*[[${id}]]*/ null;
+    console.log("window.ID_MAZO recibido:", window.ID_MAZO);
 </script>
+
 
 <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 <script th:src="@{/JS/visorMazo.js}"></script>

@@ -19,47 +19,61 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             const mazo = await res.json();
 
-            cargarSeccion(mazo.mainDeck.cartas, mainCont);
-            cargarSeccion(mazo.extraDeck.cartas, extraCont);
-            cargarSeccion(mazo.sideDeck.cartas, sideCont);
+            // Obtener IDs Konami de todas las zonas
+            const idsMain = mazo.mainDeck?.cartas?.map(c => c.idKonami) || [];
+            const idsExtra = mazo.extraDeck?.cartas?.map(c => c.idKonami) || [];
+            const idsSide = mazo.sideDeck?.cartas?.map(c => c.idKonami) || [];
+
+            const idsTotales = [...idsMain, ...idsExtra, ...idsSide];
+
+            if (idsTotales.length === 0) {
+                mainCont.innerHTML = extraCont.innerHTML = sideCont.innerHTML =
+                    `<p class='text-muted text-center'>Empty</p>`;
+                return;
+            }
+
+            // 🔥 SE HACE SOLO UNA PETICIÓN A LA API
+            const url = `https://db.ygoprodeck.com/api/v7/cardinfo.php?id=${idsTotales.join(",")}`;
+            const resCartas = await fetch(url);
+            const dataCartas = await resCartas.json();
+            const cartasInfo = dataCartas.data;
+
+            // Crear diccionario por ID
+            const dic = {};
+            for (let carta of cartasInfo) dic[carta.id] = carta;
+
+            cargarSeccion(idsMain, mainCont, dic);
+            cargarSeccion(idsExtra, extraCont, dic);
+            cargarSeccion(idsSide, sideCont, dic);
 
         } catch (e) {
             console.error(e);
         }
     }
 
-    async function cargarSeccion(cartas, contenedor) {
+    function cargarSeccion(ids, contenedor, dic) {
         contenedor.innerHTML = "";
 
-        if (!cartas || cartas.length === 0) {
+        if (!ids || ids.length === 0) {
             contenedor.innerHTML = `<p class='text-muted text-center'>Empty</p>`;
             return;
         }
 
-        for (let carta of cartas) {
-            const konami = carta.idKonami;
+        for (let id of ids) {
+            const info = dic[id];
+            if (!info) continue;
 
-            try {
-                const response = await fetch(`https://db.ygoprodeck.com/api/v7/cardinfo.php?konami_id=${konami}`);
-                const data = await response.json();
-                const info = data.data[0];
+            const cardDiv = document.createElement("div");
+            cardDiv.className = "col";
+            cardDiv.innerHTML = `
+                <img src="${info.card_images[0].image_url}" style="width:100%; cursor:pointer;">
+            `;
 
-                const cardDiv = document.createElement("div");
-                cardDiv.className = "col";
-                cardDiv.innerHTML = `
-                    <img src="${info.card_images[0].image_url}"
-                         style="width:100%; cursor:pointer;">
-                `;
+            cardDiv.querySelector("img").addEventListener("click", () => {
+                mostrarDetalles(info);
+            });
 
-                cardDiv.querySelector("img").addEventListener("click", () => {
-                    mostrarDetalles(info);
-                });
-
-                contenedor.appendChild(cardDiv);
-
-            } catch (err) {
-                console.error("Error cargando carta:", konami, err);
-            }
+            contenedor.appendChild(cardDiv);
         }
     }
 
