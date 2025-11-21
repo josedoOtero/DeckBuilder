@@ -48,4 +48,10 @@ public class UsuarioController {
         return "ventanasUsuario/visualizador-mazos";
     }
 
+    @GetMapping("/verUser/{id}")
+    public String mostrarrUser(@PathVariable Long id, Model model) {
+        model.addAttribute("id", id);
+        return "ventanasUsuario/ver-usuario";
+    }
+
 }

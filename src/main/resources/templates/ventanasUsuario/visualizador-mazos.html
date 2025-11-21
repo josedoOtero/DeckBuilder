@@ -80,11 +80,56 @@
 <div id="pantalla" class="container-fluid">
 
     <div id="zona_detalles">
+
         <h4 class="text-center">Card Details</h4>
-        <div id="zona_info" class="p-2 text-center text-muted">
+
+        <div id="zona_info" class="p-2 text-center text-muted" style="flex: 1; overflow-y: auto;">
             <p>Select a card to view details</p>
         </div>
+
+        <div id="zona-opciones"
+             class="border-top px-3 py-2"
+             style="width:100%; gap:10px; background-color:#f1f3f5;">
+
+            <div class="d-flex flex-column w-100" style="gap:10px;">
+
+                <div class="row g-2">
+
+                    <div class="col-6">
+                        <label class="form-label mb-0"><strong>Nombre del mazo</strong></label>
+                        <input id="inputNombreMazo" type="text"
+                               class="form-control form-control-sm"
+                               readonly style="background-color:#e9ecef;">
+                    </div>
+
+                    <div class="col-6">
+                        <label class="form-label mb-0"><strong>Creado por</strong></label>
+                        <input id="inputCreador" type="text"
+                               class="form-control form-control-sm"
+                               readonly style="background-color:#e9ecef;">
+                        <button id="veruser" class="btn btn-success btn-sm px-3">
+                            <a id="btnVerUser"
+                            class="btn btn-success btn-sm px-3"
+                            style="text-decoration:none; color:white;">
+                            Ver más
+                        </a>
+
+
+                    </div>
+
+                </div>
+
+                <div class="d-flex justify-content-end">
+                    <button id="btnSave" class="btn btn-success btn-sm px-3" style="height:32px;">
+                        Guardar en favoritos
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
     </div>
+
 
     <div id="zona_mazo">
 

@@ -1,5 +1,6 @@
 package com.example.deckbuilder.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -39,7 +40,6 @@ public class Usuario {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "usuario_id")
-    @JsonManagedReference
     private Set<Mazo> mazos = new HashSet<>();
 
 
@@ -49,6 +49,7 @@ public class Usuario {
             joinColumns = @JoinColumn(name = "usuario_id"),
             inverseJoinColumns = @JoinColumn(name = "mazo_id")
     )
+    @JsonIgnore
     private Set<Mazo> mazosFavoritos = new HashSet<>();
 
     @OneToOne(cascade = CascadeType.ALL)

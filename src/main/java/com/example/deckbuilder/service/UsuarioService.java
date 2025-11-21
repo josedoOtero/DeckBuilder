@@ -93,5 +93,16 @@ public class UsuarioService {
         return usuarioRepository.save(usuario);
     }
 
+    public List<Mazo> obtenerMazosPublicos(Long idUsuario) {
+        Usuario usuario = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con id: " + idUsuario));
+
+        return usuario.getMazos()
+                .stream()
+                .filter(m -> m.getEstado() != null && m.getEstado().equalsIgnoreCase("publico"))
+                .toList();
+    }
+
+
 
 }

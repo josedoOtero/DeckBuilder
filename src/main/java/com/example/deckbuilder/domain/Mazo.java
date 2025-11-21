@@ -4,6 +4,7 @@ import com.example.deckbuilder.domain.partesMazo.ExtraDeck;
 import com.example.deckbuilder.domain.partesMazo.MainDeck;
 import com.example.deckbuilder.domain.partesMazo.SideDeck;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -29,8 +30,11 @@ public class Mazo {
 
     @ManyToOne
     @JoinColumn(name = "usuario_id")
+    @JsonIgnoreProperties({"mazos", "password"})
     @JsonBackReference
     private Usuario creador;
+
+
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "main_deck_id")

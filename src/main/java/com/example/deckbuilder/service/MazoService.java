@@ -89,4 +89,6 @@ public class MazoService {
     public List<Mazo> obtenerMazosPublicos() {
         return mazoRepository.findByEstado("publico");
     }
+
+
 }

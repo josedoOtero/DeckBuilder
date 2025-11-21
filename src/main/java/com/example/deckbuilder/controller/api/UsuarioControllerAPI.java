@@ -8,26 +8,25 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @RestController
 @RequestMapping("/UsuarioAPI")
-
 public class UsuarioControllerAPI {
-    UsuarioService usuarioService;
 
-    UsuarioControllerAPI(UsuarioService usuarioService) {
+    private final UsuarioService usuarioService;
+
+    public UsuarioControllerAPI(UsuarioService usuarioService) {
         this.usuarioService = usuarioService;
     }
 
-    //*FUNCIONES DEL CRUD*//
-
-    @GetMapping(value = {"","/"})
-    public List<Usuario> all(){
+    @GetMapping({"", "/"})
+    public List<Usuario> all() {
         return usuarioService.findAll();
     }
 
-    @PostMapping({"","/"})
+    @PostMapping({"", "/"})
     public Usuario newUsuario(@RequestBody Usuario usuario) {
         return this.usuarioService.save(usuario);
     }
@@ -48,4 +47,10 @@ public class UsuarioControllerAPI {
     public Usuario deleteCarta(@PathVariable("id") Long id) {
         return this.usuarioService.delete(id);
     }
+
+    @GetMapping("/{id}/mazos/publicos")
+    public List<Mazo> obtenerMazosPublicos(@PathVariable("id") Long id) {
+        return usuarioService.obtenerMazosPublicos(id);
+    }
 }
+

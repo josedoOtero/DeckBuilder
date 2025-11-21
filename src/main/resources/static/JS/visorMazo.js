@@ -19,7 +19,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             const mazo = await res.json();
 
-            // Obtener IDs Konami de todas las zonas
             const idsMain = mazo.mainDeck?.cartas?.map(c => c.idKonami) || [];
             const idsExtra = mazo.extraDeck?.cartas?.map(c => c.idKonami) || [];
             const idsSide = mazo.sideDeck?.cartas?.map(c => c.idKonami) || [];
@@ -32,19 +31,27 @@ document.addEventListener("DOMContentLoaded", async () => {
                 return;
             }
 
-            // 🔥 SE HACE SOLO UNA PETICIÓN A LA API
             const url = `https://db.ygoprodeck.com/api/v7/cardinfo.php?id=${idsTotales.join(",")}`;
             const resCartas = await fetch(url);
             const dataCartas = await resCartas.json();
             const cartasInfo = dataCartas.data;
 
-            // Crear diccionario por ID
             const dic = {};
             for (let carta of cartasInfo) dic[carta.id] = carta;
 
             cargarSeccion(idsMain, mainCont, dic);
             cargarSeccion(idsExtra, extraCont, dic);
             cargarSeccion(idsSide, sideCont, dic);
+
+            document.querySelector("#inputNombreMazo").value = mazo.nombre || "Sin nombre";
+            document.querySelector("#inputCreador").value = "Desconocido";
+
+
+            if (mazo.creador) {
+                document.querySelector("#inputCreador").value = mazo.creador.nombre;
+                document.querySelector("#btnVerUser").href = `/user/verUser/${mazo.creador.id}`;
+            }
+
 
         } catch (e) {
             console.error(e);
@@ -78,7 +85,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     function mostrarDetalles(carta) {
-        zonaDetalles.innerHTML = `
+        const zonaInfo = document.querySelector("#zona_info");
+
+        zonaInfo.innerHTML = `
             <h3>${carta.name}</h3>
             <img src="${carta.card_images[0].image_url}" style="width:200px;">
             <p><strong>Type:</strong> ${carta.type}</p>
