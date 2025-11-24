@@ -5,15 +5,60 @@
     <title>Editar Perfil</title>
     <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
 </head>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Perfil</title>
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+</head>
 <body>
 
+<!-- HEADER -->
+<header>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/login/home}">DeckBuilder</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" th:href="@{/login/home}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/login/cartas}">Cartas</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/user/mazos}">Mazos</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/user/misMazos}">Mis Mazos</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/user/constructorMazos}">Constructor de Mazos</a></li>
+                    <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                        <a class="nav-link" th:href="@{/admin/panel}">Panel Admin</a>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center">
+                    <!-- Usuario autenticado -->
+                    <div sec:authorize="isAuthenticated()" class="me-3">
+                        Bienvenido, <b sec:authentication="principal.username"></b>
+                        (<span sec:authentication="principal.authorities"></span>)
+                        <a th:href="@{/user/perfil}" class="ms-2">Perfil</a>
+                        <form th:action="@{/logout}" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-link p-0 ms-2">Cerrar sesión</button>
+                        </form>
+                    </div>
+
+                    <!-- Invitado -->
+                    <div sec:authorize="isAnonymous()">
+                        Invitado | <a th:href="@{/login/iniciarSesion}">Iniciar sesión</a>
+                        | <a th:href="@{/login/crearCuenta}">Registrarse</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<!-- CONTENIDO -->
 <div class="container mt-5">
     <h2>Editar Perfil</h2>
     <div class="row">
 
-        <!-- ===================== IMAGEN DE PERFIL ===================== -->
+        <!-- FOTO PERFIL -->
         <div class="col-md-4 text-center">
-
             <img id="fotoPerfil"
                  th:src="${usuario.imagenUsuario != null ? usuario.imagenUsuario.url : '/images/default-user.png'}"
                  class="img-thumbnail mb-3"
@@ -24,109 +69,84 @@
             </button>
         </div>
 
-        <!-- ===================== FORMULARIO PERFIL ===================== -->
+        <!-- FORMULARIO PERFIL -->
         <div class="col-md-8">
-
             <form th:action="@{/user/perfil}" th:object="${usuario}" method="post">
-
-                <!-- NOMBRE -->
                 <div class="mb-3">
                     <label class="form-label">Nombre</label>
                     <input type="text" th:field="*{nombre}" class="form-control" required>
                 </div>
 
-                <!-- EMAIL (solo lectura) -->
                 <div class="mb-3">
                     <label class="form-label">Email</label>
                     <input type="email" th:field="*{email}" class="form-control" readonly>
                 </div>
 
-                <!-- BOTÓN CAMBIAR CONTRASEÑA -->
                 <button type="button" class="btn btn-warning mb-3" data-bs-toggle="modal" data-bs-target="#modalPassword">
                     Cambiar Contraseña
                 </button>
-
                 <br>
-
                 <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                <a th:href="@{}" class="btn btn-secondary">Cancelar</a>
-
+                <a href="javascript:history.back()" class="btn btn-secondary">Cancelar</a>
             </form>
-
         </div>
 
     </div>
 </div>
 
+<!-- MODAL CAMBIAR CONTRASEÑA -->
 <div class="modal fade" id="modalPassword" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-
             <form id="formCambiarPassword">
-
                 <div class="modal-header">
                     <h5 class="modal-title">Cambiar Contraseña</h5>
                     <button class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-
                 <div class="modal-body">
-
                     <div class="mb-3">
                         <label>Contraseña actual</label>
                         <input type="password" id="passwordActual" class="form-control" required>
                     </div>
-
                     <div class="mb-3">
                         <label>Nueva contraseña</label>
                         <input type="password" id="passwordNueva" class="form-control" required>
                     </div>
-
                     <div class="mb-3">
                         <label>Repite la nueva contraseña</label>
                         <input type="password" id="passwordRepetida" class="form-control" required>
                     </div>
-
                 </div>
-
                 <div class="modal-footer">
                     <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button class="btn btn-primary" type="submit">Cambiar</button>
                 </div>
-
             </form>
-
         </div>
     </div>
 </div>
 
+<!-- MODAL SELECCIONAR CARTA -->
 <div class="modal fade" id="modalSeleccionarCarta" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-
             <div class="modal-header">
                 <h5 class="modal-title">Seleccionar carta como imagen</h5>
                 <button class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-
             <div class="modal-body">
-
                 <form id="filtro_cartas" class="d-flex mb-3">
                     <input type="text" class="form-control" name="q" placeholder="Buscar por nombre...">
                     <button class="btn btn-primary ms-2">Buscar</button>
                 </form>
-
                 <div id="lista_cartas" class="row row-cols-2 row-cols-md-6 g-2"></div>
-
             </div>
-
         </div>
     </div>
 </div>
-
 
 <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 <script th:src="@{/js/editarPerfil.js}"></script>
 
 </body>
 </html>
-

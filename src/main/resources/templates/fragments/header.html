@@ -1,30 +1,42 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<body>
-<header>
-    <nav>
-        <ul>
-            <li><a th:href="@{/login/home}">Home</a></li>
-            <li><a th:href="@{/login/cartas}">Cartas</a></li>
-            <li><a th:href="@{/user/mazos}">Mazos</a></li>
-            <li><a th:href="@{/user/misMazos}">Mis Mazos</a></li>
-            <li><a th:href="@{/user/constructorMazos}">Constructor de Mazos</a></li>
-            <li><a th:href="@{/admin/panel}">Panel Admin</a></li>
-        </ul>
+<header xmlns:sec="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/login/home}">DeckBuilder</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" th:href="@{/login/home}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/login/cartas}">Cartas</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/user/mazos}">Mazos</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/user/misMazos}">Mis Mazos</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/user/constructorMazos}">Constructor de Mazos</a></li>
+                    <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                        <a class="nav-link" th:href="@{/admin/panel}">Panel Admin</a>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center">
 
-        <div>
-                <span th:if="${usuarioLogueado != null}">
-                    Bienvenido, <b th:text="${usuarioLogueado.nombre}">Usuario</b>
-                    <span th:text="${usuarioLogueado.rol}">ROL</span>
-                    <a th:href="@{/logout}">Cerrar sesión</a>
-                    <a th:href="@{/user/perfil}">Cambiar cuenta</a>
-                </span>
-            <span th:if="${usuarioLogueado == null}">
-                    Invitado | <a th:href="@{/login/iniciarSesion}">Iniciar sesión</a>
-                    | <a th:href="@{/login/crearCuenta}">Registrarse</a>
-                </span>
+                    <!-- Solo para usuario logueado -->
+                    <div sec:authorize="isAuthenticated()" class="me-3">
+                        Bienvenido, <b sec:authentication="name"></b>
+                        (<span sec:authentication="principal.authorities"></span>)
+                        <a th:href="@{/user/perfil}" class="ms-2">Perfil</a>
+                        <form th:action="@{/logout}" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-link p-0 ms-2">Cerrar sesión</button>
+                        </form>
+                    </div>
+
+                    <!-- Solo para invitado -->
+                    <div sec:authorize="isAnonymous()">
+                        Invitado | <a th:href="@{/login/iniciarSesion}">Iniciar sesión</a>
+                        | <a th:href="@{/login/crearCuenta}">Registrarse</a>
+                    </div>
+
+                </div>
+
+            </div>
+
+            </div>
         </div>
     </nav>
 </header>
-</body>
-</html>
+
