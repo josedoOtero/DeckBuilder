@@ -20,7 +20,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
-    // Función de mostrar mazos (sin cambios, mantiene el diseño original)
     function mostrarMazos(mazos) {
         listaMazos.innerHTML = "";
 
@@ -62,11 +61,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         listaMazos.appendChild(row);
     }
 
-    // Cargar todos inicialmente
     let mazosPublicos = await obtenerMazos();
     mostrarMazos(mazosPublicos);
 
-    // Evento de búsqueda
     btnBuscar.addEventListener("click", async () => {
         const nombreMazo = busquedaNombreMazo.value;
         const nombreCreador = busquedaNombreCreador.value;
@@ -74,7 +71,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         mostrarMazos(resultados);
     });
 
-    // Permitir Enter en ambas barras
     [busquedaNombreMazo, busquedaNombreCreador].forEach(input => {
         input.addEventListener("keyup", async (e) => {
             if (e.key === "Enter") btnBuscar.click();

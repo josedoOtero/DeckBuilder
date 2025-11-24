@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", async () => {
     const listaMazos = document.querySelector("#lista_mazos");
+    const listaMazosGuardados = document.querySelector("#lista_mazos_guardados");
 
     async function obtenerMazosUsuario() {
         try {
@@ -13,11 +14,23 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
-    function mostrarMazos(mazos) {
-        listaMazos.innerHTML = "";
+    async function obtenerMazosGuardados() {
+        try {
+            const response = await fetch("/UsuarioAPI/favoritos");
+            if (!response.ok) throw new Error("Error al obtener mazos guardados");
+            return await response.json();
+        } catch (error) {
+            console.error(error);
+            listaMazosGuardados.innerHTML = '<p class="text-center text-danger">No se pudieron cargar los mazos guardados.</p>';
+            return [];
+        }
+    }
+
+    function mostrarMazosEnContenedor(mazos, contenedor) {
+        contenedor.innerHTML = "";
 
         if (mazos.length === 0) {
-            listaMazos.innerHTML = '<p class="text-center text-muted">No tienes mazos creados.</p>';
+            contenedor.innerHTML = '<p class="text-center text-muted">No hay mazos.</p>';
             return;
         }
 
@@ -32,11 +45,20 @@ document.addEventListener("DOMContentLoaded", async () => {
                 ? mazo.imagenCartaDestacada
                 : "/IMG/cartaDorso.jpg";
 
+            // Determinar URL según contenedor
+            let url = "";
+            if (contenedor.id === "lista_mazos") {
+                // Mazos creados por el usuario -> constructor
+                url = `/user/constructorMazos/${mazo.id}`;
+            } else if (contenedor.id === "lista_mazos_guardados") {
+                // Mazos guardados -> visualizador
+                url = `/user/visualizadorMazos/${mazo.id}`;
+            }
+
             col.innerHTML = `
                 <div class="card border-0" style="background: none;">
                     <h5 class="mb-2">${mazo.nombre || "Mazo sin título"}</h5>
-
-                    <a href="/user/constructorMazos/${mazo.id}">
+                    <a href="${url}">
                         <img src="${imagen}"
                              alt="Mazo ${mazo.id}"
                              style="height: 240px; border-radius: 15px;
@@ -53,9 +75,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             row.appendChild(col);
         });
 
-        listaMazos.appendChild(row);
+        contenedor.appendChild(row);
     }
 
-    const mazos = await obtenerMazosUsuario();
-    mostrarMazos(mazos);
+    const mazosUsuario = await obtenerMazosUsuario();
+    mostrarMazosEnContenedor(mazosUsuario, listaMazos);
+
+    const mazosGuardados = await obtenerMazosGuardados();
+    mostrarMazosEnContenedor(mazosGuardados, listaMazosGuardados);
 });

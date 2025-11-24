@@ -9,18 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping("/user")
 public class UsuarioController {
-
-
-    @GetMapping("/home")
-    public String home() {
-        return "ventanasUsuario/user-home";
-    }
-
-    @GetMapping("/cartas")
-    public String verCartas() {
-        return "ventanasUsuario/ver-cartas";
-    }
-
     @GetMapping("/mazos")
     public String verMazos() {
         return "ventanasUsuario/ver-mazos";

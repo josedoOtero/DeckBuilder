@@ -21,32 +21,42 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+                        // Recursos públicos: login, registro, CSS, JS, imágenes
+                        .requestMatchers("/", "/login/**", "/crearCuenta/**", "/css/**", "/js/**", "/images/**").permitAll()
 
-                        .requestMatchers("/", "/login/**", "/css/**", "/js/**", "/images/**").permitAll()
+                        // Páginas públicas de mazos (pueden ver sin loguearse)
+                        .requestMatchers("/user/visualizadorMazos/**", "/user/verUser/**", "/user/mazos", "/user/cartas").permitAll()
 
+                        // Solo usuarios logueados pueden acceder a otras páginas de /user/**
                         .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
+
+                        // Solo admins pueden acceder a /admin/**
                         .requestMatchers("/admin/**").hasRole("ADMIN")
+
+                        // APIs privadas
+                        .requestMatchers("/UsuarioAPI/**", "/MazoAPI/**").hasAnyRole("USER", "ADMIN")
+
+                        // Cualquier otra ruta requiere autenticación
                         .anyRequest().authenticated()
                 )
-
                 .formLogin(form -> form
                         .loginPage("/login/iniciarSesion")
                         .loginProcessingUrl("/login")
-                        .defaultSuccessUrl("/user/home", true)
+                        .defaultSuccessUrl("/login/home", true)
                         .permitAll()
                 )
-
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/")
                         .permitAll()
                 )
-
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((request, response, authException) -> {
+                            // Redirige a la página de inicio si no está autenticado
                             response.sendRedirect("/");
                         })
                 );
@@ -68,7 +78,3 @@ public class SecurityConfig {
         return authBuilder.build();
     }
 }
-
-
-
-

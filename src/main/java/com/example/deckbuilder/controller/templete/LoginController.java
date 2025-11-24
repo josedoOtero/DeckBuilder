@@ -23,7 +23,7 @@ public class LoginController {
     @GetMapping("/iniciarSesion")
     public String mostrarLogin(Authentication auth) {
         if (auth != null && auth.isAuthenticated()) {
-            return "redirect:/user/home";
+            return "redirect:/login/home";
         }
         return "login-page";
     }
@@ -44,6 +44,17 @@ public class LoginController {
         usuarioService.registrarUsuario(usuario);
         model.addAttribute("exito", "Cuenta creada correctamente, ahora inicia sesión");
         return "redirect:/login/iniciarSesion";
+    }
+
+
+    @GetMapping("/home")
+    public String home() {
+        return "index";
+    }
+
+    @GetMapping("/cartas")
+    public String verCartas() {
+        return "ver-cartas";
     }
 }
 

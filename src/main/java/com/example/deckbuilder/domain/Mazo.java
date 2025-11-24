@@ -3,24 +3,24 @@ package com.example.deckbuilder.domain;
 import com.example.deckbuilder.domain.partesMazo.ExtraDeck;
 import com.example.deckbuilder.domain.partesMazo.MainDeck;
 import com.example.deckbuilder.domain.partesMazo.SideDeck;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
+import lombok.EqualsAndHashCode;
 
 @Entity
 @Table(name = "mazo")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Mazo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
     private String nombre;
@@ -30,10 +30,8 @@ public class Mazo {
 
     @ManyToOne
     @JoinColumn(name = "usuario_id")
-    @JsonIgnoreProperties({"mazos", "password"})
+    @JsonIgnoreProperties({"mazos", "password", "mazosFavoritos"})
     private Usuario creador;
-
-
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "main_deck_id")
@@ -46,7 +44,4 @@ public class Mazo {
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "side_deck_id")
     private SideDeck sideDeck;
-
 }
-
-

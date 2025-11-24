@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel Admin</title>
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+<body>
+
+<div th:replace="fragments/header :: header"></div>
+<div th:replace="fragments/headerAdmin :: headerAdmin"></div>
+
+<div class="container mt-4">
+    <h1>Bienvenido al Panel de Administración</h1>
+    <p>Selecciona una sección desde el menú.</p>
+</div>
+
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

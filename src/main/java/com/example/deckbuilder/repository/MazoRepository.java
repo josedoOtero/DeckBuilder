@@ -15,4 +15,10 @@ public interface MazoRepository extends JpaRepository<Mazo, Long> {
     List<Mazo> findByEstado(String publico);
 
     List<Mazo> findByNombreContainingIgnoreCaseAndCreadorNombreContainingIgnoreCase(String s, String s1);
+
+    List<Mazo> findByEstadoIgnoreCase(String estado);
+
+    List<Mazo> findByEstadoIgnoreCaseAndNombreContainingIgnoreCaseAndCreadorNombreContainingIgnoreCase(
+            String estado, String nombreMazo, String nombreCreador
+    );
 }

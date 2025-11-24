@@ -115,7 +115,7 @@ public class MazoService {
 
     public List<Mazo> buscarMazosPublicos(String nombreMazo, String nombreCreador) {
         if ((nombreMazo == null || nombreMazo.isBlank()) && (nombreCreador == null || nombreCreador.isBlank())) {
-            return obtenerMazosPublicos(); // devuelve todos si no hay filtros
+            return obtenerMazosPublicos();
         }
         return mazoRepository.findByNombreContainingIgnoreCaseAndCreadorNombreContainingIgnoreCase(
                 nombreMazo == null ? "" : nombreMazo,

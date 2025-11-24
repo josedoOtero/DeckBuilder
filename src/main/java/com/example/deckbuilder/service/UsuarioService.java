@@ -15,10 +15,12 @@ import java.util.Set;
 public class UsuarioService {
     UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
+    MazoService mazoService;
 
-    UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
+    UsuarioService(UsuarioRepository usuarioRepository, MazoService mazoService, PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
+        this.mazoService = mazoService;
     }
 
     public Usuario save(Usuario usuario) {
@@ -103,6 +105,39 @@ public class UsuarioService {
                 .toList();
     }
 
+    @Transactional
+    public void addMazoFavoritos(Long idUsuario, Long idMazo) {
+        Usuario usuario = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con id: " + idUsuario));
+
+        Mazo mazo = mazoService.findById(idMazo);
+        if (mazo == null) {
+            throw new EntityNotFoundException("Mazo no encontrado con id: " + idMazo);
+        }
+
+        if (!usuario.getMazosFavoritos().contains(mazo)) {
+            usuario.getMazosFavoritos().add(mazo);
+            usuarioRepository.save(usuario);
+        }
+    }
+
+    @Transactional
+    public void removeMazoFavoritos(Long idUsuario, Long idMazo) {
+        Usuario usuario = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con id: " + idUsuario));
+
+        Mazo mazo = mazoService.findById(idMazo);
+        if (mazo == null) throw new EntityNotFoundException("Mazo no encontrado con id: " + idMazo);
+
+        usuario.getMazosFavoritos().remove(mazo);
+        usuarioRepository.save(usuario);
+    }
+
+    public boolean isFavorito(Long idUsuario, Long idMazo) {
+        Usuario usuario = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con id: " + idUsuario));
+        return usuario.getMazosFavoritos().stream().anyMatch(m -> m.getId().equals(idMazo));
+    }
 
 
 }

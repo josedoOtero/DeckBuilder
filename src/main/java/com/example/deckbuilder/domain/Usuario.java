@@ -1,7 +1,6 @@
 package com.example.deckbuilder.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -9,6 +8,7 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -18,16 +18,18 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
     @NotBlank(message = "El nombre de usuario no puede estar vacío")
     @Size(min = 3, message = "El nombre de usuario debe tener al menos 3 caracteres")
     @Column(unique = true)
+    @EqualsAndHashCode.Include
     private String nombre;
 
     @NotBlank
@@ -42,7 +44,6 @@ public class Usuario {
     @JoinColumn(name = "usuario_id")
     @JsonIgnore
     private Set<Mazo> mazos = new HashSet<>();
-
 
     @ManyToMany
     @JoinTable(
