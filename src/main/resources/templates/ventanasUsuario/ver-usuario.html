@@ -52,6 +52,34 @@
             background: #f8f9fa;
             text-align: center;
         }
+
+        #lista_mazos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1rem;
+}
+
+.mazo-card {
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    background-color: #f8f9fa;
+    text-align: center;
+}
+
+.mazo-card img {
+    width: 100%;
+    height: 240px;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s ease;
+    border-radius: 15px 15px 0 0;
+}
+
+.mazo-card h5 {
+    margin: 0.5rem 0;
+}
+
     </style>
 </head>
 

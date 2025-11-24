@@ -35,46 +35,57 @@ function cargarDatosUsuario(idUsuario) {
 
 function cargarMazosPublicos(idUsuario) {
 
-    fetch(`/UsuarioAPI/${idUsuario}/mazos/publicos`)
+    fetch(`/MazoAPI/publicos/${idUsuario}`)
         .then(r => {
-            if (!r.ok) throw new Error("Error al cargar los mazos públicos");
+            if (!r.ok) {
+                console.error("Respuesta no OK:", r.status);
+                throw new Error("Error al cargar los mazos públicos");
+            }
             return r.json();
         })
         .then(mazos => {
+
+            if (!Array.isArray(mazos)) {
+                console.error("Formato inesperado recibido:", mazos);
+                return;
+            }
 
             const contenedor = document.getElementById("lista_mazos");
             contenedor.innerHTML = "";
 
             if (mazos.length === 0) {
-                contenedor.innerHTML = `<p class="text-muted text-center">Este usuario no tiene mazos públicos.</p>`;
+                contenedor.innerHTML = `
+                    <p class="text-muted text-center">
+                        Este usuario no tiene mazos públicos.
+                    </p>`;
                 return;
             }
 
             mazos.forEach(mazo => {
 
-                const card = document.createElement("div");
-                card.classList.add("mazo-card");
+                const col = document.createElement("div");
+                col.classList.add("col-md-4", "mb-4");
 
-                card.innerHTML = `
-                    <img src="${mazo.imagenCartaDestacada || '/images/default-card.png'}"
-                         alt="imagen"
-                         style="width:100%; border-radius:6px;">
+                const imagen = mazo.imagenCartaDestacada || "/images/default-card.png";
 
-                    <h6 class="mt-2">${mazo.nombre}</h6>
+                col.innerHTML = `
+                    <div class="card border-0" style="background: none;">
+                        <h5 class="mb-2">${mazo.nombre || "Mazo sin título"}</h5>
 
-                    <p class="text-muted" style="font-size:13px;">
-                        Vistas: ${mazo.vistas}
-                    </p>
-
-                    <a href="/verMazo/${mazo.id}"
-                       class="btn btn-primary btn-sm w-100">
-                       Ver mazo
-                    </a>
+                        <a href="/user/visualizadorMazos/${mazo.id}">
+                            <img src="${imagen}"
+                                 alt="Mazo ${mazo.id}"
+                                 style="height: 240px; width: 100%; object-fit: cover;
+                                 border-radius: 15px;
+                                 box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+                                 transition: transform 0.3s ease;">
+                        </a>
+                    </div>
                 `;
 
-                contenedor.appendChild(card);
+                contenedor.appendChild(col);
             });
 
         })
-        .catch(err => console.error(err));
+        .catch(err => console.error("Error cargando mazos públicos:", err));
 }

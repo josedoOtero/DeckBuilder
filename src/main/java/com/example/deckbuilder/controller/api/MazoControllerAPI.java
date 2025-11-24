@@ -62,6 +62,12 @@ public class MazoControllerAPI {
     public List<Mazo> obtenerMazosPublicos() {
         return mazoService.obtenerMazosPublicos();
     }
+
+    @GetMapping("/publicos/{idUser}")
+    public List<Mazo> obtenerMazosPublicosFindByUsuario(@PathVariable Long idUser) {
+        Usuario usuario = usuarioService.findById(idUser);
+        return mazoService.obtenerMazosPublicosFindByUsuario(usuario);
+    }
 }
 
 

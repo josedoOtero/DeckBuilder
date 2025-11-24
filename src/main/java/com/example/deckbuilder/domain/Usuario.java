@@ -40,6 +40,7 @@ public class Usuario {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "usuario_id")
+    @JsonIgnore
     private Set<Mazo> mazos = new HashSet<>();
 
 

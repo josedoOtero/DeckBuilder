@@ -90,5 +90,12 @@ public class MazoService {
         return mazoRepository.findByEstado("publico");
     }
 
+    public List<Mazo> obtenerMazosPublicosFindByUsuario(Usuario usuario) {
+        List<Mazo> mazos = new ArrayList<>(mazoRepository.findAllByCreador(usuario));
+
+        return mazos.stream()
+                .filter(m -> "publico".equalsIgnoreCase(m.getEstado()))
+                .toList();
+    }
 
 }

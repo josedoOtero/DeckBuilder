@@ -31,7 +31,6 @@ public class Mazo {
     @ManyToOne
     @JoinColumn(name = "usuario_id")
     @JsonIgnoreProperties({"mazos", "password"})
-    @JsonBackReference
     private Usuario creador;
 
 
