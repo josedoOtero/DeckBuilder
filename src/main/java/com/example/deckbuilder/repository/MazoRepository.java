@@ -13,4 +13,6 @@ public interface MazoRepository extends JpaRepository<Mazo, Long> {
     List<Mazo> findAllByCreador(Usuario usuario);
 
     List<Mazo> findByEstado(String publico);
+
+    List<Mazo> findByNombreContainingIgnoreCaseAndCreadorNombreContainingIgnoreCase(String s, String s1);
 }

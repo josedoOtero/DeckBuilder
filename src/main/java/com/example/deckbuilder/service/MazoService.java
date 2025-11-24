@@ -98,4 +98,29 @@ public class MazoService {
                 .toList();
     }
 
+    public List<Mazo> buscarPorNombreCreadorONombreMazo(String nombreCreador, String nombreMazo) {
+        String creador = nombreCreador != null ? nombreCreador.toLowerCase() : null;
+        String mazo = nombreMazo != null ? nombreMazo.toLowerCase() : null;
+
+        List<Mazo> todos = mazoRepository.findAll();
+
+        return todos.stream()
+                .filter(m ->
+                        (mazo == null || m.getNombre().toLowerCase().contains(mazo)) &&
+                                (creador == null || m.getCreador().getNombre().toLowerCase().contains(creador))
+                )
+                .toList();
+    }
+
+
+    public List<Mazo> buscarMazosPublicos(String nombreMazo, String nombreCreador) {
+        if ((nombreMazo == null || nombreMazo.isBlank()) && (nombreCreador == null || nombreCreador.isBlank())) {
+            return obtenerMazosPublicos(); // devuelve todos si no hay filtros
+        }
+        return mazoRepository.findByNombreContainingIgnoreCaseAndCreadorNombreContainingIgnoreCase(
+                nombreMazo == null ? "" : nombreMazo,
+                nombreCreador == null ? "" : nombreCreador
+        );
+    }
+
 }

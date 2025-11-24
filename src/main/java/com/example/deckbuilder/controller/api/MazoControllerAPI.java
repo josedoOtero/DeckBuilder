@@ -68,6 +68,29 @@ public class MazoControllerAPI {
         Usuario usuario = usuarioService.findById(idUser);
         return mazoService.obtenerMazosPublicosFindByUsuario(usuario);
     }
+
+    @GetMapping("/buscar")
+    public List<Mazo> buscarMazos(
+            @RequestParam(value = "nombreCreador", required = false) String nombreCreador,
+            @RequestParam(value = "nombreMazo", required = false) String nombreMazo) {
+
+        if ((nombreCreador == null || nombreCreador.isBlank()) && (nombreMazo == null || nombreMazo.isBlank())) {
+            return mazoService.findAll();
+        }
+
+        return mazoService.buscarPorNombreCreadorONombreMazo(nombreCreador, nombreMazo);
+    }
+
+    @GetMapping("/publicos/buscar")
+    public List<Mazo> buscarMazosPublicos(
+            @RequestParam(required = false) String nombreMazo,
+            @RequestParam(required = false) String nombreCreador) {
+
+        return mazoService.buscarMazosPublicos(nombreMazo, nombreCreador);
+    }
+
+
+
 }
 
 

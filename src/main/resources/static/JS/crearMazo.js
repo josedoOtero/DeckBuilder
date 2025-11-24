@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const ID_MAZO = match ? match[1] : null;
 
     let cartasFiltradas = [];
-    let zonaSeleccionada = "main";
+    let zonaSeleccionada = "mainExtra";
     const mazo = { main: [], extra: [], side: [] };
 
     async function cargarMazoSiExiste() {
@@ -56,27 +56,24 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    document.querySelector("#btnMain").addEventListener("click", () => {
-        zonaSeleccionada = "main";
-        actualizarBotones();
-    });
-    document.querySelector("#btnExtra").addEventListener("click", () => {
-        zonaSeleccionada = "extra";
-        actualizarBotones();
-    });
-    document.querySelector("#btnSide").addEventListener("click", () => {
-        zonaSeleccionada = "side";
-        actualizarBotones();
-    });
+document.querySelector("#btnMainExtra").addEventListener("click", () => {
+    zonaSeleccionada = "mainExtra";
+    actualizarBotones();
+});
 
-    function actualizarBotones() {
-        document.querySelectorAll("#zona_mazo .btn").forEach(btn => btn.classList.remove("active-zone"));
-        if (zonaSeleccionada === "main") document.querySelector("#btnMain").classList.add("active-zone");
-        if (zonaSeleccionada === "extra") document.querySelector("#btnExtra").classList.add("active-zone");
-        if (zonaSeleccionada === "side") document.querySelector("#btnSide").classList.add("active-zone");
-    }
+document.querySelector("#btnSide").addEventListener("click", () => {
+    zonaSeleccionada = "side";
+    actualizarBotones();
+});
 
-    // Buscar cartas
+function actualizarBotones() {
+    document.querySelectorAll("#zona_mazo .btn").forEach(btn => btn.classList.remove("active-zone"));
+
+    if (zonaSeleccionada === "mainExtra") document.querySelector("#btnMainExtra").classList.add("active-zone");
+    if (zonaSeleccionada === "side") document.querySelector("#btnSide").classList.add("active-zone");
+}
+
+
     filtros.addEventListener("submit", async e => {
         e.preventDefault();
         const formData = new FormData(filtros);
@@ -163,26 +160,29 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        if (mazo[zona].length >= 60) {
-            alert("Esta zona del mazo no puede tener más de 60 cartas.");
-            return;
-        }
-
-        if (zona === "extra") {
+        if (zona === "side") {
+            if (mazo.side.length >= 15) {
+                alert("Side Deck no puede tener más de 15 cartas.");
+                return;
+            }
+            mazo.side.push({ idKonami });
+        } else if (zona === "mainExtra") {
             const tiposExtra = ["Fusion Monster", "Synchro Monster", "XYZ Monster", "Link Monster", "Pendulum Monster"];
-            if (!tiposExtra.includes(carta.type)) {
-                alert("Solo puedes agregar cartas del Extra Deck (Fusión, Synchro, XYZ, Link, Pendulum) a esta zona.");
-                return;
-            }
-        } else if (zona === "main") {
-            const tiposExtra = ["Fusion Monster", "Synchro Monster", "XYZ Monster", "Link Monster"];
             if (tiposExtra.includes(carta.type)) {
-                alert("No puedes agregar cartas del Extra Deck al Main Deck.");
-                return;
+                if (mazo.extra.length >= 15) {
+                    alert("Extra Deck no puede tener más de 15 cartas.");
+                    return;
+                }
+                mazo.extra.push({ idKonami });
+            } else {
+                if (mazo.main.length >= 60) {
+                    alert("Main Deck no puede tener más de 60 cartas.");
+                    return;
+                }
+                mazo.main.push({ idKonami });
             }
         }
 
-        mazo[zona].push({ idKonami });
         mostrarMazo();
         actualizarCartaDestacada();
     }
@@ -293,21 +293,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
     btnDelete.addEventListener("click", async () => {
         if (!ID_MAZO) {
-            alert("No hay mazo seleccionado para eliminar.");
+            // No hay mazo creado, simplemente redirigir
+            window.location.href = "/user/misMazos";
             return;
         }
 
         if (confirm("¿Seguro que quieres eliminar este mazo?")) {
             try {
-                console.log(`/MazoAPI/${ID_MAZO}`)
                 const response = await fetch(`/MazoAPI/${ID_MAZO}`, { method: "DELETE" });
-                console.log(response)
 
                 if (!response.ok) {
                     const errorText = await response.text();
                     throw new Error(`Error al eliminar el mazo: ${errorText}`);
                 }
 
+                // Limpiar localmente
                 Object.keys(mazo).forEach(k => mazo[k] = []);
                 mostrarMazo();
                 actualizarCartaDestacada();

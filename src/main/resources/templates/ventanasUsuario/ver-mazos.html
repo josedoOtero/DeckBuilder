@@ -65,14 +65,21 @@
 <body>
 <div th:replace="fragments/header :: header"></div>
 
-<div id="contenedorMazos1">
-    <h2>Mazos Publicos</h2>
-    <div id="lista_mazos"></div>
+<div class="container-fluid p-3">
+    <div class="d-flex justify-content-center mb-4 gap-2 flex-wrap">
+        <input type="text" id="busquedaNombreMazo" class="form-control" placeholder="Buscar por nombre del mazo" style="max-width:250px;">
+        <input type="text" id="busquedaNombreCreador" class="form-control" placeholder="Buscar por creador" style="max-width:250px;">
+        <button id="btnBuscar" class="btn btn-primary">Buscar</button>
+    </div>
 
-</div>
+    <div id="contenedorMazos1">
+        <h2 class="text-center mb-3">Mazos Públicos</h2>
+        <div id="lista_mazos"></div>
+    </div>
 </div>
 
 <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 <script th:src="@{/JS/verMazos.js}"></script>
 </body>
+
 </html>
