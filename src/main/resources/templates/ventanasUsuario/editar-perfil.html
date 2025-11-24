@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Perfil</title>
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+<body>
+
+<div class="container mt-5">
+    <h2>Editar Perfil</h2>
+    <div class="row">
+
+        <!-- ===================== IMAGEN DE PERFIL ===================== -->
+        <div class="col-md-4 text-center">
+
+            <img id="fotoPerfil"
+                 th:src="${usuario.imagenUsuario != null ? usuario.imagenUsuario.url : '/images/default-user.png'}"
+                 class="img-thumbnail mb-3"
+                 style="width:150px;height:150px;object-fit:contain;">
+
+            <button class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modalSeleccionarCarta">
+                Seleccionar carta como imagen
+            </button>
+        </div>
+
+        <!-- ===================== FORMULARIO PERFIL ===================== -->
+        <div class="col-md-8">
+
+            <form th:action="@{/user/perfil}" th:object="${usuario}" method="post">
+
+                <!-- NOMBRE -->
+                <div class="mb-3">
+                    <label class="form-label">Nombre</label>
+                    <input type="text" th:field="*{nombre}" class="form-control" required>
+                </div>
+
+                <!-- EMAIL (solo lectura) -->
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input type="email" th:field="*{email}" class="form-control" readonly>
+                </div>
+
+                <!-- BOTÓN CAMBIAR CONTRASEÑA -->
+                <button type="button" class="btn btn-warning mb-3" data-bs-toggle="modal" data-bs-target="#modalPassword">
+                    Cambiar Contraseña
+                </button>
+
+                <br>
+
+                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                <a th:href="@{}" class="btn btn-secondary">Cancelar</a>
+
+            </form>
+
+        </div>
+
+    </div>
+</div>
+
+<div class="modal fade" id="modalPassword" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <form id="formCambiarPassword">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Cambiar Contraseña</h5>
+                    <button class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="mb-3">
+                        <label>Contraseña actual</label>
+                        <input type="password" id="passwordActual" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Nueva contraseña</label>
+                        <input type="password" id="passwordNueva" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Repite la nueva contraseña</label>
+                        <input type="password" id="passwordRepetida" class="form-control" required>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button class="btn btn-primary" type="submit">Cambiar</button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalSeleccionarCarta" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Seleccionar carta como imagen</h5>
+                <button class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+
+                <form id="filtro_cartas" class="d-flex mb-3">
+                    <input type="text" class="form-control" name="q" placeholder="Buscar por nombre...">
+                    <button class="btn btn-primary ms-2">Buscar</button>
+                </form>
+
+                <div id="lista_cartas" class="row row-cols-2 row-cols-md-6 g-2"></div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/js/editarPerfil.js}"></script>
+
+</body>
+</html>
+

@@ -1,14 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Panel Mazos</title>
     <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
 </head>
 <body>
+
 <div th:replace="fragments/header :: header"></div>
 <div th:replace="fragments/headerAdmin :: headerAdmin"></div>
 
-</body>
+
+
 <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
 </html>

@@ -140,4 +140,13 @@ public class UsuarioService {
     }
 
 
+    public List<Usuario> buscarPorNombreOemail(String nombre, String email) {
+        if ((nombre == null || nombre.isBlank()) && (email == null || email.isBlank())) {
+            return this.findAll();
+        }
+        return usuarioRepository.findByNombreContainingIgnoreCaseAndEmailContainingIgnoreCase(
+                nombre == null ? "" : nombre,
+                email == null ? "" : email
+        );
+    }
 }

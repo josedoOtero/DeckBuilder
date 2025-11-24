@@ -17,6 +17,7 @@
                     Bienvenido, <b th:text="${usuarioLogueado.nombre}">Usuario</b>
                     <span th:text="${usuarioLogueado.rol}">ROL</span>
                     <a th:href="@{/logout}">Cerrar sesión</a>
+                    <a th:href="@{/user/perfil}">Cambiar cuenta</a>
                 </span>
             <span th:if="${usuarioLogueado == null}">
                     Invitado | <a th:href="@{/login/iniciarSesion}">Iniciar sesión</a>

@@ -80,5 +80,17 @@ public class UsuarioControllerAPI {
         return usuario.getMazosFavoritos();
     }
 
+    @GetMapping("/buscar")
+    public List<Usuario> buscarUsuario(
+            @RequestParam(value = "nombre", required = false) String nombre,
+            @RequestParam(value = "email", required = false) String email) {
+
+        if ((nombre == null || nombre.isBlank()) && (email == null || email.isBlank())) {
+            return usuarioService.findAll();
+        }
+
+        return usuarioService.buscarPorNombreOemail(nombre, email);
+    }
+
 }
 
