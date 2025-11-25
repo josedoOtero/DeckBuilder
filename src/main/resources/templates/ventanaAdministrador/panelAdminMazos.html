@@ -10,8 +10,39 @@
 <div th:replace="fragments/header :: header"></div>
 <div th:replace="fragments/headerAdmin :: headerAdmin"></div>
 
+<div id="pantalla" class="container-fluid">
+
+    <div id="zona_mazos_crud">
+
+        <h4 class="text-center mb-2">Gestión de Mazos</h4>
+
+        <div class="d-flex mb-3 gap-2 justify-content-center">
+            <input type="text" id="buscarNombreMazo" placeholder="Nombre del mazo" class="form-control" style="max-width:200px;">
+            <input type="text" id="buscarCreador" placeholder="Nombre del creador" class="form-control" style="max-width:200px;">
+            <button id="btnBuscarMazos" class="btn btn-primary">Buscar</button>
+            <button id="btnCrearMazo" class="btn btn-success">Crear Mazo</button>
+        </div>
+
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Creador</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+            </thead>
+            <tbody id="tabla-mazos-body">
+            </tbody>
+        </table>
 
 
+    </div>
+
+</div>
+
+<script th:src="@{/js/panelMazos.js}"></script>
 <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>

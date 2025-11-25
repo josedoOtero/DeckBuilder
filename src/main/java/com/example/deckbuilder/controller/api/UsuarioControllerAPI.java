@@ -92,5 +92,19 @@ public class UsuarioControllerAPI {
         return usuarioService.buscarPorNombreOemail(nombre, email);
     }
 
+    @PutMapping("/cambiarImg/{id}")
+    public Usuario cambiarImg(
+            @PathVariable Long id,
+            @RequestParam(value = "url") String url) {
+        Usuario usuario = usuarioService.findById(id);
+        if (usuario == null) {
+            throw new RuntimeException("Usuario no encontrado");
+        }
+        usuario.setImagenUsuario(url);
+        return usuarioService.save(usuario);
+    }
+
+
+
 }
 

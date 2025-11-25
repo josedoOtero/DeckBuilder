@@ -33,5 +33,7 @@ public class UsuarioDetailsService implements UserDetailsService {
                 .roles(role)
                 .build();
     }
+
 }
+
 

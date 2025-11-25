@@ -1,12 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Editar Perfil</title>
-    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
-</head>
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>Editar Perfil</title>
@@ -14,43 +7,7 @@
 </head>
 <body>
 
-<!-- HEADER -->
-<header>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
-        <div class="container">
-            <a class="navbar-brand" th:href="@{/login/home}">DeckBuilder</a>
-            <div class="collapse navbar-collapse">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item"><a class="nav-link" th:href="@{/login/home}">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" th:href="@{/login/cartas}">Cartas</a></li>
-                    <li class="nav-item"><a class="nav-link" th:href="@{/user/mazos}">Mazos</a></li>
-                    <li class="nav-item"><a class="nav-link" th:href="@{/user/misMazos}">Mis Mazos</a></li>
-                    <li class="nav-item"><a class="nav-link" th:href="@{/user/constructorMazos}">Constructor de Mazos</a></li>
-                    <li class="nav-item" sec:authorize="hasRole('ADMIN')">
-                        <a class="nav-link" th:href="@{/admin/panel}">Panel Admin</a>
-                    </li>
-                </ul>
-                <div class="d-flex align-items-center">
-                    <!-- Usuario autenticado -->
-                    <div sec:authorize="isAuthenticated()" class="me-3">
-                        Bienvenido, <b sec:authentication="principal.username"></b>
-                        (<span sec:authentication="principal.authorities"></span>)
-                        <a th:href="@{/user/perfil}" class="ms-2">Perfil</a>
-                        <form th:action="@{/logout}" method="post" class="d-inline">
-                            <button type="submit" class="btn btn-link p-0 ms-2">Cerrar sesión</button>
-                        </form>
-                    </div>
-
-                    <!-- Invitado -->
-                    <div sec:authorize="isAnonymous()">
-                        Invitado | <a th:href="@{/login/iniciarSesion}">Iniciar sesión</a>
-                        | <a th:href="@{/login/crearCuenta}">Registrarse</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </nav>
-</header>
+<div th:replace="fragments/header :: header"></div>
 
 <!-- CONTENIDO -->
 <div class="container mt-5">
@@ -60,9 +17,10 @@
         <!-- FOTO PERFIL -->
         <div class="col-md-4 text-center">
             <img id="fotoPerfil"
-                 th:src="${usuario.imagenUsuario != null ? usuario.imagenUsuario.url : '/images/default-user.png'}"
+                 th:src="${usuario.imagenUsuario != null ? usuario.imagenUsuario : '/img/fotoPerfil.png'}"
                  class="img-thumbnail mb-3"
-                 style="width:150px;height:150px;object-fit:contain;">
+                 style="width:150px;height:150px;object-fit:contain;"
+                 th:attr="data-usuario-id=${usuario.id}">
 
             <button class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modalSeleccionarCarta">
                 Seleccionar carta como imagen

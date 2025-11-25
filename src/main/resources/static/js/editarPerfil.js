@@ -4,6 +4,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const filtro = document.querySelector("#filtro_cartas");
     const imgPerfil = document.querySelector("#fotoPerfil");
 
+    // Obtener ID de usuario desde el atributo del <img>
+    const usuarioId = imgPerfil.getAttribute("data-usuario-id");
+
+    if (!usuarioId) {
+        console.error("No se encontró el ID del usuario.");
+        return;
+    }
+
+    // Buscar cartas
     filtro.addEventListener("submit", async (e) => {
         e.preventDefault();
 
@@ -18,6 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         try {
             const response = await fetch(url);
+
             if (!response.ok) {
                 listaCartas.innerHTML = "<p class='text-muted'>No se encontraron cartas.</p>";
                 return;
@@ -32,72 +42,58 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
+    // Mostrar las cartas usando SIEMPRE image_url_cropped
     function mostrarCartas(cartas) {
         listaCartas.innerHTML = "";
 
         cartas.forEach(carta => {
-
             const col = document.createElement("div");
             col.classList.add("col");
 
+            const imagenCropped = carta.card_images[0].image_url_cropped;
+
             col.innerHTML = `
-                <img src="${carta.card_images[0].image_url}"
+                <img src="${imagenCropped}"
                      class="img-fluid img-thumbnail seleccionar-carta"
                      style="cursor:pointer;"
-                     data-url="${carta.card_images[0].image_url}">
+                     data-url="${imagenCropped}"
+                     onerror="this.src='/img/fotoPerfil.png'">
             `;
 
             listaCartas.appendChild(col);
 
             col.querySelector("img").addEventListener("click", () => {
-                seleccionarCarta(carta.card_images[0].image_url);
+                seleccionarCarta(imagenCropped);
             });
         });
     }
 
+    // Guardar la URL de la imagen en el usuario
     async function seleccionarCarta(urlImagen) {
 
-        const response = await fetch("/user/perfil/imagen/carta", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({ urlImagen })
-        });
+        try {
+            const response = await fetch(`/UsuarioAPI/cambiarImg/${usuarioId}?url=${encodeURIComponent(urlImagen)}`, {
+                method: "PUT"
+            });
 
-        if (response.ok) {
-            imgPerfil.src = urlImagen;
-            alert("Imagen actualizada");
+            if (response.ok) {
+                imgPerfil.src = urlImagen;
+                alert("Imagen actualizada correctamente.");
 
-            bootstrap.Modal.getInstance(document.querySelector("#modalSeleccionarCarta")).hide();
+                bootstrap.Modal.getInstance(
+                    document.querySelector("#modalSeleccionarCarta")
+                ).hide();
 
-        } else {
-            alert("Error al actualizar la imagen");
+            } else {
+                const errorText = await response.text();
+                console.error("ERROR del servidor: ", errorText);
+                alert("Error: " + errorText);
+            }
+
+        } catch (e) {
+            console.error(e);
+            alert("Error al actualizar la imagen.");
         }
     }
-
-    document.querySelector("#formCambiarPassword").addEventListener("submit", async (e) => {
-        e.preventDefault();
-
-        const actual = document.querySelector("#passwordActual").value;
-        const nueva = document.querySelector("#passwordNueva").value;
-        const rep = document.querySelector("#passwordRepetida").value;
-
-        if (nueva !== rep) {
-            alert("Las contraseñas no coinciden");
-            return;
-        }
-
-        const response = await fetch("/user/perfil/password", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({ actual, nueva })
-        });
-
-        if (response.ok) {
-            alert("Contraseña cambiada correctamente");
-            bootstrap.Modal.getInstance(document.querySelector("#modalPassword")).hide();
-        } else {
-            alert("Contraseña actual incorrecta");
-        }
-    });
 
 });

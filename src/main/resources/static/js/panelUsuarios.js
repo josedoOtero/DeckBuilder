@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const tablaBody = document.querySelector("#tabla-info tbody");
+    const tablaBody = document.getElementById("tabla-usuarios-body"); // <-- Cambiado
     const btnBuscar = document.getElementById("btnBuscarUsuarios");
     const btnCrear = document.getElementById("btnCrearUsuario");
     const inputNombre = document.getElementById("buscarNombre");
@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const usuarios = await response.json();
             renderUsuarios(usuarios);
         } catch (error) {
-            console.error(error);
+            console.error("Error cargando usuarios:", error);
             tablaBody.innerHTML = `<tr><td colspan="4" class="text-danger">No se pudo cargar los usuarios</td></tr>`;
         }
     }

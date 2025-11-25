@@ -54,9 +54,7 @@ public class Usuario {
     @JsonIgnore
     private Set<Mazo> mazosFavoritos = new HashSet<>();
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "imagen_usuario_id")
-    private ImagenUsuario imagenUsuario;
+    private String imagenUsuario;
 
     private String rol;
 }
