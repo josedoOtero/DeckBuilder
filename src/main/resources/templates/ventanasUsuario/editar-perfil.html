@@ -9,12 +9,10 @@
 
 <div th:replace="fragments/header :: header"></div>
 
-<!-- CONTENIDO -->
 <div class="container mt-5">
     <h2>Editar Perfil</h2>
     <div class="row">
 
-        <!-- FOTO PERFIL -->
         <div class="col-md-4 text-center">
             <img id="fotoPerfil"
                  th:src="${usuario.imagenUsuario != null ? usuario.imagenUsuario : '/img/fotoPerfil.png'}"
@@ -27,7 +25,6 @@
             </button>
         </div>
 
-        <!-- FORMULARIO PERFIL -->
         <div class="col-md-8">
             <form th:action="@{/user/perfil}" th:object="${usuario}" method="post">
                 <div class="mb-3">
@@ -52,7 +49,6 @@
     </div>
 </div>
 
-<!-- MODAL CAMBIAR CONTRASEÑA -->
 <div class="modal fade" id="modalPassword" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -84,7 +80,6 @@
     </div>
 </div>
 
-<!-- MODAL SELECCIONAR CARTA -->
 <div class="modal fade" id="modalSeleccionarCarta" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">

@@ -200,15 +200,15 @@ function actualizarBotones() {
             col.classList.add("col", "d-flex", "justify-content-center");
             col.innerHTML = `
             <div class="card border-0 text-center w-100" style="background:transparent;">
-                <div style="height:210px; width:100%;">
+                <div style="height:140px; width:100%;">
                     <img src="${imgSrc}" alt="${name}" style="width:100%; height:100%; object-fit:contain;">
                 </div>
-                <div class="card-body p-0 d-flex justify-content-between gap-1">
-                    <button class="btn btn-sm btn-primary ver-carta" data-index="${index}" style="font-size:0.9rem;">
-                                        <i class="bi bi-eye"></i>
+                <div class="card-body p-0 d-flex justify-content-start">
+                    <button class="btn btn-sm btn-primary ver-carta" data-index="${index}" style="font-size:0.9rem; border-radius:0;">
+                        <i class="bi bi-eye"></i>
                     </button>
 
-                    <button class="btn btn-sm btn-danger quitar-carta" data-zona="${zona}" data-index="${index}" style="font-size:0.9rem;">
+                    <button class="btn btn-sm btn-danger quitar-carta" data-zona="${zona}" data-index="${index}" style="font-size:0.9rem; border-radius:0; margin-left:0;">
                         <i class="bi bi-trash"></i>
                     </button>
                 </div>
@@ -235,7 +235,7 @@ function actualizarBotones() {
                 if (cartaInfo) {
                     const tituloModal = document.getElementById("modalCartaLabel");
                     tituloModal.textContent = cartaInfo.name;
-                    tituloModal.classList.add("text-white"); // título en blanco
+                    tituloModal.classList.add("text-white");
                     document.getElementById("imgCartaModal").src = cartaInfo.card_images[0].image_url;
 
                     const infoDiv = document.getElementById("infoCartaModal");
