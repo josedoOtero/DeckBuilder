@@ -203,8 +203,14 @@ function actualizarBotones() {
                 <div style="height:210px; width:100%;">
                     <img src="${imgSrc}" alt="${name}" style="width:100%; height:100%; object-fit:contain;">
                 </div>
-                <div class="card-body p-0">
-                    <button class="btn btn-sm btn-danger w-100 quitar-carta" data-zona="${zona}" data-index="${index}" style="font-size:0.7rem;">Quitar</button>
+                <div class="card-body p-0 d-flex justify-content-between gap-1">
+                    <button class="btn btn-sm btn-primary ver-carta" data-index="${index}" style="font-size:0.9rem;">
+                                        <i class="bi bi-eye"></i>
+                    </button>
+
+                    <button class="btn btn-sm btn-danger quitar-carta" data-zona="${zona}" data-index="${index}" style="font-size:0.9rem;">
+                        <i class="bi bi-trash"></i>
+                    </button>
                 </div>
             </div>
             `;
@@ -213,14 +219,61 @@ function actualizarBotones() {
 
         container.querySelectorAll(".quitar-carta").forEach(boton => {
             boton.addEventListener("click", e => {
-                const zona = e.target.dataset.zona;
-                const index = e.target.dataset.index;
+                const zona = e.target.closest("button").dataset.zona;
+                const index = e.target.closest("button").dataset.index;
                 mazo[zona].splice(index, 1);
                 mostrarMazo();
                 actualizarCartaDestacada();
             });
         });
+
+        container.querySelectorAll(".ver-carta").forEach(boton => {
+            boton.addEventListener("click", e => {
+                const index = e.target.closest("button").dataset.index;
+                const carta = cartas[index];
+                const cartaInfo = cartasFiltradas.find(c => c.id === carta.idKonami);
+                if (cartaInfo) {
+                    const tituloModal = document.getElementById("modalCartaLabel");
+                    tituloModal.textContent = cartaInfo.name;
+                    tituloModal.classList.add("text-white"); // título en blanco
+                    document.getElementById("imgCartaModal").src = cartaInfo.card_images[0].image_url;
+
+                    const infoDiv = document.getElementById("infoCartaModal");
+                    let htmlInfo = `
+                        <p><strong>Tipo de carta:</strong> ${cartaInfo.type || "N/A"}</p>
+                        <p><strong>Arquetipo:</strong> ${cartaInfo.archetype || "N/A"}</p>
+                    `;
+
+                    if (cartaInfo.type.includes("Monster")) {
+                        htmlInfo += `
+                            <p><strong>Ataque:</strong> ${cartaInfo.atk !== undefined ? cartaInfo.atk : "N/A"}</p>
+                            <p><strong>Defensa:</strong> ${cartaInfo.def !== undefined ? cartaInfo.def : "N/A"}</p>
+                            <p><strong>Nivel:</strong> ${cartaInfo.level !== undefined ? cartaInfo.level : "N/A"}</p>
+                            <p><strong>Atributo:</strong> ${cartaInfo.attribute || "N/A"}</p>
+                            <p><strong>Raza:</strong> ${cartaInfo.race || "N/A"}</p>
+                            <p><strong>Descripción:</strong> ${cartaInfo.desc || "N/A"}</p>
+                        `;
+                    } else if (cartaInfo.type.includes("Spell")) {
+                        htmlInfo += `
+                            <p><strong>Descripción:</strong> ${cartaInfo.desc || "N/A"}</p>
+                        `;
+                    } else if (cartaInfo.type.includes("Trap")) {
+                        htmlInfo += `
+                            <p><strong>Descripción:</strong> ${cartaInfo.desc || "N/A"}</p>
+                        `;
+                    }
+
+                    infoDiv.innerHTML = htmlInfo;
+
+                    const modal = new bootstrap.Modal(document.getElementById("modalCarta"));
+                    modal.show();
+                }
+            });
+        });
+
+
     }
+
 
     function mostrarMazo() {
         renderZona(mainDeck, mazo.main, "main");
@@ -293,7 +346,6 @@ function actualizarBotones() {
 
     btnDelete.addEventListener("click", async () => {
         if (!ID_MAZO) {
-            // No hay mazo creado, simplemente redirigir
             window.location.href = "/user/misMazos";
             return;
         }
@@ -307,7 +359,6 @@ function actualizarBotones() {
                     throw new Error(`Error al eliminar el mazo: ${errorText}`);
                 }
 
-                // Limpiar localmente
                 Object.keys(mazo).forEach(k => mazo[k] = []);
                 mostrarMazo();
                 actualizarCartaDestacada();

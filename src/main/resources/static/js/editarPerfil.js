@@ -4,7 +4,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const filtro = document.querySelector("#filtro_cartas");
     const imgPerfil = document.querySelector("#fotoPerfil");
 
-    // Obtener ID de usuario desde el atributo del <img>
     const usuarioId = imgPerfil.getAttribute("data-usuario-id");
 
     if (!usuarioId) {
@@ -12,7 +11,6 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     }
 
-    // Buscar cartas
     filtro.addEventListener("submit", async (e) => {
         e.preventDefault();
 
@@ -42,7 +40,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Mostrar las cartas usando SIEMPRE image_url_cropped
     function mostrarCartas(cartas) {
         listaCartas.innerHTML = "";
 
@@ -68,7 +65,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Guardar la URL de la imagen en el usuario
     async function seleccionarCarta(urlImagen) {
 
         try {
