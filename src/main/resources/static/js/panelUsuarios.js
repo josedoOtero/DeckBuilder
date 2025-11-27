@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const tablaBody = document.getElementById("tabla-usuarios-body"); // <-- Cambiado
+    const tablaBody = document.getElementById("tabla-usuarios-body");
     const btnBuscar = document.getElementById("btnBuscarUsuarios");
     const btnCrear = document.getElementById("btnCrearUsuario");
     const inputNombre = document.getElementById("buscarNombre");
@@ -32,10 +32,16 @@ document.addEventListener("DOMContentLoaded", function () {
                 <td>${usuario.id}</td>
                 <td>${usuario.nombre}</td>
                 <td>${usuario.email}</td>
-                <td>
-                    <button class="btn btn-sm btn-warning btnEditar" data-id="${usuario.id}">Editar</button>
-                    <button class="btn btn-sm btn-danger btnEliminar" data-id="${usuario.id}">Eliminar</button>
-                    <button class="btn btn-sm btn-info btnVerMazos" data-id="${usuario.id}">Ver Mazos</button>
+                <td class="">
+                    <button class="btn btn-sm btn-warning btnEditar me-1" data-id="${usuario.id}" title="Editar">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger btnEliminar me-1" data-id="${usuario.id}" title="Eliminar">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                    <button class="btn btn-sm btn-primary btnVerMazos" data-id="${usuario.id}" title="Ver Mazos">
+                        <i class="bi bi-eye"></i>
+                    </button>
                 </td>
             `;
 

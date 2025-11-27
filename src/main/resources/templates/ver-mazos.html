@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Buscar mazos</title>
     <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/css/header.css}" rel="stylesheet">
 
     <style>
         body {
@@ -13,23 +14,17 @@
             flex-direction: column;
         }
 
-        main {
-            flex: 1;
-            display: flex;
-            gap: 1rem;
-            padding: 1rem;
-        }
-
-        #contenedorMazos1, #contenedorMazos2 {
-            flex: 1;
+        #contenedorMazos1 {
             background-color: #fff;
             border-radius: 20px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
             overflow-y: auto;
+            width: 100%;
+        }
+
+        #lista_mazos {
+            width: 100%;
         }
 
         h2 {
@@ -38,26 +33,14 @@
             margin-bottom: 1rem;
         }
 
-        .crear-mazo {
-            text-align: center;
-            margin-top: 2rem;
-        }
-
-        .crear-mazo h3 {
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
-
-        .crear-mazo img {
-            display: block;
-            margin: 0 auto;
-            height: 240px;
+        .mazo-img {
+            height: 200px;
             border-radius: 15px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             transition: transform 0.3s ease;
         }
 
-        .crear-mazo img:hover {
+        .mazo-img:hover {
             transform: scale(1.05);
         }
     </style>
@@ -66,6 +49,7 @@
 <div th:replace="fragments/header :: header"></div>
 
 <div class="container-fluid p-3">
+
     <div class="d-flex justify-content-center mb-4 gap-2 flex-wrap">
         <input type="text" id="busquedaNombreMazo" class="form-control" placeholder="Buscar por nombre del mazo" style="max-width:250px;">
         <input type="text" id="busquedaNombreCreador" class="form-control" placeholder="Buscar por creador" style="max-width:250px;">
@@ -76,6 +60,7 @@
         <h2 class="text-center mb-3">Mazos Públicos</h2>
         <div id="lista_mazos"></div>
     </div>
+
 </div>
 
 <script th:src="@{/js/bootstrap.bundle.min.js}"></script>

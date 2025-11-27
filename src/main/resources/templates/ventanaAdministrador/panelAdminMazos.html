@@ -4,27 +4,68 @@
     <meta charset="UTF-8">
     <title>Panel Mazos</title>
     <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/css/header.css}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <style>
+        /* Estilo limpio y uniforme para inputs y botones */
+        #zona_mazos_crud .form-control {
+            max-width: 200px;
+        }
+        #zona_mazos_crud .btn {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        table th, table td {
+            vertical-align: middle;
+        }
+        table .btn i {
+            font-size: 1rem;
+        }
+        .table-striped tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+    </style>
 </head>
 <body>
 
 <div th:replace="fragments/header :: header"></div>
 <div th:replace="fragments/headerAdmin :: headerAdmin"></div>
 
-<div id="pantalla" class="container-fluid">
+<div class="container-fluid mt-4">
 
-    <div id="zona_mazos_crud">
+    <h3 class="text-center mb-4">Gestión de Mazos</h3>
 
-        <h4 class="text-center mb-2">Gestión de Mazos</h4>
+    <div class="d-flex align-items-center justify-content-center gap-3 flex-wrap my-4">
+        <input
+                type="text"
+                id="buscarNombreMazo"
+                placeholder="Nombre del mazo"
+                class="form-control form-control-sm w-auto"
+                style="min-width: 180px;"
+        >
 
-        <div class="d-flex mb-3 gap-2 justify-content-center">
-            <input type="text" id="buscarNombreMazo" placeholder="Nombre del mazo" class="form-control" style="max-width:200px;">
-            <input type="text" id="buscarCreador" placeholder="Nombre del creador" class="form-control" style="max-width:200px;">
-            <button id="btnBuscarMazos" class="btn btn-primary">Buscar</button>
-            <button id="btnCrearMazo" class="btn btn-success">Crear Mazo</button>
-        </div>
+        <input
+                type="text"
+                id="buscarCreador"
+                placeholder="Nombre del creador"
+                class="form-control form-control-sm w-auto"
+                style="min-width: 180px;"
+        >
 
-        <table class="table table-striped">
-            <thead>
+        <button id="btnBuscarMazos" class="btn btn-primary btn-sm d-flex align-items-center">
+            <i class="bi bi-search me-1"></i> Buscar
+        </button>
+
+        <button id="btnCrearMazo" class="btn btn-success btn-sm d-flex align-items-center">
+            <i class="bi bi-plus-circle me-1"></i> Crear Mazo
+        </button>
+    </div>
+
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle">
+            <thead class="table-dark">
             <tr>
                 <th>ID</th>
                 <th>Nombre</th>
@@ -36,8 +77,6 @@
             <tbody id="tabla-mazos-body">
             </tbody>
         </table>
-
-
     </div>
 
 </div>

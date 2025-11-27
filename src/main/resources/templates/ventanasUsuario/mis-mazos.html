@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Mis Mazos</title>
     <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/css/header.css}" rel="stylesheet">
 
     <style>
         body {
@@ -20,16 +21,19 @@
             padding: 1rem;
         }
 
+        /* 🔥 Corrección clave: eliminar flex que impedía el grid */
         #contenedorMazos1, #contenedorMazos2 {
             flex: 1;
             background-color: #fff;
             border-radius: 20px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
             overflow-y: auto;
+        }
+
+        /* 🔥 Para que el grid ocupe todo el ancho */
+        #lista_mazos, #lista_mazos_guardados {
+            width: 100%;
         }
 
         h2 {
@@ -38,26 +42,15 @@
             margin-bottom: 1rem;
         }
 
-        .crear-mazo {
-            text-align: center;
-            margin-top: 2rem;
-        }
-
-        .crear-mazo h3 {
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
-
-        .crear-mazo img {
-            display: block;
-            margin: 0 auto;
+        /* Imagen con efecto */
+        .mazo-img {
             height: 240px;
             border-radius: 15px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             transition: transform 0.3s ease;
         }
 
-        .crear-mazo img:hover {
+        .mazo-img:hover {
             transform: scale(1.05);
         }
     </style>
@@ -69,15 +62,11 @@
     <div id="contenedorMazos1">
         <h2>Mis Mazos</h2>
         <div id="lista_mazos"></div>
-
-        </div>
     </div>
 
     <div id="contenedorMazos2">
         <h2>Mazos Guardados</h2>
-        <div id="lista_mazos_guardados">
-
-        </div>
+        <div id="lista_mazos_guardados"></div>
     </div>
 </main>
 
@@ -85,4 +74,3 @@
 <script th:src="@{/js/misMazos.js}"></script>
 </body>
 </html>
-

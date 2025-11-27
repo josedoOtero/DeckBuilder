@@ -20,6 +20,9 @@ document.addEventListener("DOMContentLoaded", () => {
     let zonaSeleccionada = "mainExtra";
     const mazo = { main: [], extra: [], side: [] };
 
+    let paginaActual = 1;
+    const cartasPorPagina = 180;
+
     async function cargarMazoSiExiste() {
         if (!ID_MAZO) return;
 
@@ -32,9 +35,9 @@ document.addEventListener("DOMContentLoaded", () => {
             nombreMazo.value = data.nombre || "";
             estadoSelect.value = data.estado || "publico";
 
-            mazo.main = data.mainDeck?.cartas?.map(c => ({ idKonami: c.idKonami })) || [];
-            mazo.extra = data.extraDeck?.cartas?.map(c => ({ idKonami: c.idKonami })) || [];
-            mazo.side = data.sideDeck?.cartas?.map(c => ({ idKonami: c.idKonami })) || [];
+            mazo.main = data.mainDeck?.cartas || [];
+            mazo.extra = data.extraDeck?.cartas || [];
+            mazo.side = data.sideDeck?.cartas || [];
 
             const ids = [...mazo.main, ...mazo.extra, ...mazo.side].map(c => c.idKonami);
 
@@ -46,33 +49,134 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             mostrarMazo();
-            actualizarCartaDestacada();
 
             setTimeout(() => {
-                cartaDestacada.value = data.imagenCartaDestacada || "";
+                const url = data.imagenCartaDestacada || "/img/cartaDorso.jpg";
+                cartaDestacada.value = url;
+                document.getElementById("cartaDestacadaPreview").src = url;
             }, 200);
+
         } catch (error) {
             console.error("Error al cargar mazo existente:", error);
         }
     }
 
-document.querySelector("#btnMainExtra").addEventListener("click", () => {
-    zonaSeleccionada = "mainExtra";
-    actualizarBotones();
-});
+    document.querySelector("#btnShort").addEventListener("click", ordenarMazo);
 
-document.querySelector("#btnSide").addEventListener("click", () => {
-    zonaSeleccionada = "side";
-    actualizarBotones();
-});
+    function ordenarMazo() {
+        if (cartasFiltradas.length === 0) return;
 
-function actualizarBotones() {
-    document.querySelectorAll("#zona_mazo .btn").forEach(btn => btn.classList.remove("active-zone"));
+        const prioridadTipo = {
+            "Normal Monster": 1,
+            "Effect Monster": 1,
+            "Flip Effect Monster": 1,
+            "Tuner Monster": 1,
+            "Ritual Monster": 1,
+            "Fusion Monster": 2,
+            "Synchro Monster": 2,
+            "XYZ Monster": 2,
+            "Link Monster": 2,
+            "Spell Card": 3,
+            "Trap Card": 4
+        };
 
-    if (zonaSeleccionada === "mainExtra") document.querySelector("#btnMainExtra").classList.add("active-zone");
-    if (zonaSeleccionada === "side") document.querySelector("#btnSide").classList.add("active-zone");
-}
+        function obtenerCartaInfo(idKonami) {
+            return cartasFiltradas.find(c => c.id === idKonami);
+        }
 
+        function ordenarZona(arr) {
+            arr.sort((a, b) => {
+                const cartaA = obtenerCartaInfo(a.idKonami);
+                const cartaB = obtenerCartaInfo(b.idKonami);
+                if (!cartaA || !cartaB) return 0;
+
+                const tipoA = prioridadTipo[cartaA.type] || 99;
+                const tipoB = prioridadTipo[cartaB.type] || 99;
+
+                if (tipoA !== tipoB) return tipoA - tipoB;
+
+                return cartaA.name.localeCompare(cartaB.name);
+            });
+        }
+
+        ordenarZona(mazo.main);
+        ordenarZona(mazo.extra);
+        ordenarZona(mazo.side);
+
+        mostrarMazo();
+
+        alert("Cartas ordenadas correctamente.");
+    }
+
+    document.querySelector("#btnMainExtra").addEventListener("click", () => {
+        zonaSeleccionada = "mainExtra";
+        actualizarBotones();
+    });
+
+    document.querySelector("#btnSide").addEventListener("click", () => {
+        zonaSeleccionada = "side";
+        actualizarBotones();
+    });
+
+    function actualizarBotones() {
+        document.querySelectorAll("#zona_mazo .btn").forEach(btn => btn.classList.remove("active-zone"));
+        if (zonaSeleccionada === "mainExtra") document.querySelector("#btnMainExtra").classList.add("active-zone");
+        if (zonaSeleccionada === "side") document.querySelector("#btnSide").classList.add("active-zone");
+    }
+
+    function mostrarSelectorDestacada() {
+        const cont = document.getElementById("destacadaSelector");
+        cont.innerHTML = "";
+
+        const imgDefault = document.createElement("img");
+        imgDefault.src = "/img/cartaDorso.jpg";
+        imgDefault.dataset.url = "/img/cartaDorso.jpg";
+        estiloMiniatura(imgDefault);
+        imgDefault.addEventListener("click", () => seleccionarDestacada(imgDefault));
+        cont.appendChild(imgDefault);
+
+        const todas = [...mazo.main, ...mazo.extra, ...mazo.side];
+        const idsUnicos = [...new Set(todas.map(c => c.idKonami))];
+
+        idsUnicos.forEach(id => {
+            const cartaInfo = cartasFiltradas.find(c => c.id === id);
+            if (!cartaInfo) return;
+
+            const url = cartaInfo.card_images[0].image_url;
+
+            const img = document.createElement("img");
+            img.src = url;
+            img.dataset.url = url;
+            estiloMiniatura(img);
+
+            img.addEventListener("click", () => seleccionarDestacada(img));
+            cont.appendChild(img);
+        });
+    }
+
+    function estiloMiniatura(img) {
+        img.style.width = "80px";
+        img.style.height = "110px";
+        img.style.cursor = "pointer";
+        img.style.border = "2px solid transparent";
+        img.style.borderRadius = "4px";
+    }
+
+    document.getElementById("cartaDestacadaPreview").addEventListener("click", () => {
+        mostrarSelectorDestacada();
+        const modal = new bootstrap.Modal(document.getElementById("modalDestacada"));
+        modal.show();
+    });
+
+    function seleccionarDestacada(img) {
+        const url = img.dataset.url;
+
+        cartaDestacada.value = url;
+        document.getElementById("cartaDestacadaPreview").src = url;
+
+        const modal = bootstrap.Modal.getInstance(document.getElementById("modalDestacada"));
+        modal.hide();
+    }
 
     filtros.addEventListener("submit", async e => {
         e.preventDefault();
@@ -117,16 +221,27 @@ function actualizarBotones() {
 
             if (cartas.length === 0) {
                 listaCartas.innerHTML = '<p class="text-center text-muted mt-3">No se encontraron cartas.</p>';
+                document.getElementById("paginacion").innerHTML = "";
                 return;
             }
 
             cartasFiltradas = cartas;
-            mostrarCartas(cartasFiltradas);
+            paginaActual = 1; // reset página
+            mostrarCartasPaginadas();
         } catch (error) {
             console.error("Error al cargar cartas:", error);
             listaCartas.innerHTML = '<p class="text-center text-danger mt-3">Error al cargar las cartas.</p>';
+            document.getElementById("paginacion").innerHTML = "";
         }
     });
+
+    function mostrarCartasPaginadas() {
+        const inicio = (paginaActual - 1) * cartasPorPagina;
+        const fin = inicio + cartasPorPagina;
+        const cartasAMostrar = cartasFiltradas.slice(inicio, fin);
+        mostrarCartas(cartasAMostrar);
+        renderizarPaginacion();
+    }
 
     function mostrarCartas(cartas) {
         listaCartas.className = "row row-cols-6 g-2";
@@ -148,6 +263,55 @@ function actualizarBotones() {
             col.querySelector("img").addEventListener("click", () => agregarCartaAlMazo(carta, zonaSeleccionada));
             listaCartas.appendChild(col);
         });
+    }
+
+    function renderizarPaginacion() {
+        const cont = document.getElementById("paginacion");
+        cont.innerHTML = "";
+
+        const totalPaginas = Math.ceil(cartasFiltradas.length / cartasPorPagina);
+        if (totalPaginas <= 1) return;
+
+        const btnPrev = document.createElement("button");
+        btnPrev.className = "btn btn-secondary mx-1";
+        btnPrev.textContent = "« Prev";
+        btnPrev.disabled = paginaActual === 1;
+        btnPrev.onclick = () => {
+            paginaActual--;
+            mostrarCartasPaginadas();
+        };
+        cont.appendChild(btnPrev);
+
+        // Mostrar máximo 4 páginas alrededor de la actual
+        const maxPaginasMostradas = 4;
+        let inicio = Math.max(1, paginaActual - Math.floor(maxPaginasMostradas / 2));
+        let fin = inicio + maxPaginasMostradas - 1;
+
+        if (fin > totalPaginas) {
+            fin = totalPaginas;
+            inicio = Math.max(1, fin - maxPaginasMostradas + 1);
+        }
+
+        for (let i = inicio; i <= fin; i++) {
+            const btn = document.createElement("button");
+            btn.className = `btn mx-1 ${i === paginaActual ? "btn-primary" : "btn-outline-primary"}`;
+            btn.textContent = i;
+            btn.onclick = () => {
+                paginaActual = i;
+                mostrarCartasPaginadas();
+            };
+            cont.appendChild(btn);
+        }
+
+        const btnNext = document.createElement("button");
+        btnNext.className = "btn btn-secondary mx-1";
+        btnNext.textContent = "Next »";
+        btnNext.disabled = paginaActual === totalPaginas;
+        btnNext.onclick = () => {
+            paginaActual++;
+            mostrarCartasPaginadas();
+        };
+        cont.appendChild(btnNext);
     }
 
     function agregarCartaAlMazo(carta, zona) {
@@ -184,7 +348,6 @@ function actualizarBotones() {
         }
 
         mostrarMazo();
-        actualizarCartaDestacada();
     }
 
     function renderZona(container, cartas, zona) {
@@ -200,7 +363,7 @@ function actualizarBotones() {
             col.classList.add("col", "d-flex", "justify-content-center");
             col.innerHTML = `
             <div class="card border-0 text-center w-100" style="background:transparent;">
-                <div style="height:140px; width:100%;">
+                <div style="height:120px; width:100%;">
                     <img src="${imgSrc}" alt="${name}" style="width:100%; height:100%; object-fit:contain;">
                 </div>
                 <div class="card-body p-0 d-flex justify-content-start">
@@ -223,7 +386,6 @@ function actualizarBotones() {
                 const index = e.target.closest("button").dataset.index;
                 mazo[zona].splice(index, 1);
                 mostrarMazo();
-                actualizarCartaDestacada();
             });
         });
 
@@ -253,11 +415,7 @@ function actualizarBotones() {
                             <p><strong>Raza:</strong> ${cartaInfo.race || "N/A"}</p>
                             <p><strong>Descripción:</strong> ${cartaInfo.desc || "N/A"}</p>
                         `;
-                    } else if (cartaInfo.type.includes("Spell")) {
-                        htmlInfo += `
-                            <p><strong>Descripción:</strong> ${cartaInfo.desc || "N/A"}</p>
-                        `;
-                    } else if (cartaInfo.type.includes("Trap")) {
+                    } else {
                         htmlInfo += `
                             <p><strong>Descripción:</strong> ${cartaInfo.desc || "N/A"}</p>
                         `;
@@ -270,32 +428,12 @@ function actualizarBotones() {
                 }
             });
         });
-
-
     }
-
 
     function mostrarMazo() {
         renderZona(mainDeck, mazo.main, "main");
         renderZona(extraDeck, mazo.extra, "extra");
         renderZona(sideDeck, mazo.side, "side");
-    }
-
-    function actualizarCartaDestacada() {
-        const todas = [...mazo.main, ...mazo.extra, ...mazo.side];
-        const idsUnicos = [...new Set(todas.map(c => c.idKonami))];
-
-        cartaDestacada.innerHTML = '<option value="">Featured card</option>';
-
-        idsUnicos.forEach(id => {
-            const cartaInfo = cartasFiltradas.find(c => c.id === id);
-            if (cartaInfo) {
-                const opt = document.createElement("option");
-                opt.value = cartaInfo.card_images[0].image_url;
-                opt.textContent = cartaInfo.name;
-                cartaDestacada.appendChild(opt);
-            }
-        });
     }
 
     btnSave.addEventListener("click", async () => {
@@ -361,7 +499,6 @@ function actualizarBotones() {
 
                 Object.keys(mazo).forEach(k => mazo[k] = []);
                 mostrarMazo();
-                actualizarCartaDestacada();
                 nombreMazo.value = "";
 
                 window.location.href = "/user/misMazos";

@@ -33,10 +33,16 @@ document.addEventListener("DOMContentLoaded", function () {
                 <td>${mazo.nombre || "Sin nombre"}</td>
                 <td>${mazo.creador?.nombre || "Desconocido"}</td>
                 <td>${mazo.estado || "Desconocido"}</td>
-                <td>
-                    <button class="btn btn-sm btn-warning btnEditar" data-id="${mazo.id}">Editar</button>
-                    <button class="btn btn-sm btn-danger btnEliminar" data-id="${mazo.id}">Eliminar</button>
-                    <button class="btn btn-sm btn-info btnVer" data-id="${mazo.id}">Ver Mazos</button>
+                <td class="">
+                    <button class="btn btn-sm btn-warning btnEditar me-1" data-id="${mazo.id}" title="Editar">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger btnEliminar me-1" data-id="${mazo.id}" title="Eliminar">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                    <button class="btn btn-sm btn-primary btnVer" data-id="${mazo.id}" title="Ver Mazos">
+                        <i class="bi bi-eye"></i>
+                    </button>
                 </td>
             `;
 

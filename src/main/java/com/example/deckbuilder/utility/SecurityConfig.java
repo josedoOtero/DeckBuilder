@@ -26,9 +26,16 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         // Recursos públicos: login, registro, CSS, JS, imágenes
-                        .requestMatchers("/", "/login/**", "/crearCuenta/**", "/css/**", "/js/**", "/images/**").permitAll()
+                        .requestMatchers("/", "/login/**", "/crearCuenta/**", "/css/**", "/js/**", "/img/**").permitAll()
 
-                        // Páginas públicas de mazos (pueden ver sin loguearse)
+                        // APIs públicas de Mazo y Usuario (solo GETs que devuelven info)
+                        .requestMatchers("/MazoAPI/**").permitAll()
+                        .requestMatchers("/UsuarioAPI/**").permitAll()
+
+                        // Solo usuarios logueados pueden acceder a POST, PUT, DELETE en UsuarioAPI
+                        .requestMatchers("/UsuarioAPI/**").hasAnyRole("USER", "ADMIN")
+
+                        // Páginas públicas de mazos (visualizador)
                         .requestMatchers("/user/visualizadorMazos/**", "/user/verUser/**", "/user/mazos", "/user/cartas").permitAll()
 
                         // Solo usuarios logueados pueden acceder a otras páginas de /user/**
@@ -36,9 +43,6 @@ public class SecurityConfig {
 
                         // Solo admins pueden acceder a /admin/**
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-
-                        // APIs privadas
-                        .requestMatchers("/UsuarioAPI/**", "/MazoAPI/**").hasAnyRole("USER", "ADMIN")
 
                         // Cualquier otra ruta requiere autenticación
                         .anyRequest().authenticated()
@@ -56,10 +60,10 @@ public class SecurityConfig {
                 )
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((request, response, authException) -> {
-                            // Redirige a la página de inicio si no está autenticado
                             response.sendRedirect("/");
                         })
                 );
+
 
         return http.build();
     }

@@ -35,23 +35,21 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
         const row = document.createElement("div");
-        row.classList.add("row", "g-4", "justify-content-center");
+        row.classList.add("row", "g-4");
 
         mazos.forEach(mazo => {
             const col = document.createElement("div");
-            col.classList.add("col-12", "col-sm-6", "col-md-4", "text-center");
+            col.classList.add("col-12", "col-sm-6", "col-md-4", "col-lg-3", "text-center");
 
             const imagen = mazo.imagenCartaDestacada
                 ? mazo.imagenCartaDestacada
                 : "/IMG/cartaDorso.jpg";
 
-            // Determinar URL según contenedor
+            // Selección de URL según el contenedor
             let url = "";
             if (contenedor.id === "lista_mazos") {
-                // Mazos creados por el usuario -> constructor
                 url = `/user/constructorMazos/${mazo.id}`;
-            } else if (contenedor.id === "lista_mazos_guardados") {
-                // Mazos guardados -> visualizador
+            } else {
                 url = `/user/visualizadorMazos/${mazo.id}`;
             }
 
@@ -59,18 +57,10 @@ document.addEventListener("DOMContentLoaded", async () => {
                 <div class="card border-0" style="background: none;">
                     <h5 class="mb-2">${mazo.nombre || "Mazo sin título"}</h5>
                     <a href="${url}">
-                        <img src="${imagen}"
-                             alt="Mazo ${mazo.id}"
-                             style="height: 240px; border-radius: 15px;
-                             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-                             transition: transform 0.3s ease;">
+                        <img src="${imagen}" class="mazo-img" alt="Mazo ${mazo.id}">
                     </a>
                 </div>
             `;
-
-            const img = col.querySelector("img");
-            img.addEventListener("mouseenter", () => img.style.transform = "scale(1.05)");
-            img.addEventListener("mouseleave", () => img.style.transform = "scale(1)");
 
             row.appendChild(col);
         });

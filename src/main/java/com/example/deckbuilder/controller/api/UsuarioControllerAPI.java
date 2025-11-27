@@ -103,8 +103,5 @@ public class UsuarioControllerAPI {
         usuario.setImagenUsuario(url);
         return usuarioService.save(usuario);
     }
-
-
-
 }
 

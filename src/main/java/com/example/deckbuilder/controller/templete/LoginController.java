@@ -1,5 +1,6 @@
 package com.example.deckbuilder.controller.templete;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.ui.Model;
 import com.example.deckbuilder.domain.Usuario;
 import com.example.deckbuilder.service.UsuarioService;
@@ -48,13 +49,21 @@ public class LoginController {
 
 
     @GetMapping("/home")
-    public String home() {
+    public String home(Model model, HttpServletRequest request) {
+        model.addAttribute("currentUri", request.getRequestURI());
         return "index";
     }
 
     @GetMapping("/cartas")
-    public String verCartas() {
+    public String verCartas(Model model, HttpServletRequest request) {
+        model.addAttribute("currentUri", request.getRequestURI());
         return "ver-cartas";
+    }
+
+    @GetMapping("/mazos")
+    public String verMazos(Model model, HttpServletRequest request) {
+        model.addAttribute("currentUri", request.getRequestURI());
+        return "ver-mazos";
     }
 }
 
