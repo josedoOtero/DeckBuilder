@@ -53,7 +53,6 @@ document.addEventListener("DOMContentLoaded", () => {
             const data = await response.json();
             let cartas = data.data;
 
-            // Filtros adicionales
             cartas = cartas.filter(c => {
                 if (atkMin !== null && c.atk < atkMin) return false;
                 if (atkMax !== null && c.atk > atkMax) return false;
@@ -160,7 +159,7 @@ function mostrarCartas(cartas, listaCartas) {
         const idKonami = carta.misc_info?.[0]?.konami_id ?? "Unknown";
 
         col.innerHTML = `
-            <div class="card border-0 text-center w-100 d-flex flex-column" style="background:transparent;">
+            <div class="card border-0 text-center w-100" style="background:transparent;">
                 <div style="height:240px; width:100%; flex-shrink:0;">
                     <img src="${carta.card_images[0].image_url}"
                          alt="${carta.name}"

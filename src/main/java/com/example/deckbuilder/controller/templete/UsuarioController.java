@@ -45,13 +45,6 @@ public class UsuarioController {
         return "ventanasUsuario/visualizador-mazos";
     }
 
-    @GetMapping("/verUser/{id}")
-    public String mostrarrUser(@PathVariable Long id, Model model, HttpServletRequest request) {
-        model.addAttribute("id", id);
-        model.addAttribute("currentUri", request.getRequestURI());
-        return "ventanasUsuario/ver-usuario";
-    }
-
     @GetMapping("/perfil")
     public String mostrarPerfil(@AuthenticationPrincipal UserDetails userDetails, Model model, HttpServletRequest request) {
         Usuario usuario = usuarioService.findByNombre(userDetails.getUsername());

@@ -21,7 +21,6 @@
             padding: 1rem;
         }
 
-        /* 🔥 Corrección clave: eliminar flex que impedía el grid */
         #contenedorMazos1, #contenedorMazos2 {
             flex: 1;
             background-color: #fff;
@@ -31,7 +30,6 @@
             overflow-y: auto;
         }
 
-        /* 🔥 Para que el grid ocupe todo el ancho */
         #lista_mazos, #lista_mazos_guardados {
             width: 100%;
         }
@@ -44,15 +42,16 @@
 
         /* Imagen con efecto */
         .mazo-img {
-            height: 240px;
-            border-radius: 15px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             transition: transform 0.3s ease;
+            height: 240px;
+            object-fit: contain;
+            width: 100%;
         }
 
         .mazo-img:hover {
             transform: scale(1.05);
         }
+
     </style>
 </head>
 <body>

@@ -57,4 +57,8 @@ public class Usuario {
     private String imagenUsuario;
 
     private String rol;
+
+    @Size(max = 300, message = "La descripción no puede tener más de 300 caracteres")
+    private String descripcion;
+
 }

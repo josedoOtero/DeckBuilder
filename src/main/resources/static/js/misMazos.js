@@ -45,7 +45,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                 ? mazo.imagenCartaDestacada
                 : "/IMG/cartaDorso.jpg";
 
-            // Selección de URL según el contenedor
             let url = "";
             if (contenedor.id === "lista_mazos") {
                 url = `/user/constructorMazos/${mazo.id}`;

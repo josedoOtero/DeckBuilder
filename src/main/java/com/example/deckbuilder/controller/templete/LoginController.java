@@ -5,10 +5,7 @@ import org.springframework.ui.Model;
 import com.example.deckbuilder.domain.Usuario;
 import com.example.deckbuilder.service.UsuarioService;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
 
 @Controller
@@ -64,6 +61,13 @@ public class LoginController {
     public String verMazos(Model model, HttpServletRequest request) {
         model.addAttribute("currentUri", request.getRequestURI());
         return "ver-mazos";
+    }
+
+    @GetMapping("/verUser/{id}")
+    public String mostrarrUser(@PathVariable Long id, Model model, HttpServletRequest request) {
+        model.addAttribute("id", id);
+        model.addAttribute("currentUri", request.getRequestURI());
+        return "ver-usuario";
     }
 }
 

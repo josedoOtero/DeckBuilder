@@ -82,7 +82,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             document.querySelector("#inputNombreMazo").value = mazo.nombre || "Sin nombre";
             document.querySelector("#inputCreador").value = mazo.creador?.nombre || "Desconocido";
-            document.querySelector("#btnVerUser").href = `/user/verUser/${mazo.creador?.id || ""}`;
+            document.querySelector("#btnVerUser").href = `/login/verUser/${mazo.creador?.id || ""}`;
         } catch (e) {
             console.error(e);
         }
@@ -94,25 +94,87 @@ document.addEventListener("DOMContentLoaded", async () => {
             contenedor.innerHTML = `<p class='text-muted text-center'>Empty</p>`;
             return;
         }
+
         for (let id of ids) {
             const info = dic[id];
             if (!info) continue;
 
-            const cardDiv = document.createElement("div");
-            cardDiv.className = "col";
-            cardDiv.innerHTML = `<img src="${info.card_images[0].image_url}" style="width:100%; cursor:pointer;">`;
-            cardDiv.querySelector("img").addEventListener("click", () => mostrarDetalles(info));
-            contenedor.appendChild(cardDiv);
+            const col = document.createElement("div");
+            col.className = "col d-flex justify-content-center";
+
+            col.innerHTML = `
+                <div class="card border-0 text-center w-100" style="background:transparent;">
+                    <div style="height:240px; width:100%; flex-shrink:0;">
+                        <img src="${info.card_images[0].image_url}"
+                             alt="${info.name}"
+                             style="width:100%; height:100%; object-fit:contain; cursor:pointer;">
+                    </div>
+                </div>
+            `;
+
+            col.querySelector("img").addEventListener("click", () => mostrarDetalles(info));
+            contenedor.appendChild(col);
         }
     }
 
+
     function mostrarDetalles(carta) {
-        const zonaInfo = document.querySelector("#zona_info");
-        zonaInfo.innerHTML = `
-            <h3>${carta.name}</h3>
-            <img src="${carta.card_images[0].image_url}" style="width:200px;">
-            <p><strong>Type:</strong> ${carta.type}</p>
-            <p><strong>Description:</strong> ${carta.desc}</p>
+        const zonaDetalles = document.querySelector("#zona_info");
+
+        let preciosHTML = "";
+
+        const p = carta.card_prices?.[0];
+        if (p) {
+            preciosHTML = `<hr><h5 class="mt-2">Precios estimados</h5><div class="d-flex flex-wrap gap-2">`;
+
+            if (parseFloat(p.cardmarket_price) > 0)
+                preciosHTML += `<span class="badge bg-success">Cardmarket: €${p.cardmarket_price}</span>`;
+
+            if (parseFloat(p.tcgplayer_price) > 0)
+                preciosHTML += `<span class="badge bg-primary">TCGPlayer: $${p.tcgplayer_price}</span>`;
+
+            if (parseFloat(p.ebay_price) > 0)
+                preciosHTML += `<span class="badge bg-warning text-dark">eBay: $${p.ebay_price}</span>`;
+
+            if (parseFloat(p.amazon_price) > 0)
+                preciosHTML += `<span class="badge bg-info text-dark">Amazon: $${p.amazon_price}</span>`;
+
+            if (parseFloat(p.coolstuffinc_price) > 0)
+                preciosHTML += `<span class="badge bg-secondary">CoolStuffInc: $${p.coolstuffinc_price}</span>`;
+
+            preciosHTML += `</div>`;
+        }
+
+        zonaDetalles.innerHTML = `
+            <div class="card mb-3 border-0" style="max-width: 700px;">
+                <div class="card-header bg-transparent border-0">
+                    <h4 class="card-title mb-0 text-center">${carta.name}</h4>
+                </div>
+
+                <div class="card-body">
+                    <div class="row g-3">
+
+                        <div class="col-md-4 d-flex justify-content-center align-self-start">
+                            <img src="${carta.card_images[0].image_url}" class="img-fluid rounded"
+                                 style="object-fit:contain; max-height:240px;">
+                        </div>
+
+                        <div class="col-md-8" style="text-align: left;">
+                            ${carta.type ? `<p><strong>Tipo:</strong> ${carta.type}</p>` : ''}
+                            ${carta.archetype ? `<p><strong>Arquetipo:</strong> ${carta.archetype}</p>` : ''}
+                            ${carta.attribute ? `<p><strong>Atributo:</strong> ${carta.attribute}</p>` : ''}
+                            ${carta.race ? `<p><strong>Raza / Tipo:</strong> ${carta.race}</p>` : ''}
+                            ${carta.level != null ? `<p><strong>Nivel:</strong> ${carta.level}</p>` : ''}
+                            ${(carta.atk != null || carta.def != null) ? `<p><strong>ATK / DEF:</strong> ${carta.atk} / ${carta.def}</p>` : ''}
+                        </div>
+
+                    </div>
+
+                    ${carta.desc ? `<hr><p class="mt-3" style="text-align: left;"><strong>Descripción:</strong> ${carta.desc}</p>` : ''}
+
+                    ${preciosHTML}
+                </div>
+            </div>
         `;
     }
 
