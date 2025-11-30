@@ -75,12 +75,21 @@ public class MazoService {
 
     @Transactional
     public void delete(Long id) {
-        if(mazoRepository.existsById(id)) {
-            mazoRepository.deleteById(id);
-        } else {
-            throw new RuntimeException("El mazo no existe");
-        }
+        Mazo mazo = mazoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("El mazo no existe"));
+        
+        mazo.getCreador().getMazosFavoritos().remove(mazo);
+        mazoRepository.flush();
+
+        // Alternativamente, recorrer todos los usuarios si tienes UserRepository
+        // List<Usuario> usuarios = usuarioRepository.findAll();
+        // for (Usuario u : usuarios) {
+        //     u.getMazosFavoritos().remove(mazo);
+        // }
+
+        mazoRepository.delete(mazo);
     }
+
 
     public List<Mazo> findByUsuario(Usuario usuario) {
         return mazoRepository.findAllByCreador(usuario);
