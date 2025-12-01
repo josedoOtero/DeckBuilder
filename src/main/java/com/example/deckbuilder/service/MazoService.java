@@ -81,12 +81,6 @@ public class MazoService {
         mazo.getCreador().getMazosFavoritos().remove(mazo);
         mazoRepository.flush();
 
-        // Alternativamente, recorrer todos los usuarios si tienes UserRepository
-        // List<Usuario> usuarios = usuarioRepository.findAll();
-        // for (Usuario u : usuarios) {
-        //     u.getMazosFavoritos().remove(mazo);
-        // }
-
         mazoRepository.delete(mazo);
     }
 

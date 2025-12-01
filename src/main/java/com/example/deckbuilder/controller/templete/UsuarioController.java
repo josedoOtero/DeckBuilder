@@ -54,15 +54,52 @@ public class UsuarioController {
 
     @PostMapping("/perfil")
     public String actualizarPerfil(@ModelAttribute Usuario usuario, @AuthenticationPrincipal UserDetails userDetails) {
+
         Usuario usuarioActual = usuarioService.findByNombre(userDetails.getUsername());
 
         usuarioActual.setNombre(usuario.getNombre());
+        usuarioActual.setDescripcion(usuario.getDescripcion());
+
         if (usuario.getPassword() != null && !usuario.getPassword().isBlank()) {
             usuarioActual.setPassword(usuario.getPassword());
         }
 
         usuarioService.save(usuarioActual);
+
         return "redirect:/login/home";
     }
 
+
+    @GetMapping("/cuenta-editar/{id}")
+    public String mostrarPerfil(@PathVariable Long id, Model model) {
+        Usuario usuario = usuarioService.findById(id);
+
+        if (usuario == null) {
+            return "redirect:/error";
+        }
+
+        model.addAttribute("usuario", usuario);
+        return "ventanaAdministrador/editar-perfil";
+    }
+
+    @PostMapping("/cuenta-editar/{id}")
+    public String actualizarPerfil(@PathVariable Long id, @ModelAttribute Usuario usuarioForm
+    ) {
+        Usuario usuarioActual = usuarioService.findById(id);
+
+        if (usuarioActual == null) {
+            return "redirect:/error";
+        }
+
+        usuarioActual.setNombre(usuarioForm.getNombre());
+        usuarioActual.setDescripcion(usuarioForm.getDescripcion());
+
+        if (usuarioForm.getPassword() != null && !usuarioForm.getPassword().isBlank()) {
+            usuarioActual.setPassword(usuarioForm.getPassword());
+        }
+
+        usuarioService.save(usuarioActual);
+
+        return "redirect:/login/home";
+    }
 }

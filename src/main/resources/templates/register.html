@@ -1,24 +1,94 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>Registro</title>
+    <meta charset="UTF-8">
+    <title>Registro</title>
+
     <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+
+    <style>
+        body {
+            background: #f5f6fa;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: "Segoe UI", Roboto, sans-serif;
+        }
+
+        .register-card {
+            width: 380px;
+            padding: 30px;
+            border-radius: 12px;
+            background: #ffffff;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .register-title {
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-control {
+            border-radius: 8px;
+        }
+
+        .btn-primary {
+            width: 100%;
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 1rem;
+        }
+
+        .msg-error {
+            margin-top: 15px;
+            text-align: center;
+            color: #e74c3c;
+            font-size: 0.9rem;
+        }
+
+        .msg-exito {
+            margin-top: 15px;
+            text-align: center;
+            color: #27ae60;
+            font-size: 0.9rem;
+        }
+    </style>
 </head>
+
 <body>
-<h2>Registrar usuario</h2>
 
-<form th:action="@{/login/crearCuenta}" th:object="${usuario}" method="post">
-  <input type="text" th:field="*{nombre}" placeholder="Nombre" required />
-  <input type="email" th:field="*{email}" placeholder="Email" required />
-  <input type="password" th:field="*{password}" placeholder="Contraseña" required />
-  <button type="submit">Crear Cuenta</button>
-</form>
+<div class="register-card">
+    <h2 class="register-title">Crear cuenta</h2>
 
+    <form th:action="@{/login/crearCuenta}" th:object="${usuario}" method="post">
 
-<p th:if="${error}" th:text="${error}"></p>
-<p th:if="${exito}" th:text="${exito}"></p>
+        <div class="mb-3">
+            <label class="form-label">Nombre</label>
+            <input type="text" th:field="*{nombre}" class="form-control" placeholder="Ingresa tu nombre" required />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" th:field="*{email}" class="form-control" placeholder="Ingresa tu correo" required />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Contraseña</label>
+            <input type="password" th:field="*{password}" class="form-control" placeholder="Crea una contraseña" required />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Crear Cuenta</button>
+    </form>
+
+    <p th:if="${error}" class="msg-error" th:text="${error}"></p>
+    <p th:if="${exito}" class="msg-exito" th:text="${exito}"></p>
+</div>
 
 <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+
 </body>
 </html>

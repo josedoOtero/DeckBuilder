@@ -3,25 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <title>Iniciar sesión</title>
+
     <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+
+    <style>
+        body {
+            background: #f5f6fa;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: "Segoe UI", Roboto, sans-serif;
+        }
+
+        .login-card {
+            width: 360px;
+            padding: 30px;
+            border-radius: 12px;
+            background: #ffffff;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .login-title {
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-control {
+            border-radius: 8px;
+        }
+
+        .btn-primary {
+            width: 100%;
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 1rem;
+        }
+
+        .alert-msg {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: #e74c3c;
+        }
+
+        .logout-msg {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: #27ae60;
+        }
+    </style>
 </head>
+
 <body>
-<h2>Login</h2>
 
-<form th:action="@{/login}" method="post">
-    <label for="username">Usuario:</label>
-    <input type="text" id="username" name="username" required />
-    <br>
+<div class="login-card">
+    <h2 class="login-title">Iniciar sesión</h2>
 
-    <label for="password">Contraseña:</label>
-    <input type="password" id="password" name="password" required />
-    <br>
+    <form th:action="@{/login}" method="post">
 
-    <button type="submit">Entrar</button>
-</form>
+        <div class="mb-3">
+            <label for="username" class="form-label">Usuario</label>
+            <input type="text" id="username" name="username" class="form-control" required />
+        </div>
 
-<p th:if="${param.error}"> Usuario o contraseña incorrectos</p>
-<p th:if="${param.logout}"> Has cerrado sesión correctamente</p>
+        <div class="mb-3">
+            <label for="password" class="form-label">Contraseña</label>
+            <input type="password" id="password" name="password" class="form-control" required />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Entrar</button>
+    </form>
+
+    <p th:if="${param.error}" class="alert-msg">Usuario o contraseña incorrectos</p>
+    <p th:if="${param.logout}" class="logout-msg">Has cerrado sesión correctamente</p>
+</div>
 
 <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 </body>

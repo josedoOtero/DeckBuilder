@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
+
     const tablaBody = document.getElementById("tabla-usuarios-body");
     const btnBuscar = document.getElementById("btnBuscarUsuarios");
     const btnCrear = document.getElementById("btnCrearUsuario");
@@ -7,38 +8,47 @@ document.addEventListener("DOMContentLoaded", function () {
 
     async function cargarUsuarios(nombre = "", email = "") {
         let url = `/UsuarioAPI/buscar?nombre=${encodeURIComponent(nombre)}&email=${encodeURIComponent(email)}`;
+
         try {
             const response = await fetch(url);
             if (!response.ok) throw new Error("Error al obtener usuarios");
+
             const usuarios = await response.json();
             renderUsuarios(usuarios);
+
         } catch (error) {
             console.error("Error cargando usuarios:", error);
-            tablaBody.innerHTML = `<tr><td colspan="4" class="text-danger">No se pudo cargar los usuarios</td></tr>`;
+            tablaBody.innerHTML =
+                `<tr><td colspan="4" class="text-danger">No se pudo cargar los usuarios</td></tr>`;
         }
     }
 
     function renderUsuarios(usuarios) {
+
         tablaBody.innerHTML = "";
+
         if (!usuarios || usuarios.length === 0) {
             tablaBody.innerHTML = `<tr><td colspan="4">No hay usuarios</td></tr>`;
             return;
         }
 
         usuarios.forEach(usuario => {
+
             const tr = document.createElement("tr");
 
             tr.innerHTML = `
                 <td>${usuario.id}</td>
                 <td>${usuario.nombre}</td>
                 <td>${usuario.email}</td>
-                <td class="">
+                <td>
                     <button class="btn btn-sm btn-warning btnEditar me-1" data-id="${usuario.id}" title="Editar">
                         <i class="bi bi-pencil"></i>
                     </button>
+
                     <button class="btn btn-sm btn-danger btnEliminar me-1" data-id="${usuario.id}" title="Eliminar">
                         <i class="bi bi-trash"></i>
                     </button>
+
                     <button class="btn btn-sm btn-primary btnVerMazos" data-id="${usuario.id}" title="Ver Mazos">
                         <i class="bi bi-eye"></i>
                     </button>
@@ -46,11 +56,18 @@ document.addEventListener("DOMContentLoaded", function () {
             `;
 
             tr.querySelector(".btnEliminar").addEventListener("click", async () => {
+
                 if (confirm(`¿Seguro que quieres eliminar al usuario ${usuario.nombre}?`)) {
+
                     try {
-                        const res = await fetch(`/UsuarioAPI/${usuario.id}`, { method: "DELETE" });
+                        const res = await fetch(`/UsuarioAPI/${usuario.id}`, {
+                            method: "DELETE"
+                        });
+
                         if (!res.ok) throw new Error("Error al eliminar usuario");
+
                         cargarUsuarios(inputNombre.value, inputEmail.value);
+
                     } catch (err) {
                         console.error(err);
                         alert("No se pudo eliminar el usuario");
@@ -59,11 +76,11 @@ document.addEventListener("DOMContentLoaded", function () {
             });
 
             tr.querySelector(".btnEditar").addEventListener("click", () => {
-                alert("Editar usuario: " + usuario.nombre);
+                window.location.href = `/user/cuenta-editar/${usuario.id}`;
             });
 
             tr.querySelector(".btnVerMazos").addEventListener("click", () => {
-                alert("Ver mazos del usuario: " + usuario.nombre);
+                window.location.href = `/login/verUser/${usuario.id}`;
             });
 
             tablaBody.appendChild(tr);
@@ -77,6 +94,5 @@ document.addEventListener("DOMContentLoaded", function () {
     btnCrear.addEventListener("click", () => {
         window.location.href = "/login/crearCuenta";
     });
-
     cargarUsuarios();
 });
