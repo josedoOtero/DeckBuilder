@@ -132,7 +132,6 @@
 
 
     </style>
-</head>
 <body>
 <div th:replace="fragments/header :: header"></div>
 
@@ -140,8 +139,6 @@
 
     <div id="zona_cartas">
         <div id="filtros_cartas_div" class="p-3 rounded" style="background-color:#f1f3f5;">
-            <h5 class="mb-3 text-center">Card Filters</h5>
-
             <form id="filtros_cartas">
 
                 <div class="row g-2 mb-2">
@@ -237,14 +234,20 @@
                     </div>
                 </div>
 
-                <div class="d-grid">
-                    <button name="botonFiltro" type="submit" class="btn btn-primary">Apply Filters</button>
+                <div class="row g-2">
+                    <div class="col-2">
+                        <button id="btnFavoritos" type="button" class="btn btn-warning text-white w-100">Cartas Favoritas</button>
+                    </div>
+                    <div class="col-10">
+                        <button name="botonFiltro" type="submit" class="btn btn-primary w-100">Apply Filters</button>
+                    </div>
+
                 </div>
+
             </form>
         </div>
 
         <div id="lista_cartas">
-            <h6 class="text-center mb-3">Card List</h6>
             <div class="row row-cols-2 row-cols-md-3 g-3"></div>
         </div>
 
@@ -272,6 +275,7 @@
             <div id="paginacion" class="d-flex justify-content-center align-items-center mt-3 gap-2 border-top py-2 px-3 rounded bg-light shadow-sm"></div>
 
             <div class="d-flex align-items-center" style="gap:5px;">
+                <button id="btnExport" class="btn btn-secondary btn-sm px-2 text-white" style="height:30px;">Export</button>
                 <button id="btnShort" class="btn btn-warning btn-sm px-2 text-white" style="height:30px;">Ordenar</button>
                 <button id="btnDelete" class="btn btn-danger btn-sm px-2" style="height:30px;">Delete</button>
                 <button id="btnSave" class="btn btn-success btn-sm px-2" style="height:30px;">Save</button>
@@ -281,7 +285,6 @@
     </div>
 
     <div id="zona_mazo" class="p-3">
-        <h5 class="text-center mb-3">Your Deck</h5>
 
         <div class="d-flex justify-content-around mb-3">
             <button id="btnMainExtra" class="btn btn-outline-primary btn-sm">Main / Extra Deck</button>
@@ -350,4 +353,6 @@
 <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 <script th:src="@{/js/crearMazo.js}"></script>
 </body>
+</head>
+
 </html>

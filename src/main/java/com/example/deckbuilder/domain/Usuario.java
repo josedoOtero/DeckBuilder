@@ -54,6 +54,8 @@ public class Usuario {
     @JsonIgnore
     private Set<Mazo> mazosFavoritos = new HashSet<>();
 
+    private Set<Integer> cartasFavoritas = new HashSet<>();
+
     private String imagenUsuario;
 
     private String rol;

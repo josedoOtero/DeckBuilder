@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
     const filtros = document.querySelector("#filtros_cartas");
     const listaCartas = document.querySelector("#lista_cartas .row");
 
@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const extraDeck = document.querySelector("#extra_deck");
     const sideDeck = document.querySelector("#side_deck");
 
+    const btnFavoritos = document.querySelector("#btnFavoritos");
     const btnSave = document.querySelector("#btnSave");
     const btnDelete = document.querySelector("#btnDelete");
     const nombreMazo = document.querySelector("#nombreMazo");
@@ -19,104 +20,128 @@ document.addEventListener("DOMContentLoaded", () => {
     let cartasFiltradas = [];
     let zonaSeleccionada = "mainExtra";
     const mazo = { main: [], extra: [], side: [] };
-
     let paginaActual = 1;
     const cartasPorPagina = 180;
 
-    async function cargarMazoSiExiste() {
+    let cartasMazoInfo = {};
+    let _actualizandoInfoMazo = false;
+
+    async function cargarMazoExistente() {
         if (!ID_MAZO) return;
-
         try {
-            const response = await fetch(`/MazoAPI/${ID_MAZO}`);
-            if (!response.ok) throw new Error("No se pudo cargar el mazo");
-
-            const data = await response.json();
-
-            nombreMazo.value = data.nombre || "";
-            estadoSelect.value = data.estado || "publico";
+            const resp = await fetch(`/MazoAPI/${ID_MAZO}`);
+            if (!resp.ok) throw new Error();
+            const data = await resp.json();
 
             mazo.main = data.mainDeck?.cartas || [];
             mazo.extra = data.extraDeck?.cartas || [];
             mazo.side = data.sideDeck?.cartas || [];
 
-            const ids = [...mazo.main, ...mazo.extra, ...mazo.side].map(c => c.idKonami);
+            nombreMazo.value = data.nombre || "";
+            estadoSelect.value = data.estado || "publico";
+            cartaDestacada.value = data.imagenCartaDestacada || "/img/cartaDorso.jpg";
+            document.getElementById("cartaDestacadaPreview").src = cartaDestacada.value;
 
-            if (ids.length > 0) {
-                const url = `https://db.ygoprodeck.com/api/v7/cardinfo.php?id=${ids.join(",")}`;
-                const res = await fetch(url);
-                const cartaData = await res.json();
-                cartasFiltradas = cartaData.data;
-            }
-
+            await actualizarInfoMazo();
             mostrarMazo();
-
-            setTimeout(() => {
-                const url = data.imagenCartaDestacada || "/img/cartaDorso.jpg";
-                cartaDestacada.value = url;
-                document.getElementById("cartaDestacadaPreview").src = url;
-            }, 200);
-
-        } catch (error) {
-            console.error("Error al cargar mazo existente:", error);
+        } catch (err) {
+            console.error(err);
         }
     }
 
-    document.querySelector("#btnShort").addEventListener("click", ordenarMazo);
+    btnFavoritos.addEventListener("click", async e => {
+        e.preventDefault();
+        try {
+            const response = await fetch("/UsuarioAPI/cartasFavoritas", { method: "GET", credentials: "include" });
+            if (!response.ok) throw new Error();
+            const idsFavoritas = await response.json();
+            if (idsFavoritas.length === 0) {
+                alert("No tienes cartas favoritas.");
+                return;
+            }
 
-    function ordenarMazo() {
-        if (cartasFiltradas.length === 0) return;
+            const url = `https://db.ygoprodeck.com/api/v7/cardinfo.php?id=${idsFavoritas.join(",")}`;
+            const res = await fetch(url);
+            if (!res.ok) throw new Error();
+            const data = await res.json();
+            cartasFiltradas = data.data;
+            paginaActual = 1;
+            mostrarCartasPaginadas();
+        } catch (error) {
+            alert("Error al cargar cartas favoritas");
+        }
+    });
 
-        const prioridadTipo = {
-            "Normal Monster": 1,
-            "Effect Monster": 1,
-            "Flip Effect Monster": 1,
-            "Tuner Monster": 1,
-            "Ritual Monster": 1,
-            "Fusion Monster": 2,
-            "Synchro Monster": 2,
-            "XYZ Monster": 2,
-            "Link Monster": 2,
-            "Spell Card": 3,
-            "Trap Card": 4
+    function exportDeck() {
+        const nombreMazoVal = nombreMazo.value || 'mi_mazo';
+        const estadoMazoVal = estadoSelect.value;
+        const cartaDestacadaVal = cartaDestacada.value;
+
+        const mapDeck = deck => deck.map(c => {
+            const info = cartasMazoInfo[c.idKonami];
+            return info ? {
+                id: info.id,
+                nombre: info.name,
+                atk: info.atk,
+                def: info.def,
+                nivel: info.level,
+                tipo: info.type,
+                arquetipo: info.archetype,
+                atributo: info.attribute,
+                descripcion: info.desc,
+                imagen: info.card_images[0].image_url
+            } : { id: c.idKonami };
+        });
+
+        const deckData = {
+            nombre: nombreMazoVal,
+            estado: estadoMazoVal,
+            cartaDestacada: cartaDestacadaVal,
+            mainDeck: mapDeck(mazo.main),
+            extraDeck: mapDeck(mazo.extra),
+            sideDeck: mapDeck(mazo.side)
         };
 
-        function obtenerCartaInfo(idKonami) {
-            return cartasFiltradas.find(c => c.id === idKonami);
-        }
+        const blob = new Blob([JSON.stringify(deckData, null, 2)], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${nombreMazoVal}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
 
-        function ordenarZona(arr) {
-            arr.sort((a, b) => {
-                const cartaA = obtenerCartaInfo(a.idKonami);
-                const cartaB = obtenerCartaInfo(b.idKonami);
-                if (!cartaA || !cartaB) return 0;
+    document.getElementById('btnExport').addEventListener('click', exportDeck);
 
-                const tipoA = prioridadTipo[cartaA.type] || 99;
-                const tipoB = prioridadTipo[cartaB.type] || 99;
+    function ordenarMazo() {
+        const prioridadTipo = {
+            "Normal Monster": 1, "Effect Monster": 1, "Flip Effect Monster": 1, "Tuner Monster": 1, "Ritual Monster": 1,
+            "Fusion Monster": 2, "Synchro Monster": 2, "XYZ Monster": 2, "Link Monster": 2, "Pendulum Monster": 2,
+            "Spell Card": 3, "Trap Card": 4
+        };
 
-                if (tipoA !== tipoB) return tipoA - tipoB;
-
-                return cartaA.name.localeCompare(cartaB.name);
-            });
-        }
+        const ordenarZona = arr => arr.sort((a, b) => {
+            const cartaA = cartasMazoInfo[a.idKonami];
+            const cartaB = cartasMazoInfo[b.idKonami];
+            if (!cartaA || !cartaB) return 0;
+            const tipoA = prioridadTipo[cartaA.type] || 99;
+            const tipoB = prioridadTipo[cartaB.type] || 99;
+            if (tipoA !== tipoB) return tipoA - tipoB;
+            return cartaA.name.localeCompare(cartaB.name);
+        });
 
         ordenarZona(mazo.main);
         ordenarZona(mazo.extra);
         ordenarZona(mazo.side);
-
         mostrarMazo();
-
         alert("Cartas ordenadas correctamente.");
     }
 
-    document.querySelector("#btnMainExtra").addEventListener("click", () => {
-        zonaSeleccionada = "mainExtra";
-        actualizarBotones();
-    });
-
-    document.querySelector("#btnSide").addEventListener("click", () => {
-        zonaSeleccionada = "side";
-        actualizarBotones();
-    });
+    document.querySelector("#btnShort").addEventListener("click", ordenarMazo);
+    document.querySelector("#btnMainExtra").addEventListener("click", () => { zonaSeleccionada = "mainExtra"; actualizarBotones(); });
+    document.querySelector("#btnSide").addEventListener("click", () => { zonaSeleccionada = "side"; actualizarBotones(); });
 
     function actualizarBotones() {
         document.querySelectorAll("#zona_mazo .btn").forEach(btn => btn.classList.remove("active-zone"));
@@ -138,20 +163,21 @@ document.addEventListener("DOMContentLoaded", () => {
         const todas = [...mazo.main, ...mazo.extra, ...mazo.side];
         const idsUnicos = [...new Set(todas.map(c => c.idKonami))];
 
-        idsUnicos.forEach(id => {
-            const cartaInfo = cartasFiltradas.find(c => c.id === id);
-            if (!cartaInfo) return;
+        if (idsUnicos.length === 0) return;
 
-            const url = cartaInfo.card_images[0].image_url;
-
-            const img = document.createElement("img");
-            img.src = url;
-            img.dataset.url = url;
-            estiloMiniatura(img);
-
-            img.addEventListener("click", () => seleccionarDestacada(img));
-            cont.appendChild(img);
-        });
+        fetch(`https://db.ygoprodeck.com/api/v7/cardinfo.php?id=${idsUnicos.join(",")}`)
+            .then(res => res.json())
+            .then(data => {
+                (data.data || []).forEach(cartaInfo => {
+                    const img = document.createElement("img");
+                    img.src = cartaInfo.card_images[0].image_url;
+                    img.dataset.url = img.src;
+                    estiloMiniatura(img);
+                    img.addEventListener("click", () => seleccionarDestacada(img));
+                    cont.appendChild(img);
+                });
+            })
+            .catch(() => {});
     }
 
     function estiloMiniatura(img) {
@@ -164,25 +190,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.getElementById("cartaDestacadaPreview").addEventListener("click", () => {
         mostrarSelectorDestacada();
-        const modal = new bootstrap.Modal(document.getElementById("modalDestacada"));
-        modal.show();
+        new bootstrap.Modal(document.getElementById("modalDestacada")).show();
     });
 
     function seleccionarDestacada(img) {
-        const url = img.dataset.url;
-
-        cartaDestacada.value = url;
-        document.getElementById("cartaDestacadaPreview").src = url;
-
-        const modal = bootstrap.Modal.getInstance(document.getElementById("modalDestacada"));
-        modal.hide();
+        cartaDestacada.value = img.dataset.url;
+        document.getElementById("cartaDestacadaPreview").src = img.dataset.url;
+        bootstrap.Modal.getInstance(document.getElementById("modalDestacada")).hide();
     }
 
     filtros.addEventListener("submit", async e => {
         e.preventDefault();
         const formData = new FormData(filtros);
         const params = new URLSearchParams();
-
         let atkMin = null, atkMax = null, defMin = null, defMax = null;
 
         for (const [key, value] of formData.entries()) {
@@ -204,32 +224,21 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-        const url = `https://db.ygoprodeck.com/api/v7/cardinfo.php?${params.toString()}`;
         try {
-            const response = await fetch(url);
-            if (!response.ok) throw new Error("Error al obtener cartas");
-            const data = await response.json();
-            let cartas = data.data;
-
-            cartas = cartas.filter(c => {
-                if (atkMin !== null && c.atk < atkMin) return false;
-                if (atkMax !== null && c.atk > atkMax) return false;
-                if (defMin !== null && c.def < defMin) return false;
-                if (defMax !== null && c.def > defMax) return false;
-                return true;
-            });
-
-            if (cartas.length === 0) {
+            const response = await fetch(`https://db.ygoprodeck.com/api/v7/cardinfo.php?${params.toString()}`);
+            if (!response.ok) throw new Error();
+            let cartas = (await response.json()).data || [];
+            cartas = cartas.filter(c => (atkMin === null || c.atk >= atkMin) && (atkMax === null || c.atk <= atkMax) &&
+                (defMin === null || c.def >= defMin) && (defMax === null || c.def <= defMax));
+            if (!cartas.length) {
                 listaCartas.innerHTML = '<p class="text-center text-muted mt-3">No se encontraron cartas.</p>';
                 document.getElementById("paginacion").innerHTML = "";
                 return;
             }
-
             cartasFiltradas = cartas;
-            paginaActual = 1; // reset página
+            paginaActual = 1;
             mostrarCartasPaginadas();
         } catch (error) {
-            console.error("Error al cargar cartas:", error);
             listaCartas.innerHTML = '<p class="text-center text-danger mt-3">Error al cargar las cartas.</p>';
             document.getElementById("paginacion").innerHTML = "";
         }
@@ -237,29 +246,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function mostrarCartasPaginadas() {
         const inicio = (paginaActual - 1) * cartasPorPagina;
-        const fin = inicio + cartasPorPagina;
-        const cartasAMostrar = cartasFiltradas.slice(inicio, fin);
-        mostrarCartas(cartasAMostrar);
+        const visibles = cartasFiltradas.slice(inicio, inicio + cartasPorPagina);
+        mostrarCartas(visibles);
         renderizarPaginacion();
     }
 
     function mostrarCartas(cartas) {
         listaCartas.className = "row row-cols-6 g-2";
         listaCartas.innerHTML = "";
-
         cartas.forEach(carta => {
             const col = document.createElement("div");
             col.classList.add("col", "d-flex", "justify-content-center");
             col.innerHTML = `
                 <div class="card border-0 text-center w-100" style="background:transparent;">
                     <div style="height:240px; width:100%;">
-                        <img src="${carta.card_images[0].image_url}"
-                             alt="${carta.name}"
-                             style="width:100%; height:100%; object-fit:contain; cursor:pointer;">
+                        <img src="${carta.card_images[0].image_url}" alt="${carta.name}" style="width:100%; height:100%; object-fit:contain; cursor:pointer;">
                     </div>
                 </div>
             `;
-
             col.querySelector("img").addEventListener("click", () => agregarCartaAlMazo(carta, zonaSeleccionada));
             listaCartas.appendChild(col);
         });
@@ -268,7 +272,6 @@ document.addEventListener("DOMContentLoaded", () => {
     function renderizarPaginacion() {
         const cont = document.getElementById("paginacion");
         cont.innerHTML = "";
-
         const totalPaginas = Math.ceil(cartasFiltradas.length / cartasPorPagina);
         if (totalPaginas <= 1) return;
 
@@ -276,30 +279,19 @@ document.addEventListener("DOMContentLoaded", () => {
         btnPrev.className = "btn btn-secondary mx-1";
         btnPrev.textContent = "« Prev";
         btnPrev.disabled = paginaActual === 1;
-        btnPrev.onclick = () => {
-            paginaActual--;
-            mostrarCartasPaginadas();
-        };
+        btnPrev.onclick = () => { paginaActual--; mostrarCartasPaginadas(); };
         cont.appendChild(btnPrev);
 
-        // Mostrar máximo 4 páginas alrededor de la actual
         const maxPaginasMostradas = 4;
         let inicio = Math.max(1, paginaActual - Math.floor(maxPaginasMostradas / 2));
         let fin = inicio + maxPaginasMostradas - 1;
-
-        if (fin > totalPaginas) {
-            fin = totalPaginas;
-            inicio = Math.max(1, fin - maxPaginasMostradas + 1);
-        }
+        if (fin > totalPaginas) { fin = totalPaginas; inicio = Math.max(1, fin - maxPaginasMostradas + 1); }
 
         for (let i = inicio; i <= fin; i++) {
             const btn = document.createElement("button");
             btn.className = `btn mx-1 ${i === paginaActual ? "btn-primary" : "btn-outline-primary"}`;
             btn.textContent = i;
-            btn.onclick = () => {
-                paginaActual = i;
-                mostrarCartasPaginadas();
-            };
+            btn.onclick = () => { paginaActual = i; mostrarCartasPaginadas(); };
             cont.appendChild(btn);
         }
 
@@ -307,125 +299,85 @@ document.addEventListener("DOMContentLoaded", () => {
         btnNext.className = "btn btn-secondary mx-1";
         btnNext.textContent = "Next »";
         btnNext.disabled = paginaActual === totalPaginas;
-        btnNext.onclick = () => {
-            paginaActual++;
-            mostrarCartasPaginadas();
-        };
+        btnNext.onclick = () => { paginaActual++; mostrarCartasPaginadas(); };
         cont.appendChild(btnNext);
     }
 
-    function agregarCartaAlMazo(carta, zona) {
+    async function agregarCartaAlMazo(carta, zona) {
         const idKonami = carta.id;
-        const totalCopias = [...mazo.main, ...mazo.extra, ...mazo.side]
-            .filter(c => c.idKonami === idKonami).length;
-
-        if (totalCopias >= 3) {
-            alert("No puedes tener más de 3 copias de la misma carta en tu mazo.");
-            return;
-        }
+        const totalCopias = [...mazo.main, ...mazo.extra, ...mazo.side].filter(c => c.idKonami === idKonami).length;
+        if (totalCopias >= 3) { alert("No puedes tener más de 3 copias de la misma carta en tu mazo."); return; }
 
         if (zona === "side") {
-            if (mazo.side.length >= 15) {
-                alert("Side Deck no puede tener más de 15 cartas.");
-                return;
-            }
+            if (mazo.side.length >= 15) { alert("Side Deck no puede tener más de 15 cartas."); return; }
             mazo.side.push({ idKonami });
-        } else if (zona === "mainExtra") {
+        } else {
             const tiposExtra = ["Fusion Monster", "Synchro Monster", "XYZ Monster", "Link Monster", "Pendulum Monster"];
             if (tiposExtra.includes(carta.type)) {
-                if (mazo.extra.length >= 15) {
-                    alert("Extra Deck no puede tener más de 15 cartas.");
-                    return;
-                }
+                if (mazo.extra.length >= 15) { alert("Extra Deck no puede tener más de 15 cartas."); return; }
                 mazo.extra.push({ idKonami });
             } else {
-                if (mazo.main.length >= 60) {
-                    alert("Main Deck no puede tener más de 60 cartas.");
-                    return;
-                }
+                if (mazo.main.length >= 60) { alert("Main Deck no puede tener más de 60 cartas."); return; }
                 mazo.main.push({ idKonami });
             }
         }
 
+        await actualizarInfoMazo();
         mostrarMazo();
+    }
+
+    async function actualizarInfoMazo() {
+        if (_actualizandoInfoMazo) return;
+        _actualizandoInfoMazo = true;
+        try {
+            const idsKonami = [...new Set([...mazo.main, ...mazo.extra, ...mazo.side].map(c => c.idKonami))];
+            if (!idsKonami.length) { cartasMazoInfo = {}; return; }
+
+            const url = `https://db.ygoprodeck.com/api/v7/cardinfo.php?id=${idsKonami.join(",")}`;
+            const resp = await fetch(url);
+            if (!resp.ok) throw new Error();
+            const data = await resp.json();
+
+            cartasMazoInfo = {};
+            (data.data || []).forEach(c => { cartasMazoInfo[c.id] = c; });
+        } catch (err) {
+            console.error(err);
+        } finally {
+            _actualizandoInfoMazo = false;
+        }
     }
 
     function renderZona(container, cartas, zona) {
         const row = container.querySelector(".row");
         row.innerHTML = "";
-
         cartas.forEach((carta, index) => {
-            const cartaInfo = cartasFiltradas.find(c => c.id === carta.idKonami);
-            const imgSrc = cartaInfo ? cartaInfo.card_images[0].image_url : "";
+            const cartaInfo = cartasMazoInfo[carta.idKonami];
+            const imgSrc = cartaInfo ? cartaInfo.card_images[0].image_url : "img/noimage.jpg";
             const name = cartaInfo ? cartaInfo.name : `Carta ${carta.idKonami}`;
 
             const col = document.createElement("div");
             col.classList.add("col", "d-flex", "justify-content-center");
             col.innerHTML = `
-            <div class="card border-0 text-center w-100" style="background:transparent;">
-                <div style="height:120px; width:100%;">
-                    <img src="${imgSrc}" alt="${name}" style="width:100%; height:100%; object-fit:contain;">
+                <div class="card border-0 text-center w-100" style="background:transparent;">
+                    <div style="height:120px; width:100%;">
+                        <img src="${imgSrc}" alt="${name}" style="width:100%; height:100%; object-fit:contain;">
+                    </div>
+                    <div class="card-body p-0 d-flex justify-content-start">
+                        <button class="btn btn-sm btn-primary ver-carta" data-index="${index}" style="font-size:0.9rem; border-radius:0;">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger quitar-carta" data-zona="${zona}" data-index="${index}" style="font-size:0.9rem; border-radius:0;">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
                 </div>
-                <div class="card-body p-0 d-flex justify-content-start">
-                    <button class="btn btn-sm btn-primary ver-carta" data-index="${index}" style="font-size:0.9rem; border-radius:0;">
-                        <i class="bi bi-eye"></i>
-                    </button>
-
-                    <button class="btn btn-sm btn-danger quitar-carta" data-zona="${zona}" data-index="${index}" style="font-size:0.9rem; border-radius:0; margin-left:0;">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                </div>
-            </div>
             `;
             row.appendChild(col);
-        });
 
-        container.querySelectorAll(".quitar-carta").forEach(boton => {
-            boton.addEventListener("click", e => {
-                const zona = e.target.closest("button").dataset.zona;
-                const index = e.target.closest("button").dataset.index;
-                mazo[zona].splice(index, 1);
+            col.querySelector(".ver-carta").addEventListener("click", () => mostrarCartaModal(cartaInfo));
+            col.querySelector(".quitar-carta").addEventListener("click", () => {
+                mazo[zona] = mazo[zona].filter((_, i) => i !== index);
                 mostrarMazo();
-            });
-        });
-
-        container.querySelectorAll(".ver-carta").forEach(boton => {
-            boton.addEventListener("click", e => {
-                const index = e.target.closest("button").dataset.index;
-                const carta = cartas[index];
-                const cartaInfo = cartasFiltradas.find(c => c.id === carta.idKonami);
-                if (cartaInfo) {
-                    const tituloModal = document.getElementById("modalCartaLabel");
-                    tituloModal.textContent = cartaInfo.name;
-                    tituloModal.classList.add("text-white");
-                    document.getElementById("imgCartaModal").src = cartaInfo.card_images[0].image_url;
-
-                    const infoDiv = document.getElementById("infoCartaModal");
-                    let htmlInfo = `
-                        <p><strong>Tipo de carta:</strong> ${cartaInfo.type || "N/A"}</p>
-                        <p><strong>Arquetipo:</strong> ${cartaInfo.archetype || "N/A"}</p>
-                    `;
-
-                    if (cartaInfo.type.includes("Monster")) {
-                        htmlInfo += `
-                            <p><strong>Ataque:</strong> ${cartaInfo.atk !== undefined ? cartaInfo.atk : "N/A"}</p>
-                            <p><strong>Defensa:</strong> ${cartaInfo.def !== undefined ? cartaInfo.def : "N/A"}</p>
-                            <p><strong>Nivel:</strong> ${cartaInfo.level !== undefined ? cartaInfo.level : "N/A"}</p>
-                            <p><strong>Atributo:</strong> ${cartaInfo.attribute || "N/A"}</p>
-                            <p><strong>Raza:</strong> ${cartaInfo.race || "N/A"}</p>
-                            <p><strong>Descripción:</strong> ${cartaInfo.desc || "N/A"}</p>
-                        `;
-                    } else {
-                        htmlInfo += `
-                            <p><strong>Descripción:</strong> ${cartaInfo.desc || "N/A"}</p>
-                        `;
-                    }
-
-                    infoDiv.innerHTML = htmlInfo;
-
-                    const modal = new bootstrap.Modal(document.getElementById("modalCarta"));
-                    modal.show();
-                }
             });
         });
     }
@@ -436,80 +388,60 @@ document.addEventListener("DOMContentLoaded", () => {
         renderZona(sideDeck, mazo.side, "side");
     }
 
-    btnSave.addEventListener("click", async () => {
+    function mostrarCartaModal(cartaInfo) {
+        if (!cartaInfo) return;
+        const modalImg = document.getElementById("imgCartaModal");
+        const modalInfo = document.getElementById("infoCartaModal");
+        modalImg.src = cartaInfo.card_images[0].image_url;
+        modalInfo.innerHTML = `
+            <p><strong>${cartaInfo.name}</strong></p>
+            <p>Type: ${cartaInfo.type}</p>
+            <p>ATK/${cartaInfo.atk} DEF/${cartaInfo.def}</p>
+            <p>${cartaInfo.desc}</p>
+        `;
+        new bootstrap.Modal(document.getElementById("modalCarta")).show();
+    }
+
+    async function guardarMazo() {
         const payload = {
             nombre: nombreMazo.value,
-            estado: estadoSelect.value || "publico",
+            estado: estadoSelect.value,
+            imagenCartaDestacada: cartaDestacada.value,
             mainDeck: { cartas: mazo.main },
             extraDeck: { cartas: mazo.extra },
-            sideDeck: { cartas: mazo.side },
-            imagenCartaDestacada: cartaDestacada.value
+            sideDeck: { cartas: mazo.side }
         };
 
-        try {
-            let response;
+        const options = {
+            method: ID_MAZO ? "PUT" : "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        };
 
-            if (!ID_MAZO) {
-                response = await fetch("/MazoAPI", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(payload)
-                });
+        const url = ID_MAZO ? `/MazoAPI/${ID_MAZO}` : `/MazoAPI`;
 
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`Error al crear el mazo: ${errorText}`);
-                }
-
-            } else {
-                response = await fetch(`/MazoAPI/${ID_MAZO}`, {
-                    method: "PUT",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(payload)
-                });
-
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`Error al actualizar el mazo: ${errorText}`);
-                }
-            }
-
-            window.location.href = "/user/misMazos";
-
-        } catch (error) {
-            console.error("Error al guardar mazo:", error);
-            alert(error.message);
-        }
-    });
-
-    btnDelete.addEventListener("click", async () => {
-        if (!ID_MAZO) {
-            window.location.href = "/user/misMazos";
+        const resp = await fetch(url, options);
+        if (!resp.ok) {
+            alert("Error guardando el mazo");
             return;
         }
 
-        if (confirm("¿Seguro que quieres eliminar este mazo?")) {
-            try {
-                const response = await fetch(`/MazoAPI/${ID_MAZO}`, { method: "DELETE" });
+        const data = await resp.json();
+        alert("Mazo guardado correctamente");
 
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`Error al eliminar el mazo: ${errorText}`);
-                }
-
-                Object.keys(mazo).forEach(k => mazo[k] = []);
-                mostrarMazo();
-                nombreMazo.value = "";
-
-                window.location.href = "/user/misMazos";
-
-            } catch (error) {
-                console.error(error);
-                alert(error.message);
-            }
+        if (!ID_MAZO) {
+            window.location.href = `/user/constructorMazos/${data.id}`;
         }
+    }
+
+    btnSave.addEventListener("click", guardarMazo);
+
+    btnDelete.addEventListener("click", () => {
+        if (!confirm("¿Estás seguro que deseas eliminar el mazo?")) return;
+        if (!ID_MAZO) { alert("No hay mazo para eliminar"); return; }
+        fetch(`/MazoAPI/${ID_MAZO}`, { method: "DELETE" })
+            .then(r => { if (r.ok) { alert("Mazo eliminado"); window.location.href = "/constructorMazos"; } });
     });
 
-    actualizarBotones();
-    cargarMazoSiExiste();
+    cargarMazoExistente();
 });

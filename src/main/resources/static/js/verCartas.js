@@ -156,7 +156,11 @@ function mostrarCartas(cartas, listaCartas) {
         const col = document.createElement("div");
         col.classList.add("col", "d-flex", "justify-content-center");
 
-        const idKonami = carta.misc_info?.[0]?.konami_id ?? "Unknown";
+        // ✔ FIX FINAL: idKonami siempre existe
+        const idKonami =
+            carta.konami_id ??
+            carta.misc_info?.[0]?.konami_id ??
+            carta.id;
 
         col.innerHTML = `
             <div class="card border-0 text-center w-100" style="background:transparent;">
@@ -176,6 +180,7 @@ function mostrarCartas(cartas, listaCartas) {
     });
 }
 
+
 async function mostrarDetallesCarta(id, idKonami, zonaDetalles) {
     try {
         const response = await fetch(`https://db.ygoprodeck.com/api/v7/cardinfo.php?id=${id}`);
@@ -184,62 +189,122 @@ async function mostrarDetallesCarta(id, idKonami, zonaDetalles) {
         const data = await response.json();
         const carta = data.data[0];
 
+        // Datos seguros
+        const precios = carta.card_prices?.[0] ?? {};
+        const sets = carta.card_sets ?? [];
+
+        // Función auxiliar para mostrar solo precio válido
+        const mostrarPrecio = (titulo, valor) =>
+            valor && valor !== "0.00"
+                ? `<p class="mb-1"><strong>${titulo}:</strong> ${valor} €</p>`
+                : "";
+
         let html = `
-        <div class="card mb-3 border-0" style="max-width: 700px;">
-          <!-- Título -->
-          <div class="card-header bg-transparent border-0">
-            <h4 class="card-title mb-0 text-center">${carta.name}</h4>
+        <div class="card shadow-lg mb-4 border-0" style="max-width: 900px;">
+          <div class="card-header bg-dark text-white text-center py-3 rounded-top">
+            <h4 class="mb-0">${carta.name}</h4>
           </div>
 
-          <div class="card-body">
-            <div class="row g-3">
-              <!-- Imagen -->
-              <div class="col-md-4 d-flex justify-content-center align-self-start">
-                <img src="${carta.card_images[0].image_url}" class="img-fluid rounded" style="object-fit:contain; max-height:240px;">
+          <div class="card-body bg-light">
+
+            <!-- FILA PRINCIPAL -->
+            <div class="row g-4">
+              <div class="col-md-4 text-center">
+                <img src="${carta.card_images[0].image_url}" class="img-fluid rounded shadow" style="max-height:260px; object-fit:contain;">
               </div>
 
-              <!-- Datos -->
               <div class="col-md-8">
-                ${carta.type ? `<p><strong>Tipo:</strong> ${carta.type}</p>` : ''}
-                ${carta.archetype ? `<p><strong>Arquetipo:</strong> ${carta.archetype}</p>` : ''}
-                ${carta.attribute ? `<p><strong>Atributo:</strong> ${carta.attribute}</p>` : ''}
-                ${carta.race ? `<p><strong>Raza / Tipo:</strong> ${carta.race}</p>` : ''}
-                ${carta.level != null ? `<p><strong>Nivel / Link / Rango:</strong> ${carta.level}</p>` : ''}
-                ${(carta.atk != null || carta.def != null) ? `<p><strong>ATK / DEF:</strong> ${carta.atk != null ? carta.atk : ''} / ${carta.def != null ? carta.def : ''}</p>` : ''}
+
+                <h5 class="border-bottom pb-2">Información</h5>
+
+                ${carta.type ? `<p><strong>Tipo:</strong> ${carta.type}</p>` : ""}
+                ${carta.race ? `<p><strong>Tipo de Carta:</strong> ${carta.race}</p>` : ""}
+                ${carta.attribute ? `<p><strong>Atributo:</strong> ${carta.attribute}</p>` : ""}
+                ${carta.level ? `<p><strong>Nivel / Rango:</strong> ${carta.level}</p>` : ""}
+                ${carta.linkval ? `<p><strong>Link:</strong> ${carta.linkval}</p>` : ""}
+                ${(carta.atk != null || carta.def != null)
+            ? `<p><strong>ATK / DEF:</strong> ${carta.atk ?? ""} / ${carta.def ?? ""}</p>`
+            : ""}
+                ${carta.archetype ? `<p><strong>Arquetipo:</strong> ${carta.archetype}</p>` : ""}
               </div>
             </div>
 
-            <!-- Descripción -->
-            ${carta.desc ? `<hr><p class="mt-3"><strong>Descripción:</strong> ${carta.desc}</p>` : ''}
+            <hr>
 
-            <!-- Precios -->
-            ${carta.card_prices && carta.card_prices.length > 0 ? (() => {
-              const p = carta.card_prices[0];
-              let preciosHtml = `<hr><h5 class="mt-2">Precios estimados</h5><div class="d-flex flex-wrap gap-2">`;
+            <!-- DESCRIPCIÓN -->
+            ${carta.desc ? `
+            <h5 class="mt-3">Descripción</h5>
+            <p class="bg-white p-3 rounded shadow-sm">${carta.desc}</p>
+            ` : ""}
 
-              if (parseFloat(p.cardmarket_price) > 0)
-                preciosHtml += `<span class="badge bg-success">Cardmarket: €${p.cardmarket_price}</span>`;
+            <!-- PRECIOS -->
+            <h5 class="mt-4">Precios de mercado</h5>
+            <div class="p-3 bg-white rounded shadow-sm">
+              ${mostrarPrecio("Cardmarket", precios.cardmarket_price)}
+              ${mostrarPrecio("TCGPlayer", precios.tcgplayer_price)}
+              ${mostrarPrecio("eBay", precios.ebay_price)}
+              ${mostrarPrecio("Amazon", precios.amazon_price)}
+            </div>
 
-              if (parseFloat(p.tcgplayer_price) > 0)
-                preciosHtml += `<span class="badge bg-primary">TCGPlayer: $${p.tcgplayer_price}</span>`;
+            <!-- SETS -->
+            ${sets.length > 0 ? `
+            <h5 class="mt-4">Sets disponibles</h5>
+            <ul class="list-group mb-3">
+              ${sets.map(s => `
+                <li class="list-group-item">
+                  <strong>${s.set_name}</strong><br>
+                  Rarity: ${s.set_rarity}<br>
+                  Code: ${s.set_code}
+                </li>
+              `).join("")}
+            </ul>
+            ` : ""}
 
-              if (parseFloat(p.ebay_price) > 0)
-                preciosHtml += `<span class="badge bg-warning text-dark">eBay: $${p.ebay_price}</span>`;
-
-              if (parseFloat(p.amazon_price) > 0)
-                preciosHtml += `<span class="badge bg-info text-dark">Amazon: $${p.amazon_price}</span>`;
-
-              if (parseFloat(p.coolstuffinc_price) > 0)
-                preciosHtml += `<span class="badge bg-secondary">CoolStuffInc: $${p.coolstuffinc_price}</span>`;
-
-              preciosHtml += `</div>`;
-              return preciosHtml;
-            })() : ''}
           </div>
         </div>
         `;
 
         zonaDetalles.innerHTML = html;
+
+        // -------------------------------
+        // FAVORITAS: NO TOCO TU LÓGICA
+        // -------------------------------
+        try {
+            const favResponse = await fetch("/UsuarioAPI/cartasFavoritas");
+            if (!favResponse.ok) throw new Error("Usuario no autenticado");
+
+            const cartasFavoritas = await favResponse.json();
+            const esFavorita = cartasFavoritas.includes(idKonami);
+
+            const favBtn = document.createElement("button");
+            favBtn.className = "btn mt-2";
+
+            if (esFavorita) {
+                favBtn.textContent = "Quitar de favoritas";
+                favBtn.classList.add("btn-danger");
+
+                favBtn.onclick = async () => {
+                    await fetch(`/UsuarioAPI/cartasFavoritas/${idKonami}`, { method: "DELETE" });
+                    favBtn.textContent = "Agregar a favoritas";
+                    favBtn.classList.replace("btn-danger", "btn-success");
+                };
+
+            } else {
+                favBtn.textContent = "Agregar a favoritas";
+                favBtn.classList.add("btn-success");
+
+                favBtn.onclick = async () => {
+                    await fetch(`/UsuarioAPI/cartasFavoritas/${idKonami}`, { method: "POST" });
+                    favBtn.textContent = "Quitar de favoritas";
+                    favBtn.classList.replace("btn-success", "btn-danger");
+                };
+            }
+
+            zonaDetalles.appendChild(favBtn);
+
+        } catch (e) {
+            console.log("Usuario no autenticado, oculto botón de favoritas");
+        }
 
     } catch (error) {
         console.error(error);

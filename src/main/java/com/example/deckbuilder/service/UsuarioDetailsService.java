@@ -2,7 +2,6 @@ package com.example.deckbuilder.service;
 
 import com.example.deckbuilder.domain.Usuario;
 import com.example.deckbuilder.repository.UsuarioRepository;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

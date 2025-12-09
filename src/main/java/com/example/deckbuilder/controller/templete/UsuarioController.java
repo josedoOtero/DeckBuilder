@@ -102,4 +102,11 @@ public class UsuarioController {
 
         return "redirect:/login/home";
     }
+
+    @GetMapping("/favoritas")
+    public String mostrarCartasFavoritas(@AuthenticationPrincipal UserDetails userDetails, Model model, HttpServletRequest request) {
+        Usuario usuario = usuarioService.findByNombre(userDetails.getUsername());
+        model.addAttribute("usuario", usuario);
+        return "ventanasUsuario/mis-favoritas";
+    }
 }

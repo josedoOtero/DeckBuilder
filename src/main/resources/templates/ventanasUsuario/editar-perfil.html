@@ -11,20 +11,22 @@
 <link th:href="@{/css/header.css}" rel="stylesheet">
 
 <div class="container mt-5">
-    <h2>Editar Perfil</h2>
     <div class="row">
 
-        <div class="col-md-4 text-center">
+        <div class="col-md-4 d-flex flex-column align-items-center">
+
             <img id="fotoPerfil"
                  th:src="${usuario.imagenUsuario != null ? usuario.imagenUsuario : '/img/fotoPerfil.png'}"
                  class="img-thumbnail mb-3"
-                 style="width:150px;height:150px;object-fit:contain;"
+                 style="width:250px;height:250px;object-fit:contain;"
                  th:attr="data-usuario-id=${usuario.id}">
 
             <button class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modalSeleccionarCarta">
                 Seleccionar carta como imagen
             </button>
+
         </div>
+
 
         <div class="col-md-8">
             <form th:action="@{/user/perfil}" th:object="${usuario}" method="post">
@@ -43,14 +45,28 @@
                     <textarea th:field="*{descripcion}" class="form-control" rows="3" maxlength="300"></textarea>
                 </div>
 
+                <div class="d-flex gap-2 mb-3">
+                    <a th:href="@{/login/verUser/{id}(id=${usuario.id})}" class="btn btn-primary">
+                        Ver mi perfil
+                    </a>
 
-                <button type="button" class="btn btn-warning mb-3" data-bs-toggle="modal" data-bs-target="#modalPassword">
-                    Cambiar Contraseña
-                </button>
+                    <a th:href="@{/user/favoritas}" class="btn btn-primary">
+                        Cartas Favoritas
+                    </a>
+
+                    <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalPassword">
+                        Cambiar Contraseña
+                    </button>
+                </div>
+
+
                 <br>
                 <button type="submit" class="btn btn-primary">Guardar Cambios</button>
                 <a href="javascript:history.back()" class="btn btn-secondary">Cancelar</a>
             </form>
+
+
+
         </div>
 
     </div>

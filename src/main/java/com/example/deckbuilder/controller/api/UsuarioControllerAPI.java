@@ -3,11 +3,15 @@ package com.example.deckbuilder.controller.api;
 import com.example.deckbuilder.domain.Mazo;
 import com.example.deckbuilder.domain.Usuario;
 import com.example.deckbuilder.service.UsuarioService;
+import com.example.deckbuilder.utility.UsuarioDetails;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -102,6 +106,51 @@ public class UsuarioControllerAPI {
         }
         usuario.setImagenUsuario(url);
         return usuarioService.save(usuario);
+    }
+
+    @GetMapping("/cartasFavoritas")
+    public ResponseEntity<List<Integer>> getCartasFavoritas(@AuthenticationPrincipal UsuarioDetails usuarioDetails) {
+        Usuario usuario = usuarioDetails.getUsuario();
+        Set<Integer> cartasFavoritas = usuario.getCartasFavoritas();
+        if (cartasFavoritas == null) {
+            cartasFavoritas = new HashSet<>();
+        }
+        List<Integer> ids = new ArrayList<>(cartasFavoritas);
+        return ResponseEntity.ok(ids);
+    }
+
+    @PostMapping("/cartasFavoritas/{idKonami}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void addCartaFavorita(
+            @PathVariable Integer idKonami,
+            @AuthenticationPrincipal UsuarioDetails usuarioDetails
+    ) {
+        Usuario usuario = usuarioDetails.getUsuario();
+
+        Set<Integer> favoritas = usuario.getCartasFavoritas();
+        if (favoritas == null) {
+            favoritas = new HashSet<>();
+            usuario.setCartasFavoritas(favoritas);
+        }
+
+        favoritas.add(idKonami);
+        usuarioService.save(usuario);
+    }
+
+    @DeleteMapping("/cartasFavoritas/{idKonami}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void removeCartaFavorita(
+            @PathVariable Integer idKonami,
+            @AuthenticationPrincipal UsuarioDetails usuarioDetails
+    ) {
+        Usuario usuario = usuarioDetails.getUsuario();
+
+        Set<Integer> favoritas = usuario.getCartasFavoritas();
+        if (favoritas != null) {
+            favoritas.remove(idKonami);
+        }
+
+        usuarioService.save(usuario);
     }
 }
 

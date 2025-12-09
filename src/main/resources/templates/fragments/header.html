@@ -1,88 +1,117 @@
-<header xmlns:sec="http://www.thymeleaf.org/extras/spring-security" xmlns:th="http://www.thymeleaf.org">
+<header xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+        xmlns:th="http://www.thymeleaf.org">
+
     <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm mb-0">
         <div class="container">
+
             <a class="navbar-brand fw-bold" th:href="@{/login/home}">DeckBuilder</a>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
-                    aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarContent">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
             <div class="collapse navbar-collapse" id="navbarContent">
+
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
                     <li class="nav-item">
-                        <a class="nav-link position-relative"
-                           th:href="@{/login/home}"
-                           th:classappend="${currentUri != null and currentUri.endsWith('/login/home')} ? ' active-link' : ''">
+                        <a class="nav-link"
+                           th:classappend="${currentUri != null && currentUri == '/login/home'} ? ' active-link' : ''"
+                           th:href="@{/login/home}">
                             Home
                         </a>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link position-relative"
-                           th:href="@{/login/cartas}"
-                           th:classappend="${currentUri != null and currentUri.endsWith('/login/cartas')} ? ' active-link' : ''">
+                        <a class="nav-link"
+                           th:classappend="${currentUri != null && currentUri.startsWith('/login/cartas')} ? ' active-link' : ''"
+                           th:href="@{/login/cartas}">
                             Cartas
                         </a>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link position-relative"
-                           th:href="@{/login/mazos}"
-                           th:classappend="${currentUri != null and currentUri.endsWith('/user/mazos')} ? ' active-link' : ''">
+                        <a class="nav-link"
+                           th:classappend="${currentUri != null && currentUri.startsWith('/login/mazos')} ? ' active-link' : ''"
+                           th:href="@{/login/mazos}">
                             Mazos
                         </a>
                     </li>
 
-                    <li class="nav-item" sec:authorize="isAuthenticated()">
-                        <a class="nav-link position-relative"
-                           th:href="@{/user/misMazos}"
-                           th:classappend="${currentUri != null and currentUri.endsWith('/user/misMazos')} ? ' active-link' : ''">
+                    <li class="nav-item" sec:authorize="hasAnyRole('USER','ADMIN')">
+                        <a class="nav-link"
+                           th:classappend="${currentUri != null && currentUri.startsWith('/user/misMazos')} ? ' active-link' : ''"
+                           th:href="@{/user/misMazos}">
                             Mis Mazos
                         </a>
                     </li>
 
-                    <li class="nav-item" sec:authorize="isAuthenticated()">
-                        <a class="nav-link position-relative"
-                           th:href="@{/user/constructorMazos}"
-                           th:classappend="${currentUri != null and currentUri.startsWith('/user/constructorMazos')} ? ' active-link' : ''">
+                    <li class="nav-item" sec:authorize="hasAnyRole('USER','ADMIN')">
+                        <a class="nav-link"
+                           th:classappend="${currentUri != null && currentUri.startsWith('/user/constructorMazos')} ? ' active-link' : ''"
+                           th:href="@{/user/constructorMazos}">
                             Constructor de Mazos
                         </a>
                     </li>
 
-
                     <li class="nav-item" sec:authorize="hasRole('ADMIN')">
-                        <a class="nav-link admin-link text-danger fw-bold position-relative"
-                           th:href="@{/admin/panel}"
-                           th:classappend="${currentUri != null and currentUri.startsWith('/admin/panel')} ? ' active-link' : ''">
+                        <a class="nav-link text-danger fw-bold"
+                           th:classappend="${currentUri != null && currentUri.startsWith('/admin/panel')} ? ' active-link' : ''"
+                           th:href="@{/admin/panel}">
                             Panel Admin
                         </a>
                     </li>
+
                 </ul>
 
                 <div class="d-flex align-items-center">
 
-                    <!-- Usuario autenticado -->
-                    <div sec:authorize="isAuthenticated()" class="d-flex align-items-center gap-2">
-                        <span class="fw-semibold text-dark">Bienvenido, <b sec:authentication="name"></b></span>
+                    <div sec:authorize="isAuthenticated()" class="dropdown">
 
-                        <a th:href="@{/user/perfil}" class="btn btn-sm btn-outline-primary ms-2">Perfil</a>
+                        <a class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle"
+                           href="#" id="dropdownUser" data-bs-toggle="dropdown">
 
-                        <form th:action="@{/logout}" method="post" class="d-inline ms-1">
-                            <button type="submit" class="btn btn-sm btn-outline-danger">Cerrar sesión</button>
-                        </form>
+                            <img th:src="${usuarioLogueado != null && usuarioLogueado.imagenUsuario != null ?
+                                         usuarioLogueado.imagenUsuario : '/img/fotoPerfil.png'}"
+                                 class="rounded-circle me-2"
+                                 style="width: 50px; height: 50px; object-fit: cover;">
+
+                            <span class="fw-semibold" sec:authentication="name"></span>
+                        </a>
+
+                        <ul class="dropdown-menu dropdown-menu-end shadow">
+                            <li>
+                                <a class="dropdown-item" th:href="@{/user/perfil}">
+                                    Mi Perfil
+                                </a>
+                            </li>
+
+                            <li><hr class="dropdown-divider"></li>
+
+                            <li>
+                                <form th:action="@{/logout}" method="post">
+                                    <button class="dropdown-item text-danger">
+                                        Cerrar sesión
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
                     </div>
 
-                    <!-- Usuario no autenticado -->
                     <div sec:authorize="isAnonymous()">
-                        <a th:href="@{/login/iniciarSesion}" class="btn btn-sm btn-primary me-2">Login</a>
-                        <a th:href="@{/login/crearCuenta}" class="btn btn-sm btn-success">Crear Cuenta</a>
+                        <a th:href="@{/login/iniciarSesion}" class="btn btn-sm btn-primary me-2">
+                            Login
+                        </a>
+                        <a th:href="@{/login/crearCuenta}" class="btn btn-sm btn-success">
+                            Crear Cuenta
+                        </a>
                     </div>
 
                 </div>
+
             </div>
         </div>
     </nav>
-</header>
 
+</header>
