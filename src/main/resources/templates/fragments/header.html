@@ -56,7 +56,7 @@
                     </li>
 
                     <li class="nav-item" sec:authorize="hasRole('ADMIN')">
-                        <a class="nav-link text-danger fw-bold"
+                        <a class="nav-link text-danger admin-link fw-bold"
                            th:classappend="${currentUri != null && currentUri.startsWith('/admin/panel')} ? ' active-link' : ''"
                            th:href="@{/admin/panel}">
                             Panel Admin
@@ -90,6 +90,14 @@
                             <li><hr class="dropdown-divider"></li>
 
                             <li>
+                                <a class="dropdown-item" th:href="@{/user/favoritas}">
+                                    Cartas Favoritas
+                                </a>
+                            </li>
+
+                            <li><hr class="dropdown-divider"></li>
+
+                            <li>
                                 <form th:action="@{/logout}" method="post">
                                     <button class="dropdown-item text-danger">
                                         Cerrar sesión
@@ -97,15 +105,6 @@
                                 </form>
                             </li>
                         </ul>
-                    </div>
-
-                    <div sec:authorize="isAnonymous()">
-                        <a th:href="@{/login/iniciarSesion}" class="btn btn-sm btn-primary me-2">
-                            Login
-                        </a>
-                        <a th:href="@{/login/crearCuenta}" class="btn btn-sm btn-success">
-                            Crear Cuenta
-                        </a>
                     </div>
 
                 </div>

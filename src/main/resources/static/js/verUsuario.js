@@ -1,35 +1,32 @@
+// @ts-nocheck
+// ...existing code...
 document.addEventListener("DOMContentLoaded", () => {
     console.log("JS verUsuario.js cargado!");
-
     if (!window.ID_USUARIO) {
         console.error("ERROR: No se recibió el ID de usuario.");
         return;
     }
-
     cargarDatosUsuario(window.ID_USUARIO);
     cargarMazosPublicos(window.ID_USUARIO);
 });
-
-
 // ====================
 //      DATOS USUARIO
 // ====================
 function cargarDatosUsuario(idUsuario) {
     fetch(`/UsuarioAPI/${idUsuario}`)
         .then(r => {
-            if (!r.ok) throw new Error("Error al obtener datos del usuario");
-            return r.json();
-        })
+        if (!r.ok)
+            throw new Error("Error al obtener datos del usuario");
+        return r.json();
+    })
         .then(usuario => {
-            const zona = document.querySelector("#zona_usuario .text-muted");
-
-            const imagen = usuario.imagenUsuario?.trim()
-                ? usuario.imagenUsuario
-                : "/img/fotoPerfil.png";
-
-            const esAdmin = usuario.rol === "ROLE_ADMIN" ? " (Admin)" : "";
-
-            zona.innerHTML = `
+        var _a;
+        const zona = document.querySelector("#zona_usuario .text-muted");
+        const imagen = ((_a = usuario.imagenUsuario) === null || _a === void 0 ? void 0 : _a.trim())
+            ? usuario.imagenUsuario
+            : "/img/fotoPerfil.png";
+        const esAdmin = usuario.rol === "ROLE_ADMIN" ? " (Admin)" : "";
+        zona.innerHTML = `
                 <div style="
                     display: flex;
                     align-items: center;
@@ -62,57 +59,48 @@ function cargarDatosUsuario(idUsuario) {
                         <strong>Descripción:</strong><br>
                         <span style="color: #444;">
                             ${usuario.descripcion && usuario.descripcion.trim() !== ""
-                                ? usuario.descripcion
-                                : "<em>Este usuario no ha añadido una descripción.</em>"}
+            ? usuario.descripcion
+            : "<em>Este usuario no ha añadido una descripción.</em>"}
                         </span>
                     </p>
                 </div>
             `;
-        })
+    })
         .catch(err => console.error("Error cargando datos del usuario:", err));
 }
-
-
-
-
 // ==============================
 //      MAZOS PÚBLICOS
 // ==============================
 function cargarMazosPublicos(idUsuario) {
     fetch(`/MazoAPI/publicos/${idUsuario}`)
         .then(r => {
-            if (!r.ok) throw new Error("Error al cargar los mazos públicos");
-            return r.json();
-        })
+        if (!r.ok)
+            throw new Error("Error al cargar los mazos públicos");
+        return r.json();
+    })
         .then(mazos => {
-            const contenedor = document.getElementById("lista_mazos");
-            contenedor.innerHTML = "";
-
-            if (mazos.length === 0) {
-                contenedor.innerHTML = `
+        const contenedor = document.getElementById("lista_mazos");
+        contenedor.innerHTML = "";
+        if (mazos.length === 0) {
+            contenedor.innerHTML = `
                     <p class="text-muted text-center">
                         Este usuario no tiene mazos públicos.
                     </p>`;
-                return;
-            }
-
-            mazos.forEach(mazo => {
-
-                const imagen = mazo.imagenCartaDestacada || "/img/cartaDorso.jpg";
-
-                const div = document.createElement("div");
-                div.classList.add("mazo-card");
-
-                div.innerHTML = `
+            return;
+        }
+        mazos.forEach(mazo => {
+            const imagen = mazo.imagenCartaDestacada || "/img/cartaDorso.jpg";
+            const div = document.createElement("div");
+            div.classList.add("mazo-card");
+            div.innerHTML = `
                     <h5>${mazo.nombre || "Mazo sin título"}</h5>
 
                     <a href="/user/visualizadorMazos/${mazo.id}">
                         <img src="${imagen}" alt="Mazo ${mazo.id}" class="mazo-img">
                     </a>
                 `;
-
-                contenedor.appendChild(div);
-            });
-        })
+            contenedor.appendChild(div);
+        });
+    })
         .catch(err => console.error("Error cargando mazos públicos:", err));
 }

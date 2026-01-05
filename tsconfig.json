@@ -1,0 +1,3 @@
+{
+  "note": "El proyecto ya no utiliza TypeScript en los recursos estáticos. Este archivo tsconfig.json se ha dejado intencionalmente en blanco para evitar compilaciones de TS. Si necesitas restaurar TS, recrea este archivo con las opciones necesarias."
+}

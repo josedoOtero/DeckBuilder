@@ -5,84 +5,76 @@
     <title>Iniciar sesión</title>
 
     <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/css/form_login.css}" rel="stylesheet">
 
-    <style>
-        body {
-            background: #f5f6fa;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: "Segoe UI", Roboto, sans-serif;
-        }
-
-        .login-card {
-            width: 360px;
-            padding: 30px;
-            border-radius: 12px;
-            background: #ffffff;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        }
-
-        .login-title {
-            text-align: center;
-            margin-bottom: 25px;
-            font-size: 1.8rem;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .form-control {
-            border-radius: 8px;
-        }
-
-        .btn-primary {
-            width: 100%;
-            border-radius: 8px;
-            padding: 10px;
-            font-size: 1rem;
-        }
-
-        .alert-msg {
-            text-align: center;
-            margin-top: 15px;
-            font-size: 0.9rem;
-            color: #e74c3c;
-        }
-
-        .logout-msg {
-            text-align: center;
-            margin-top: 15px;
-            font-size: 0.9rem;
-            color: #27ae60;
-        }
-    </style>
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 
 <body>
 
-<div class="login-card">
-    <h2 class="login-title">Iniciar sesión</h2>
+<div class="bg-slideshow">
+    <div class="slide slide1"></div>
+    <div class="slide slide2"></div>
+    <div class="slide slide3"></div>
+    <div class="slide slide4"></div>
+</div>
 
-    <form th:action="@{/login}" method="post">
+<div class="bg-dark-layer"></div>
 
-        <div class="mb-3">
-            <label for="username" class="form-label">Usuario</label>
-            <input type="text" id="username" name="username" class="form-control" required />
+<div class="center-container">
+    <div class="auth-card">
+
+        <h2 class="auth-title">Iniciar sesión</h2>
+
+        <form th:action="@{/login}" method="post">
+
+            <div class="form-row">
+                <label>Usuario</label>
+                <input type="text" name="username" class="form-control" required>
+            </div>
+
+            <div class="form-row">
+                <label>Contraseña</label>
+                <input type="password" name="password" class="form-control" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary mt-2 w-100">
+                Entrar
+            </button>
+        </form>
+
+        <p th:if="${param.error}" class="msg-error">
+            Usuario o contraseña incorrectos
+        </p>
+
+        <p th:if="${param.logout}" class="msg-success">
+            Has cerrado sesión correctamente
+        </p>
+
+        <!-- TEXTO CONTEXTUAL -->
+        <p class="text-center text-light small mt-4 mb-2 opacity-75">
+            ¿No tienes cuenta todavía?
+        </p>
+
+        <!-- LINKS MEJORADOS -->
+        <div class="d-flex justify-content-between align-items-center mt-2">
+
+            <a th:href="@{/}" class="text-light text-decoration-none small d-flex align-items-center gap-1 opacity-75">
+                <i class="bi bi-arrow-left"></i>
+                Inicio
+            </a>
+
+            <a th:href="@{/login/crearCuenta}" class="text-white fw-semibold text-decoration-none">
+                Crear cuenta
+            </a>
+
         </div>
 
-        <div class="mb-3">
-            <label for="password" class="form-label">Contraseña</label>
-            <input type="password" id="password" name="password" class="form-control" required />
-        </div>
-
-        <button type="submit" class="btn btn-primary">Entrar</button>
-    </form>
-
-    <p th:if="${param.error}" class="alert-msg">Usuario o contraseña incorrectos</p>
-    <p th:if="${param.logout}" class="logout-msg">Has cerrado sesión correctamente</p>
+    </div>
 </div>
 
 <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+
 </body>
 </html>

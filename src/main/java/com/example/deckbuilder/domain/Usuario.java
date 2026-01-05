@@ -63,4 +63,8 @@ public class Usuario {
     @Size(max = 300, message = "La descripción no puede tener más de 300 caracteres")
     private String descripcion;
 
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private Set<Comentario> comentarios = new HashSet<>();
+
 }

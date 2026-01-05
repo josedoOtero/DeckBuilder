@@ -19,9 +19,11 @@ public class GlobalControllerAdvice {
     @ModelAttribute("usuarioLogueado")
     public Usuario agregarUsuarioLogueado(Principal principal) {
         if (principal != null) {
-            return usuarioService.findByNombre(principal.getName());
+            Usuario usuario = usuarioService.findByNombre(principal.getName());
+            if (usuario != null) {
+                return usuario;
+            }
         }
         return null;
     }
 }
-

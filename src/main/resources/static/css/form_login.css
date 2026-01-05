@@ -1,0 +1,203 @@
+/* ============================ */
+/* BACKGROUND CAROUSEL CROSSFADE CON MOVIMIENTO */
+/* ============================ */
+
+body {
+    height: 100vh;
+    margin: 0;
+    overflow: hidden;
+    font-family: "Segoe UI", Roboto, sans-serif;
+}
+
+/* ============================ */
+/* CONTENEDOR SLIDESHOW */
+.bg-slideshow {
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    overflow: hidden;
+    background: #000; /* evita cualquier flash blanco */
+}
+
+/* ============================ */
+/* SLIDE BASE */
+.slide {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0;
+    transform: scale(1.05) translate(0, 0);
+    animation: slideFade 96s ease-in-out infinite;
+    will-change: opacity, transform;
+}
+
+/* ============================ */
+/* IMÁGENES + DELAYS */
+.slide1 {
+    background-image: url('/img/fondo/fondo1.jpg');
+    animation-delay: 0s;
+    z-index: 4;
+    opacity: 1; /* visible desde el primer frame */
+}
+
+.slide2 {
+    background-image: url('/img/fondo/fondo4.jpg');
+    animation-delay: 24s;
+    z-index: 3;
+}
+
+.slide3 {
+    background-image: url('/img/fondo/fondo5.jpg');
+    animation-delay: 48s;
+    z-index: 2;
+}
+
+.slide4 {
+    background-image: url('/img/fondo/fondo2.jpg');
+    animation-delay: 72s;
+    z-index: 1;
+}
+
+/* ============================ */
+/* ANIMACIÓN CROSSFADE + MOVIMIENTO CONTINUO (SIN SALTOS) */
+@keyframes slideFade {
+
+    /* Estado inicial */
+    0% {
+        opacity: 0;
+        transform: scale(1.05) translate(0, 0);
+    }
+
+    /* Fade in */
+    8% {
+        opacity: 1;
+    }
+
+    /* Imagen visible con movimiento */
+    50% {
+        opacity: 1;
+        transform: scale(1.15) translate(-3%, -3%);
+    }
+
+    /* Fade out */
+    75% {
+        opacity: 0;
+    }
+
+    /* Reset exacto para la siguiente vuelta */
+    100% {
+        opacity: 0;
+        transform: scale(1.05) translate(0, 0);
+    }
+}
+
+/* ============================ */
+/* CAPA OSCURA PARA CONTRASTE */
+.bg-dark-layer {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: -1;
+}
+
+/* ============================ */
+/* CONTENEDOR DEL FORMULARIO (GLASS) */
+.auth-card {
+    width: 520px;
+    padding: 35px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(12px) saturate(180%);
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+    position: relative;
+    z-index: 10;
+}
+
+/* ============================ */
+/* TÍTULO */
+.auth-title {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+/* ============================ */
+/* FORM ROW */
+.form-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 18px;
+}
+
+.form-row label {
+    width: 150px;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.form-row .form-control {
+    flex: 1;
+    border-radius: 10px;
+}
+
+/* ============================ */
+/* BOTÓN */
+.btn-primary {
+    width: 100%;
+    border-radius: 12px;
+    padding: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+/* ============================ */
+/* MENSAJES */
+.msg-error,
+.msg-success {
+    margin-top: 15px;
+    text-align: center;
+    font-size: 0.95rem;
+}
+
+.msg-error {
+    color: #ff4d4d;
+}
+
+.msg-success {
+    color: #00e676;
+}
+
+/* ============================ */
+/* LINKS */
+.auth-links {
+    margin-top: 18px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.auth-links a {
+    color: #ffffff;
+    font-weight: 600;
+    text-decoration: none;
+    transition: 0.25s ease;
+}
+
+.auth-links a:hover {
+    text-decoration: underline;
+    color: #d0e9ff;
+}
+
+/* ============================ */
+/* CENTRAR CONTENIDO */
+.center-container {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

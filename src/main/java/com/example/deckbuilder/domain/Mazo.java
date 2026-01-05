@@ -4,11 +4,15 @@ import com.example.deckbuilder.domain.partesMazo.ExtraDeck;
 import com.example.deckbuilder.domain.partesMazo.MainDeck;
 import com.example.deckbuilder.domain.partesMazo.SideDeck;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.EqualsAndHashCode;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "mazo")
@@ -44,4 +48,8 @@ public class Mazo {
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "side_deck_id")
     private SideDeck sideDeck;
+
+    @OneToMany(mappedBy = "mazo", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private Set<Comentario> comentarios = new HashSet<>();
 }

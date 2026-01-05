@@ -1,107 +1,108 @@
-document.addEventListener("DOMContentLoaded", async () => {
-
-    const ID = window.ID_MAZO;
+// @ts-nocheck
+// ...existing code...
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+document.addEventListener("DOMContentLoaded", () => __awaiter(this, void 0, void 0, function* () {
+    const pageData = document.getElementById('pageData');
+    const ID = pageData ? pageData.dataset.id : null;
     const btnSave = document.querySelector("#btnSave");
-
     if (!ID) {
         console.error("Falta el ID del mazo");
         return;
     }
-
-    async function actualizarBotonFavorito() {
-        try {
-            const res = await fetch(`/UsuarioAPI/favoritos/${ID}`);
-            const esFavorito = await res.json();
-
-            if (esFavorito) {
-                btnSave.textContent = "Quitar de favoritos";
-                btnSave.classList.remove("btn-success");
-                btnSave.classList.add("btn-danger");
-            } else {
-                btnSave.textContent = "Guardar en favoritos";
-                btnSave.classList.remove("btn-danger");
-                btnSave.classList.add("btn-success");
+    function actualizarBotonFavorito() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const res = yield fetch(`/UsuarioAPI/favoritos/${ID}`);
+                const esFavorito = yield res.json();
+                if (esFavorito) {
+                    btnSave.textContent = "Quitar de favoritos";
+                    btnSave.classList.remove("btn-success");
+                    btnSave.classList.add("btn-danger");
+                }
+                else {
+                    btnSave.textContent = "Guardar en favoritos";
+                    btnSave.classList.remove("btn-danger");
+                    btnSave.classList.add("btn-success");
+                }
+                return esFavorito;
             }
-
-            return esFavorito;
-        } catch (e) {
-            console.error("Error al comprobar favorito", e);
-        }
+            catch (e) {
+                console.error("Error al comprobar favorito", e);
+            }
+        });
     }
-
-    btnSave.addEventListener("click", async () => {
+    btnSave.addEventListener("click", () => __awaiter(this, void 0, void 0, function* () {
         try {
-            const esFavorito = await actualizarBotonFavorito();
-
+            const esFavorito = yield actualizarBotonFavorito();
             const metodo = esFavorito ? "DELETE" : "POST";
-
-            const res = await fetch(`/UsuarioAPI/favoritos/${ID}`, { method: metodo });
-            if (!res.ok) throw new Error("Error al actualizar favorito");
-
-            await actualizarBotonFavorito();
-
-        } catch (e) {
+            const res = yield fetch(`/UsuarioAPI/favoritos/${ID}`, { method: metodo });
+            if (!res.ok)
+                throw new Error("Error al actualizar favorito");
+            yield actualizarBotonFavorito();
+        }
+        catch (e) {
             console.error(e);
             alert("No se pudo actualizar favoritos");
         }
-    });
-
+    }));
     const mainCont = document.querySelector("#main_deck .row");
     const extraCont = document.querySelector("#extra_deck .row");
     const sideCont = document.querySelector("#side_deck .row");
-
-    async function cargarMazo() {
-        try {
-            const res = await fetch(`/MazoAPI/${ID}`);
-            if (!res.ok) throw new Error("No se pudo cargar el mazo");
-
-            const mazo = await res.json();
-
-            const idsMain = mazo.mainDeck?.cartas?.map(c => c.idKonami) || [];
-            const idsExtra = mazo.extraDeck?.cartas?.map(c => c.idKonami) || [];
-            const idsSide = mazo.sideDeck?.cartas?.map(c => c.idKonami) || [];
-
-            const idsTotales = [...idsMain, ...idsExtra, ...idsSide];
-
-            if (idsTotales.length === 0) {
-                mainCont.innerHTML = extraCont.innerHTML = sideCont.innerHTML = `<p class='text-muted text-center'>Empty</p>`;
-                return;
+    function cargarMazo() {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a, _b, _c, _d, _e, _f, _g, _h;
+            try {
+                const res = yield fetch(`/MazoAPI/${ID}`);
+                if (!res.ok)
+                    throw new Error("No se pudo cargar el mazo");
+                const mazo = yield res.json();
+                const idsMain = ((_b = (_a = mazo.mainDeck) === null || _a === void 0 ? void 0 : _a.cartas) === null || _b === void 0 ? void 0 : _b.map(c => c.idKonami)) || [];
+                const idsExtra = ((_d = (_c = mazo.extraDeck) === null || _c === void 0 ? void 0 : _c.cartas) === null || _d === void 0 ? void 0 : _d.map(c => c.idKonami)) || [];
+                const idsSide = ((_f = (_e = mazo.sideDeck) === null || _e === void 0 ? void 0 : _e.cartas) === null || _f === void 0 ? void 0 : _f.map(c => c.idKonami)) || [];
+                const idsTotales = [...idsMain, ...idsExtra, ...idsSide];
+                if (idsTotales.length === 0) {
+                    mainCont.innerHTML = extraCont.innerHTML = sideCont.innerHTML = `<p class='text-muted text-center'>Empty</p>`;
+                    return;
+                }
+                const url = `https://db.ygoprodeck.com/api/v7/cardinfo.php?id=${idsTotales.join(",")}`;
+                const resCartas = yield fetch(url);
+                const dataCartas = yield resCartas.json();
+                const cartasInfo = dataCartas.data;
+                const dic = {};
+                for (let carta of cartasInfo)
+                    dic[carta.id] = carta;
+                cargarSeccion(idsMain, mainCont, dic);
+                cargarSeccion(idsExtra, extraCont, dic);
+                cargarSeccion(idsSide, sideCont, dic);
+                document.querySelector("#inputNombreMazo").value = mazo.nombre || "Sin nombre";
+                document.querySelector("#inputCreador").value = ((_g = mazo.creador) === null || _g === void 0 ? void 0 : _g.nombre) || "Desconocido";
+                document.querySelector("#btnVerUser").href = `/login/verUser/${((_h = mazo.creador) === null || _h === void 0 ? void 0 : _h.id) || ""}`;
             }
-
-            const url = `https://db.ygoprodeck.com/api/v7/cardinfo.php?id=${idsTotales.join(",")}`;
-            const resCartas = await fetch(url);
-            const dataCartas = await resCartas.json();
-            const cartasInfo = dataCartas.data;
-
-            const dic = {};
-            for (let carta of cartasInfo) dic[carta.id] = carta;
-
-            cargarSeccion(idsMain, mainCont, dic);
-            cargarSeccion(idsExtra, extraCont, dic);
-            cargarSeccion(idsSide, sideCont, dic);
-
-            document.querySelector("#inputNombreMazo").value = mazo.nombre || "Sin nombre";
-            document.querySelector("#inputCreador").value = mazo.creador?.nombre || "Desconocido";
-            document.querySelector("#btnVerUser").href = `/login/verUser/${mazo.creador?.id || ""}`;
-        } catch (e) {
-            console.error(e);
-        }
+            catch (e) {
+                console.error(e);
+            }
+        });
     }
-
     function cargarSeccion(ids, contenedor, dic) {
         contenedor.innerHTML = "";
         if (!ids || ids.length === 0) {
             contenedor.innerHTML = `<p class='text-muted text-center'>Empty</p>`;
             return;
         }
-
         for (let id of ids) {
             const info = dic[id];
-            if (!info) continue;
-
+            if (!info)
+                continue;
             const col = document.createElement("div");
             col.className = "col d-flex justify-content-center";
-
             col.innerHTML = `
                 <div class="card border-0 text-center w-100" style="background:transparent;">
                     <div style="height:240px; width:100%; flex-shrink:0;">
@@ -111,40 +112,29 @@ document.addEventListener("DOMContentLoaded", async () => {
                     </div>
                 </div>
             `;
-
             col.querySelector("img").addEventListener("click", () => mostrarDetalles(info));
             contenedor.appendChild(col);
         }
     }
-
-
     function mostrarDetalles(carta) {
+        var _a;
         const zonaDetalles = document.querySelector("#zona_info");
-
         let preciosHTML = "";
-
-        const p = carta.card_prices?.[0];
+        const p = (_a = carta.card_prices) === null || _a === void 0 ? void 0 : _a[0];
         if (p) {
             preciosHTML = `<hr><h5 class="mt-2">Precios estimados</h5><div class="d-flex flex-wrap gap-2">`;
-
             if (parseFloat(p.cardmarket_price) > 0)
                 preciosHTML += `<span class="badge bg-success">Cardmarket: €${p.cardmarket_price}</span>`;
-
             if (parseFloat(p.tcgplayer_price) > 0)
                 preciosHTML += `<span class="badge bg-primary">TCGPlayer: $${p.tcgplayer_price}</span>`;
-
             if (parseFloat(p.ebay_price) > 0)
                 preciosHTML += `<span class="badge bg-warning text-dark">eBay: $${p.ebay_price}</span>`;
-
             if (parseFloat(p.amazon_price) > 0)
                 preciosHTML += `<span class="badge bg-info text-dark">Amazon: $${p.amazon_price}</span>`;
-
             if (parseFloat(p.coolstuffinc_price) > 0)
                 preciosHTML += `<span class="badge bg-secondary">CoolStuffInc: $${p.coolstuffinc_price}</span>`;
-
             preciosHTML += `</div>`;
         }
-
         zonaDetalles.innerHTML = `
             <div class="card mb-3 border-0" style="max-width: 700px;">
                 <div class="card-header bg-transparent border-0">
@@ -177,7 +167,259 @@ document.addEventListener("DOMContentLoaded", async () => {
             </div>
         `;
     }
-
-    await cargarMazo();
-    await actualizarBotonFavorito();
-});
+    yield cargarMazo();
+    yield actualizarBotonFavorito();
+    // ------------------
+    // Comentarios (modal)
+    // ------------------
+    const btnComentario = document.getElementById('btnComentario');
+    const modalContainer = document.getElementById('comentariosModalContainer');
+    const usuarioMeta = document.getElementById('usuarioMeta');
+    function crearEstrellasDisplay(valor) {
+        let html = '';
+        for (let i = 1; i <= 5; i++) {
+            html += `<span class="stars">${i <= valor ? '★' : '☆'}</span>`;
+        }
+        return html;
+    }
+    function crearEstrellasInteractivo(name, inicial = 0) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'd-flex align-items-center';
+        wrapper.style.gap = '4px';
+        for (let i = 1; i <= 5; i++) {
+            const s = document.createElement('span');
+            s.className = 'star-btn' + (i <= inicial ? ' filled' : '');
+            s.dataset.value = i;
+            s.innerText = '★';
+            s.addEventListener('click', () => {
+                // marcar estrellas
+                const siblings = wrapper.querySelectorAll('.star-btn');
+                siblings.forEach(sp => sp.classList.remove('filled'));
+                for (let j = 0; j < i; j++)
+                    siblings[j].classList.add('filled');
+                wrapper.dataset.value = i;
+            });
+            wrapper.appendChild(s);
+        }
+        wrapper.dataset.value = inicial;
+        return wrapper;
+    }
+    function abrirModalComentarios() {
+        return __awaiter(this, void 0, void 0, function* () {
+            // construir modal
+            modalContainer.innerHTML = `
+            <div class="modal fade" id="modalComentarios" tabindex="-1" aria-hidden="true">
+              <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Comentarios</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body" style="padding:0;">
+                    <div id="listaComentarios"></div>
+                  </div>
+                  <div class="modal-footer" id="modalFooter"></div>
+                </div>
+              </div>
+            </div>
+        `;
+            const modalEl = modalContainer.querySelector('#modalComentarios');
+            const bsModal = new bootstrap.Modal(modalEl);
+            function cargarYRenderizar() {
+                return __awaiter(this, void 0, void 0, function* () {
+                    var _a;
+                    const lista = modalContainer.querySelector('#listaComentarios');
+                    lista.innerHTML = `<div class="p-3 text-center text-muted">Cargando...</div>`;
+                    try {
+                        const res = yield fetch(`/ComentarioAPI/mazo/${ID}`);
+                        if (!res.ok)
+                            throw new Error('Error al obtener comentarios');
+                        const comentarios = yield res.json();
+                        if (!Array.isArray(comentarios) || comentarios.length === 0) {
+                            lista.innerHTML = `<div class="p-3 text-center text-muted">Aún no hay comentarios.</div>`;
+                        }
+                        else {
+                            lista.innerHTML = '';
+                            comentarios.forEach(c => {
+                                var _a, _b, _c, _d, _e, _f;
+                                const img = ((_b = (_a = c.usuario) === null || _a === void 0 ? void 0 : _a.imagenUsuario) === null || _b === void 0 ? void 0 : _b.trim()) ? c.usuario.imagenUsuario : '/img/fotoPerfil.png';
+                                const nombre = ((_c = c.usuario) === null || _c === void 0 ? void 0 : _c.nombre) || 'Usuario';
+                                const fecha = c.creadoEn ? new Date(c.creadoEn).toLocaleString() : '';
+                                const item = document.createElement('div');
+                                item.className = 'comentario-item d-flex gap-3';
+                                item.innerHTML = `
+                            <div style="flex:0 0 56px;">
+                                <img src="${img}" class="comentario-avatar" alt="${nombre}">
+                            </div>
+                            <div style="flex:1;">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <div class="comentario-nombre">${nombre}</div>
+                                        <div class="comentario-fecha">${fecha}</div>
+                                    </div>
+                                    <div class="ms-2 text-end">${crearEstrellasDisplay(c.valoracion)}</div>
+                                </div>
+                                <div class="comentario-mensaje">${c.mensaje || ''}</div>
+                            </div>
+                        `;
+                                const metaId = ((_d = usuarioMeta === null || usuarioMeta === void 0 ? void 0 : usuarioMeta.dataset) === null || _d === void 0 ? void 0 : _d.id) || '';
+                                const isAdmin = ((_e = usuarioMeta === null || usuarioMeta === void 0 ? void 0 : usuarioMeta.dataset) === null || _e === void 0 ? void 0 : _e.isadmin) === 'true';
+                                const botonesDiv = document.createElement('div');
+                                botonesDiv.style.marginLeft = '8px';
+                                botonesDiv.style.alignSelf = 'start';
+                                if (isAdmin) {
+                                    const btnDel = document.createElement('button');
+                                    btnDel.className = 'btn-eliminar-comentario';
+                                    btnDel.title = 'Eliminar comentario';
+                                    btnDel.innerText = '✖';
+                                    btnDel.addEventListener('click', () => __awaiter(this, void 0, void 0, function* () {
+                                        if (!confirm('¿Eliminar comentario?'))
+                                            return;
+                                        try {
+                                            const r = yield fetch(`/ComentarioAPI/${c.id}`, { method: 'DELETE' });
+                                            if (!r.ok)
+                                                throw new Error('Error al eliminar');
+                                            cargarYRenderizar();
+                                        }
+                                        catch (e) {
+                                            console.error(e);
+                                            alert('No se pudo eliminar');
+                                        }
+                                    }));
+                                    botonesDiv.appendChild(btnDel);
+                                }
+                                if (metaId && parseInt(metaId) === ((_f = c.usuario) === null || _f === void 0 ? void 0 : _f.id)) {
+                                    const btnEdit = document.createElement('button');
+                                    btnEdit.className = 'btn btn-sm btn-outline-secondary ms-2';
+                                    btnEdit.innerText = 'Editar';
+                                    btnEdit.addEventListener('click', () => iniciarEdicion(c, item, cargarYRenderizar));
+                                    botonesDiv.appendChild(btnEdit);
+                                }
+                                if (botonesDiv.childElementCount > 0)
+                                    item.appendChild(botonesDiv);
+                                lista.appendChild(item);
+                            });
+                        }
+                        const footer = modalContainer.querySelector('#modalFooter');
+                        footer.innerHTML = '';
+                        const usuarioId = (_a = usuarioMeta === null || usuarioMeta === void 0 ? void 0 : usuarioMeta.dataset) === null || _a === void 0 ? void 0 : _a.id;
+                        if (usuarioId) {
+                            const form = document.createElement('div');
+                            form.className = 'w-100 p-3';
+                            form.innerHTML = `
+                        <div class="mb-2"><strong>Escribe un comentario</strong></div>
+                        <div id="nuevoRating" class="mb-2"></div>
+                        <div class="mb-2"><textarea id="nuevoMensaje" class="form-control" rows="3" placeholder="Tu comentario..."></textarea></div>
+                        <div class="d-flex justify-content-end">
+                            <button id="btnEnviarComentario" class="btn btn-success btn-sm">Enviar</button>
+                        </div>
+                    `;
+                            footer.appendChild(form);
+                            const ratingWrapper = crearEstrellasInteractivo('nuevoRating', 0);
+                            form.querySelector('#nuevoRating').appendChild(ratingWrapper);
+                            form.querySelector('#btnEnviarComentario').addEventListener('click', () => __awaiter(this, void 0, void 0, function* () {
+                                const valoracion = parseInt(ratingWrapper.dataset.value) || 0;
+                                const mensaje = form.querySelector('#nuevoMensaje').value.trim();
+                                if (valoracion < 1 || valoracion > 5) {
+                                    alert('Selecciona una valoración entre 1 y 5');
+                                    return;
+                                }
+                                if (!mensaje) {
+                                    alert('Escribe un mensaje');
+                                    return;
+                                }
+                                try {
+                                    const payload = { mensaje, valoracion };
+                                    const res = yield fetch(`/ComentarioAPI?idMazo=${ID}`, {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify(payload)
+                                    });
+                                    if (!res.ok) {
+                                        const txt = yield res.text();
+                                        throw new Error(txt || 'Error al crear comentario');
+                                    }
+                                    form.querySelector('#nuevoMensaje').value = '';
+                                    ratingWrapper.dataset.value = 0;
+                                    const stars = ratingWrapper.querySelectorAll('.star-btn');
+                                    stars.forEach(s => s.classList.remove('filled'));
+                                    cargarYRenderizar();
+                                }
+                                catch (e) {
+                                    console.error(e);
+                                    alert('No se pudo crear el comentario');
+                                }
+                            }));
+                        }
+                        else {
+                            const footerMsg = document.createElement('div');
+                            footerMsg.className = 'w-100 p-3 text-muted text-center';
+                            footerMsg.innerHTML = 'Inicia sesión para poder comentar.';
+                            modalContainer.querySelector('#modalFooter').appendChild(footerMsg);
+                        }
+                    }
+                    catch (e) {
+                        console.error(e);
+                        lista.innerHTML = `<div class="p-3 text-center text-danger">Error al cargar comentarios</div>`;
+                    }
+                });
+            }
+            function iniciarEdicion(comentario, itemElement, recargar) {
+                const contenidoDiv = itemElement.querySelector('div[style*="flex:1;"]');
+                if (!contenidoDiv)
+                    return;
+                contenidoDiv.innerHTML = '';
+                const ratingWrapper = crearEstrellasInteractivo('editRating', comentario.valoracion || 0);
+                const txt = document.createElement('textarea');
+                txt.className = 'form-control mt-2';
+                txt.rows = 3;
+                txt.value = comentario.mensaje || '';
+                const acciones = document.createElement('div');
+                acciones.className = 'd-flex justify-content-end mt-2';
+                const btnGuardar = document.createElement('button');
+                btnGuardar.className = 'btn btn-sm btn-primary me-2';
+                btnGuardar.innerText = 'Guardar';
+                btnGuardar.addEventListener('click', () => __awaiter(this, void 0, void 0, function* () {
+                    const nuevaVal = parseInt(ratingWrapper.dataset.value) || 0;
+                    const nuevoMsg = txt.value.trim();
+                    if (nuevaVal < 1 || nuevaVal > 5) {
+                        alert('Selecciona una valoración entre 1 y 5');
+                        return;
+                    }
+                    if (!nuevoMsg) {
+                        alert('Escribe un mensaje');
+                        return;
+                    }
+                    try {
+                        const payload = { mensaje: nuevoMsg, valoracion: nuevaVal };
+                        const res = yield fetch(`/ComentarioAPI/${comentario.id}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+                        if (!res.ok)
+                            throw new Error('Error al guardar');
+                        recargar();
+                    }
+                    catch (e) {
+                        console.error(e);
+                        alert('No se pudo guardar');
+                    }
+                }));
+                const btnCancelar = document.createElement('button');
+                btnCancelar.className = 'btn btn-sm btn-secondary';
+                btnCancelar.innerText = 'Cancelar';
+                btnCancelar.addEventListener('click', () => recargar());
+                acciones.appendChild(btnGuardar);
+                acciones.appendChild(btnCancelar);
+                contenidoDiv.appendChild(ratingWrapper);
+                contenidoDiv.appendChild(txt);
+                contenidoDiv.appendChild(acciones);
+            }
+            bsModal.show();
+            cargarYRenderizar();
+            modalEl.addEventListener('hidden.bs.modal', () => { modalContainer.innerHTML = ''; });
+        });
+    }
+    btnComentario.addEventListener('click', abrirModalComentarios);
+}));

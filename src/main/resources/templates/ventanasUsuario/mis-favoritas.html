@@ -1,10 +1,172 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Favorite Cards</title>
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/css/header.css}" rel="stylesheet">
+
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            background-color: #f8f9fa;
+        }
+
+        #pantalla {
+            display: flex;
+            height: 100vh;
+            width: 100%;
+        }
+
+        #zona_cartas {
+            flex: 3;
+            display: flex;
+            flex-direction: column;
+            border-right: 2px solid #dee2e6;
+            background-color: #ffffff;
+            padding: 0.75rem 1rem;
+        }
+
+        #filtros_cartas_div {
+            flex: 1;
+            border-bottom: 2px solid #dee2e6;
+            padding: 0.75rem 1rem;
+            background-color: #f1f3f5;
+            box-shadow: inset 0 -2px 4px rgba(0, 0, 0, 0.05);
+            border-radius: 0.25rem;
+        }
+
+        #filtros_cartas_div h5 {
+            background-color: #f1f3f5;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            box-shadow: inset 0 -1px 2px rgba(0,0,0,0.05);
+            margin-bottom: 0.75rem;
+        }
+
+        #lista_cartas {
+            flex: 3;
+            padding: 1rem;
+            overflow-y: auto;
+            background-color: #fafafa;
+            border-radius: 0.25rem;
+            margin-top: 0.5rem;
+        }
+
+        #lista_cartas h6 {
+            background-color: #f1f3f5;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            box-shadow: inset 0 -1px 2px rgba(0,0,0,0.05);
+            margin-bottom: 1rem;
+        }
+
+        #zona_info {
+            flex: 1;
+            border-left: 2px solid #dee2e6;
+            padding: 1rem;
+            background-color: #fff;
+            overflow-y: auto;
+        }
+
+        #zona_info h5 {
+            background-color: #f1f3f5;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            box-shadow: inset 0 -1px 2px rgba(0,0,0,0.05);
+            margin-bottom: 1rem;
+        }
+
+        h5, h6 {
+            font-weight: 600;
+            color: #333;
+        }
+
+        #lista_cartas::-webkit-scrollbar, #zona_info::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #lista_cartas::-webkit-scrollbar-thumb, #zona_info::-webkit-scrollbar-thumb {
+            background-color: #ccc;
+            border-radius: 10px;
+        }
+
+        #lista_cartas .card {
+            transition: transform 0.2s;
+        }
+
+        #lista_cartas .card:hover {
+            transform: translateY(-2px);
+        }
+
+        #detalles_carta {
+            padding: 1rem;
+        }
+
+        #detalles_carta h4 {
+            margin-bottom: 0.5rem;
+        }
+
+        #detalles_carta p {
+            margin-bottom: 0.25rem;
+        }
+
+        /* Paginación */
+        #paginacion {
+            background-color: #f1f3f5 !important;
+            border-top: 1px solid #dee2e6;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.25rem;
+        }
+
+        #paginacion button {
+            min-width: 40px;
+        }
+
+        #paginacion .btn-primary {
+            font-weight: 600;
+        }
+
+        .card-img-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            height: 240px;
+            overflow: hidden;
+        }
+
+        .card-img-container img {
+            max-height: 100%;
+            object-fit: contain;
+        }
+    </style>
 </head>
+
 <body>
+
+<div th:replace="fragments/header :: header"></div>
+
+<div id="pantalla">
+
+    <div id="zona_cartas">
+
+        <div id="lista_cartas">
+            <div class="row row-cols-2 row-cols-md-3 g-3"></div>
+        </div>
+
+        <div id="paginacion" class="d-flex justify-content-center align-items-center gap-2 rounded shadow-sm"></div>
+    </div>
+
+    <div id="zona_info">
+        <div class="p-2 bg-light rounded border" id="detalles_carta">
+            <p class="text-muted text-center">Select a card to view details</p>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/js/verFavoritas.js}"></script>
 
 </body>
 </html>

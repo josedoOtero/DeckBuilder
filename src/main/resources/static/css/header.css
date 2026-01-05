@@ -57,3 +57,18 @@
 #navbarAdmin .nav-link::after {
     display: none;
 }
+
+.navbar-nav .nav-link.admin-link {
+    color: #dc3545;
+}
+
+.navbar-nav .nav-link.admin-link:hover,
+.navbar-nav .nav-link.admin-link.active-link {
+    color: #dc3545;
+}
+
+.navbar-nav .nav-link.admin-link:hover::after,
+.navbar-nav .nav-link.admin-link.active-link::after {
+    width: 100%;
+    background-color: #dc3545;
+}

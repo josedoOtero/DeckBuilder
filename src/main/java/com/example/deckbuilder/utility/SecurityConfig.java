@@ -32,6 +32,10 @@ public class SecurityConfig {
                         .requestMatchers("/MazoAPI/**").permitAll()
                         .requestMatchers("/UsuarioAPI/**").permitAll()
 
+                        // Hacer pública la API de Comentarios para que peticiones REST reciban JSON
+                        // (antes las peticiones no autenticadas eran redirigidas a "/" por el entry point)
+                        .requestMatchers("/ComentarioAPI/**").permitAll()
+
                         // Solo usuarios logueados pueden acceder a POST, PUT, DELETE en UsuarioAPI
                         .requestMatchers("/UsuarioAPI/**").hasAnyRole("USER", "ADMIN")
 

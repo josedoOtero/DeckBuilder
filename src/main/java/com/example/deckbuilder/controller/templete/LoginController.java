@@ -69,5 +69,11 @@ public class LoginController {
         model.addAttribute("currentUri", request.getRequestURI());
         return "ver-usuario";
     }
-}
 
+    @GetMapping("/visualizadorMazos/{id}")
+    public String mostrarrMazo(@PathVariable Long id, Model model, HttpServletRequest request) {
+        model.addAttribute("id", id);
+        model.addAttribute("currentUri", request.getRequestURI());
+        return "visualizador-mazos";
+    }
+}

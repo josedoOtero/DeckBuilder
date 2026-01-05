@@ -61,6 +61,7 @@ public class UsuarioControllerAPI {
     @PostMapping("/favoritos/{idMazo}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void addFavorito(@PathVariable Long idMazo, @AuthenticationPrincipal org.springframework.security.core.userdetails.UserDetails userDetails) {
+        if (userDetails == null) throw new RuntimeException("No autenticado");
         Usuario usuario = usuarioService.findByNombre(userDetails.getUsername());
         usuarioService.addMazoFavoritos(usuario.getId(), idMazo);
     }
@@ -68,18 +69,21 @@ public class UsuarioControllerAPI {
     @DeleteMapping("/favoritos/{idMazo}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removeFavorito(@PathVariable Long idMazo, @AuthenticationPrincipal org.springframework.security.core.userdetails.UserDetails userDetails) {
+        if (userDetails == null) throw new RuntimeException("No autenticado");
         Usuario usuario = usuarioService.findByNombre(userDetails.getUsername());
         usuarioService.removeMazoFavoritos(usuario.getId(), idMazo);
     }
 
     @GetMapping("/favoritos/{idMazo}")
     public boolean isFavorito(@PathVariable Long idMazo, @AuthenticationPrincipal org.springframework.security.core.userdetails.UserDetails userDetails) {
+        if (userDetails == null) return false;
         Usuario usuario = usuarioService.findByNombre(userDetails.getUsername());
         return usuarioService.isFavorito(usuario.getId(), idMazo);
     }
 
     @GetMapping("/favoritos")
     public Set<Mazo> obtenerFavoritos(@AuthenticationPrincipal org.springframework.security.core.userdetails.UserDetails userDetails) {
+        if (userDetails == null) return new HashSet<>();
         Usuario usuario = usuarioService.findByNombre(userDetails.getUsername());
         return usuario.getMazosFavoritos();
     }
@@ -153,4 +157,3 @@ public class UsuarioControllerAPI {
         usuarioService.save(usuario);
     }
 }
-

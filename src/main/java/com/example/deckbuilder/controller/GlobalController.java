@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 @Controller
 public class GlobalController {
 
-    @ModelAttribute("usuarioLogueado")
-    public UsuarioDetails usuarioLogueado(@AuthenticationPrincipal UsuarioDetails usuarioDetails) {
+    @ModelAttribute("usuarioDetails")
+    public UsuarioDetails usuarioDetails(@AuthenticationPrincipal UsuarioDetails usuarioDetails) {
         return usuarioDetails;
     }
 }

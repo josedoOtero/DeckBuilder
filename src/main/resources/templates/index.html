@@ -1,14 +1,339 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>DeckBuilder - Home</title>
     <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
     <link th:href="@{/css/header.css}" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Lato:400,700');
+
+        /* === NUEVOS ESTILOS BOTONES SPLIT === */
+        :root {
+            --btn-red: #e63946;
+            --btn-blue: #1d4ed8;
+        }
+
+        .split-container {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .split-btn {
+            position: relative;
+            z-index: 5; /* por encima del overlay */
+            letter-spacing: 0.25em;
+            padding: 1rem 2.5rem;
+            font-size: 22px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #fff;
+            text-decoration: none;
+            overflow: hidden;
+            isolation: isolate; /* crea contexto propio */
+        }
+
+        .split-btn::before,
+        .split-btn::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            height: 100%;
+            width: 60%;
+            z-index: -1;
+            transition: all 0.45s cubic-bezier(0.68,-0.55,0.265,1.55);
+            transform: skewX(30deg);
+        }
+
+        .split-btn::before {
+            left: -35%;
+            background: var(--btn-red);
+        }
+
+        .split-btn::after {
+            left: 55%;
+            background: var(--btn-blue);
+        }
+
+        .split-btn:hover::before {
+            left: 0;
+            transform: skewX(0deg);
+        }
+
+        .split-btn:hover::after {
+            left: 40%;
+            transform: skewX(0deg);
+        }
+
+        /* === TUS ESTILOS ORIGINALES === */
+
+        .search-modern {
+            max-width: 1280px;
+            width: 100%;
+        }
+
+        .search-input {
+            border-radius: 0;
+            border: 1px solid #dee2e6;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            box-shadow: none;
+            flex: 1 1 auto;
+            width: 100%;
+        }
+
+        .search-input:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 0.12rem rgba(13,110,253,.25);
+        }
+
+        .search-btn {
+            background-color: #0d6efd;
+            border: none;
+            border-radius: 0;
+            padding: 0 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .search-btn:hover {
+            background-color: #0b5ed7;
+        }
+
+        .search-btn svg {
+            fill: #fff;
+        }
+
+        .banner-carousel .carousel-item {
+            height: 60vh;
+            min-height: 320px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            color: white;
+        }
+
+        .banner-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .banner-title {
+            font-size: 3rem;
+            font-weight: 800;
+            text-shadow: 0 6px 20px rgba(0,0,0,0.6);
+        }
+
+        .banner-subtitle {
+            font-size: 1.25rem;
+            margin-top: 0.5rem;
+            opacity: 0.95;
+        }
+
+        /* Otros estilos que tenías */
+        .about-ygo { padding: 4rem 1rem; }
+        .about-ygo .img-left { max-width: 100%; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.12); }
+        .deckbuilder-section { position: relative; background-size: cover; background-position: center; padding: 6rem 1rem; color: #222; }
+        .deckbuilder-overlay { position: absolute; inset: 0; background: rgba(25, 118, 210, 0.55); }
+        .deckbuilder-card { position: relative; z-index: 2; max-width: 900px; margin: 0 auto; background: #ffffff; padding: 2rem; border-radius: 12px; box-shadow: 0 12px 40px rgba(0,0,0,0.15); }
+        .learn-section { background: #f6f9ff; padding: 4rem 1rem; text-align: center; }
+        .project-section { padding: 4rem 1rem; }
+        .project-carousel .carousel-item { height: 320px; background-size: cover; background-position: center; }
+        .archetype-card { position: relative; overflow: hidden; border-radius: 8px; width: 100%; aspect-ratio: 1 / 1; display: flex; align-items: flex-end; color: white; cursor: pointer; transition: transform .25s ease, filter .35s ease; background-size: cover; background-position: center; background-color: #000; }
+        .archetype-card .overlay-color{ position:absolute; inset:0; transition:opacity .25s ease; opacity:0.55; }
+        .archetype-card .content{ position:relative; z-index:2; padding: 1rem; width:100%; display:flex; justify-content:space-between; align-items:flex-end; }
+        .archetype-card:hover{ transform: scale(1.04); }
+        .archetype-card:hover .overlay-color{ opacity:0.82; }
+        .archetype-title{ font-weight:700; text-shadow: 0 4px 14px rgba(0,0,0,0.35); }
+        .btn-primary-ghost{ background: transparent; border:2px solid rgba(0,123,255,0.12); color:#0d6efd; }
+
+        @media (min-width: 992px){ .banner-title{ font-size: 4rem; } }
+    </style>
+
+
 </head>
 <body>
 <div th:replace="fragments/header :: header"></div>
 
+<main>
+    <!-- Apartado 1: Banner con carrusel -->
+    <section class="banner-carousel mb-5">
+        <div id="homeCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+
+                <div class="carousel-item active" th:style="|background-image: url('@{/img/fondo/fondo1.jpg}')|">
+                    <div class="banner-overlay">
+                        <div>
+                            <div class="banner-title">Bienvenido a DeckBuilder</div>
+                            <div class="banner-subtitle">Tu herramienta de gestión de mazos de YUGIOH TCG</div>
+
+                            <div class="split-container">
+                                <a class="split-btn" th:href="@{/login/iniciarSesion}">Iniciar sesión</a>
+                                <a class="split-btn" th:href="@{/login/crearCuenta}">Crear cuenta</a>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="carousel-item" th:style="|background-image: url('@{/img/fondo/fondo2.jpg}')|">
+                    <div class="banner-overlay">
+                        <div>
+                            <div class="banner-title">Comparte y mejora tus mazos</div>
+                            <div class="banner-subtitle">Analiza, exporta y comparte con la comunidad</div>
+
+                            <div class="split-container">
+                                <a class="split-btn" th:href="@{/login/iniciarSesion}">Iniciar sesión</a>
+                                <a class="split-btn" th:href="@{/login/crearCuenta}">Crear cuenta</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="carousel-item" th:style="|background-image: url('@{/img/fondo/fondo3.png}')|">
+                    <div class="banner-overlay">
+                        <div>
+                            <div class="banner-title">Conéctate con otros duelistas</div>
+                            <div class="banner-subtitle">Descubre mazos, cartas y estrategias</div>
+
+                            <div class="split-container">
+                                <a class="split-btn" th:href="@{/login/iniciarSesion}">Iniciar sesión</a>
+                                <a class="split-btn" th:href="@{/login/crearCuenta}">Crear cuenta</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <button class="carousel-control-prev" type="button" data-bs-target="#homeCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Anterior</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#homeCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Siguiente</span>
+            </button>
+        </div>
+    </section>
+
+    <!-- Apartado 2: Qué es YugiohTCG -->
+    <section class="about-ygo container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <img th:src="@{/img/yugi.jpeg}" alt="Yugioh TCG" class="img-left w-50">
+            </div>
+            <div class="col-lg-6">
+                <h2>¿Qué es Yu-Gi-Oh! TCG?</h2>
+                <p class="lead">Yu-Gi-Oh! Trading Card Game es un juego de cartas estratégico basado en la popular franquicia. Desde su lanzamiento, millones de jugadores coleccionan y compiten con cartas que representan monstruos, hechizos y trampas.</p>
+                <ul>
+                    <li>Año de creación: 1999 (adaptación del manga/anime al TCG durante finales de los 90s).</li>
+                    <li>Más de 10.000 cartas publicadas a lo largo de varias generaciones y expansiones (cifra aproximada y en constante crecimiento).</li>
+                    <li>Formato competitivo con torneos a nivel local, regional e internacional.</li>
+                </ul>
+                <p>Yu-Gi-Oh! mezcla historia, colección y estrategia. Construir un mazo equilibrado y conocer las reglas te da ventaja en cada duelo.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Apartado 3: Qué es DeckBuilder (fondo + overlay + tarjeta blanca) -->
+    <section class="deckbuilder-section" th:style="|background-image: url('@{/img/fondo/fondo5.jpg}');|">
+        <div class="deckbuilder-overlay"></div>
+        <div class="deckbuilder-card">
+            <h2>¿Qué es DeckBuilder?</h2>
+            <p>DeckBuilder es una herramienta de gestión de mazos diseñada para jugadores de Yu-Gi-Oh! TCG. Te permite crear, editar y compartir tus mazos, almacenar estadísticas y consultar cartas fácilmente.</p>
+            <p>Además, ofrece utilidades para exportar mazos a formatos populares, comparar listas, y mantener un historial de cambios para que puedas revertir y experimentar sin perder trabajo.</p>
+            <p>Mantente al día con las noticias de Yu-Gi-Oh! TCG, descubre nuevos arquetipos y comparte tus estrategias con la comunidad.</p>
+        </div>
+    </section>
+
+    <!-- Apartado 4: No sabes jugar -->
+    <section class="learn-section">
+        <div class="container">
+            <h2>No sabes jugar?</h2>
+            <p class="mb-4">Si estás comenzando en Yu-Gi-Oh! y no sabes por dónde empezar, tenemos recursos para aprender desde cero: reglas básicas, construcción de mazos y consejos de juego.</p>
+            <a class="btn btn-danger btn-lg" href="https://www.yugioh-card.com/en/rulebook/" target="_blank" rel="noopener noreferrer" role="button">
+                Aprende aquí
+            </a>
+
+        </div>
+    </section>
+
+    <!-- Apartado 5: Juega desde tu ordenador (Project Ignis) -->
+    <section class="project-section container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h2>Juega desde tu ordenador</h2>
+                <p class="lead">Project Ignis es una herramienta que permite jugar Yu-Gi-Oh! desde tu ordenador contra la IA o con otros jugadores. Reúne simulación de reglas y diversión en partidas rápidas.</p>
+                <p>Puedes descargar la herramienta y empezar a jugar desde tu equipo.</p>
+                <a class="btn btn-primary btn-lg" href="https://projectignis.github.io/" target="_blank" rel="noopener noreferrer" role="button">
+                    Jugar ahora
+                </a>
+
+            </div>
+            <div class="col-lg-6">
+                <div id="projectCarousel" class="carousel slide project-carousel" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active" th:style="|background-image: url('@{/img/igris/igris1.jpeg}')|"></div>
+                        <div class="carousel-item" th:style="|background-image: url('@{/img/igris/igris2.jpeg}')|"></div>
+                        <div class="carousel-item" th:style="|background-image: url('@{/img/igris/igris3.jpeg}')|"></div>
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#projectCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Anterior</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#projectCarousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Siguiente</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Apartado 6: Lista de arquetipos (grid) -->
+    <section class="container my-5">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="mb-0">Arquetipos</h2>
+            <!-- Barra de búsqueda en la misma línea -->
+            <form class="d-flex ms-3" role="search" onsubmit="return false;">
+                <div class="input-group search-modern">
+                    <input id="archetypeSearch" type="search" class="form-control search-input"
+                           placeholder="Buscar arquetipo por nombre..." aria-label="Buscar arquetipo">
+                    <button id="searchBtn" class="btn search-btn" type="button" aria-label="Buscar">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="white" viewBox="0 0 16 16">
+                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85zm-5.242.656a5 5 0 1 1 0-10 5 5 0 0 1 0 10z"/>
+                        </svg>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div id="archetypeGrid" class="row g-3">
+            <!-- tarjetas generadas por JS -->
+        </div>
+        <div class="d-flex justify-content-center mt-4">
+            <nav aria-label="Paginación de arquetipos">
+                <ul id="archetypePagination" class="pagination">
+                    <!-- páginas generadas por JS -->
+                </ul>
+            </nav>
+        </div>
+    </section>
+
+</main>
+
 <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/js/home.js}"></script>
 </body>
 </html>

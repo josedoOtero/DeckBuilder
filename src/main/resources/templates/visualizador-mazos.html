@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Ver mazo</title>
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/css/header.css}" rel="stylesheet">
+
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            background-color: #f8f9fa;
+        }
+
+        #pantalla {
+            display: flex;
+            height: calc(100vh - 70px);
+            width: 100%;
+        }
+
+        #zona_detalles {
+            flex: 1;
+            border-right: 2px solid #dee2e6;
+            padding: 1rem;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #lista_cartas {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        #zona-guardado {
+            border-top: 2px solid #dee2e6;
+            padding: 0.5rem;
+            background-color: #f1f3f5;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 5px;
+        }
+
+        #zona_mazo {
+            flex: 3;
+            display: flex;
+            flex-direction: column;
+            padding: 1rem;
+            background-color: #fff;
+            overflow-y: auto;
+        }
+
+        #main_deck, #extra_deck, #side_deck {
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            padding: 0.5rem;
+            background-color: #f8f9fa;
+            overflow-y: auto;
+        }
+
+        #main_deck { flex: 2; }
+        #extra_deck, #side_deck { flex: 1; }
+
+        /* Botones de selección */
+        .active-zone {
+            background-color: #0d6efd !important;
+            color: #fff !important;
+            border-color: #0d6efd !important;
+        }
+        #btnExtra.active-zone { background-color: #6c757d !important; }
+        #btnSide.active-zone { background-color: #dc3545 !important; }
+
+        /* Estilos para modal de comentarios y estrellas */
+        .comentario-avatar {
+            width: 56px;
+            height: 56px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 2px solid #e9ecef;
+        }
+
+        .comentario-item {
+            padding: 12px 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .comentario-nombre {
+            font-weight: 600;
+        }
+
+        .comentario-fecha {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .stars {
+            color: #ffc107;
+            font-size: 1.05rem;
+            line-height: 1;
+        }
+
+        .star-btn {
+            cursor: pointer;
+            color: #e4e5e9;
+            font-size: 1.3rem;
+            margin-right: 4px;
+        }
+
+        .star-btn.filled { color: #ffc107; }
+
+        .comentario-mensaje {
+            margin-top: 8px;
+            white-space: pre-wrap;
+        }
+
+        .btn-eliminar-comentario {
+            background: transparent;
+            border: none;
+            color: #dc3545;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+    </style>
+</head>
+<body>
+
+<div th:replace="fragments/header :: header"></div>
+
+<div id="pantalla" class="container-fluid">
+
+    <div id="zona_detalles">
+
+        <h4 class="text-center">Card Details</h4>
+
+        <div id="zona_info" class="p-2 text-center text-muted" style="flex: 1; overflow-y: auto;">
+            <p>Select a card to view details</p>
+        </div>
+
+        <div id="zona-opciones"
+             class="border-top px-3 py-2"
+             style="width:100%; gap:10px; background-color:#f1f3f5;">
+
+            <div class="d-flex flex-column w-100" style="gap:10px;">
+
+                <div class="row g-2">
+
+                    <div class="col-6">
+                        <label class="form-label mb-0"><strong>Nombre del mazo</strong></label>
+                        <input id="inputNombreMazo" type="text"
+                               class="form-control form-control-sm"
+                               readonly style="background-color:#e9ecef;">
+                    </div>
+
+                    <div class="col-6">
+                        <label class="form-label mb-0"><strong>Creado por</strong></label>
+                        <input id="inputCreador" type="text"
+                               class="form-control form-control-sm"
+                               readonly style="background-color:#e9ecef;">
+                        <a id="btnVerUser" class="btn btn-success btn-sm px-3" style="text-decoration:none; color:white; display:inline-block; margin-top:6px;">Ver más</a>
+
+
+                    </div>
+
+                </div>
+
+                <div class="d-flex justify-content-end">
+                    <button id="btnComentario" class="btn btn-success btn-sm px-3 mx-2" style="height:32px;">
+                        Comentarios
+                    </button>
+
+                    <button id="btnSave" class="btn btn-success btn-sm px-3" style="height:32px;">
+                        Guardar en favoritos
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+
+    <div id="zona_mazo">
+        <div id="main_deck" class="mb-3">
+            <h6 class="text-center text-muted">Main Deck</h6>
+            <div class="row row-cols-5 g-1"></div>
+        </div>
+
+        <div id="extra_deck" class="mb-3">
+            <h6 class="text-center text-muted">Extra Deck</h6>
+            <div class="row row-cols-5 g-1"></div>
+        </div>
+
+        <div id="side_deck">
+            <h6 class="text-center text-muted">Side Deck</h6>
+            <div class="row row-cols-5 g-1"></div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Datos de la página (id del mazo) -->
+<div id="pageData" th:data-id="${id}" style="display:none;"></div>
+
+<!-- Contenedor oculto con metadata del usuario para que JS pueda mostrar el formulario y saber si es admin -->
+<div id="usuarioMeta"
+     th:attr="data-id=${usuarioLogueado != null ? usuarioLogueado.id : ''},
+               data-isadmin=${usuarioLogueado != null ? (usuarioLogueado.rol == 'ROLE_ADMIN') : false},
+               data-nombre=${usuarioLogueado != null ? usuarioLogueado.nombre : ''},
+               data-imagen=${usuarioLogueado != null ? usuarioLogueado.imagenUsuario : ''}"
+     style="display:none;"></div>
+
+<!-- Contenedor donde inyectaremos el modal de comentarios -->
+<div id="comentariosModalContainer"></div>
+
+
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/js/visorMazo.js}"></script>
+</body>
+</html>
+
