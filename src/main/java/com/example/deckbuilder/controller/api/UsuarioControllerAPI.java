@@ -7,7 +7,9 @@ import com.example.deckbuilder.utility.UsuarioDetails;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -155,5 +157,24 @@ public class UsuarioControllerAPI {
         }
 
         usuarioService.save(usuario);
+    }
+
+    @GetMapping("/UsuarioAPI/logueado")
+    public ResponseEntity<?> getUsuarioLogueado() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Usuario no autenticado");
+        }
+
+        Object principal = auth.getPrincipal();
+        if (principal instanceof UsuarioDetails usuarioDetails) {
+
+            return ResponseEntity.ok(usuarioDetails.getUsuario().getId());
+        }
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("No se pudo obtener ID del usuario");
     }
 }

@@ -27,4 +27,10 @@ public class AdministradorController {
         model.addAttribute("currentUri", request.getRequestURI());
         return "ventanaAdministrador/panelAdminMazos";
     }
+
+    @GetMapping("/crearNotificacion")
+    public String crearNotificacion(Model model, HttpServletRequest request) {
+        model.addAttribute("currentUri", request.getRequestURI());
+        return "ventanaAdministrador/crear-notificacion";
+    }
 }

@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
@@ -16,8 +15,7 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Service
-
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Notificacion {
 
     @Id
@@ -41,3 +39,5 @@ public class Notificacion {
     @Column(name = "creado_en")
     private LocalDateTime creadoEn;
 }
+
+

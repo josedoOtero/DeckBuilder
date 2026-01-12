@@ -1,6 +1,9 @@
 package com.example.deckbuilder.controller.api;
 
+import com.example.deckbuilder.domain.Mensaje;
 import com.example.deckbuilder.domain.Notificacion;
+import com.example.deckbuilder.dto.UsuarioFeedDTO;
+import com.example.deckbuilder.service.MensajeService;
 import com.example.deckbuilder.service.NotificacionService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -17,70 +20,94 @@ import java.util.List;
 public class NotificacionControllerAPI {
 
     private final NotificacionService notificacionService;
+    private final MensajeService mensajeService;
 
-    public NotificacionControllerAPI(NotificacionService notificacionService) {
+    public NotificacionControllerAPI(NotificacionService notificacionService, MensajeService mensajeService) {
         this.notificacionService = notificacionService;
+        this.mensajeService = mensajeService;
     }
 
-    @GetMapping({"", "/"})
-    public ResponseEntity<List<Notificacion>> all() {
-        List<Notificacion> lista = notificacionService.findAll();
-        return ResponseEntity.ok(lista);
+    // 1️⃣ Listar todos los mensajes
+    @GetMapping("/mensajes")
+    public ResponseEntity<List<Mensaje>> listarMensajes() {
+        List<Mensaje> mensajes = mensajeService.findAll();
+        return ResponseEntity.ok(mensajes);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> one(@PathVariable Long id) {
-        Notificacion notificacion = notificacionService.buscarNotificacionPorId(id);
-        if (notificacion == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Notificación no encontrada");
+    // 2️⃣ Listar mensajes de un usuario
+    @GetMapping("/mensajes/usuario/{usuarioId}")
+    public ResponseEntity<List<Mensaje>> mensajesPorUsuario(@PathVariable Long usuarioId) {
+        List<Mensaje> mensajes = mensajeService.findByUsuarioId(usuarioId);
+        return ResponseEntity.ok(mensajes);
+    }
+
+    // 3️⃣ Listar todas las notificaciones
+    @GetMapping("/notificaciones")
+    public ResponseEntity<List<Notificacion>> listarNotificaciones() {
+        List<Notificacion> notificaciones = notificacionService.findAll();
+        return ResponseEntity.ok(notificaciones);
+    }
+
+    // 4️⃣ Listar mensajes de un usuario y todas las notificaciones
+    @GetMapping("/todos/{usuarioId}")
+    public ResponseEntity<List<Object>> listarMensajesYNotificaciones(@PathVariable Long usuarioId) {
+        List<Mensaje> mensajes = mensajeService.findByUsuarioId(usuarioId);
+        List<Notificacion> notificaciones = notificacionService.findAll();
+
+        // Agregamos tipo a cada objeto dinámicamente
+        List<Object> combinados = new java.util.ArrayList<>();
+
+        mensajes.forEach(m -> {
+            java.util.Map<String, Object> map = new java.util.HashMap<>();
+            map.put("id", m.getId());
+            map.put("titulo", m.getTitulo());
+            map.put("categoria", m.getCategoria());
+            map.put("mensaje", m.getMensaje());
+            map.put("creadoEn", m.getCreadoEn());
+            map.put("tipo", "mensaje");
+            combinados.add(map);
+        });
+
+        notificaciones.forEach(n -> {
+            java.util.Map<String, Object> map = new java.util.HashMap<>();
+            map.put("id", n.getId());
+            map.put("titulo", n.getTitulo());
+            map.put("categoria", n.getCategoria());
+            map.put("mensaje", n.getMensaje());
+            map.put("creadoEn", n.getCreadoEn());
+            map.put("tipo", "notificacion");
+            combinados.add(map);
+        });
+
+        return ResponseEntity.ok(combinados);
+    }
+
+    // 5️⃣ Crear mensaje
+    @PostMapping("/mensajes")
+    public ResponseEntity<?> crearMensaje(@RequestBody Mensaje mensaje) {
+        try {
+            Mensaje creado = mensajeService.crearMensaje(mensaje);
+            return ResponseEntity.status(HttpStatus.CREATED).body(creado);
+        } catch (DataIntegrityViolationException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            log.error("Error al crear mensaje", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
-        return ResponseEntity.ok(notificacion);
     }
 
-    @PostMapping({"", "/"})
-    public ResponseEntity<?> createNotificacion(@RequestBody Notificacion notificacion) {
+    // 6️⃣ Crear notificación
+    @PostMapping("/notificaciones")
+    public ResponseEntity<?> crearNotificacion(@RequestBody Notificacion notificacion) {
         try {
             Notificacion creado = notificacionService.crearNotificacion(notificacion);
             return ResponseEntity.status(HttpStatus.CREATED).body(creado);
         } catch (DataIntegrityViolationException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updateNotificacion(@PathVariable Long id, @RequestBody Notificacion notificacion) {
-        try {
-            Notificacion existente = notificacionService.buscarNotificacionPorId(id);
-            if (existente == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Notificación no encontrada");
-            }
-
-            existente.setTitulo(notificacion.getTitulo());
-            existente.setCategoria(notificacion.getCategoria());
-            existente.setMensaje(notificacion.getMensaje());
-            existente.setCreadoEn(notificacion.getCreadoEn());
-
-            Notificacion actualizado = notificacionService.actualizarNotificacion(existente);
-            return ResponseEntity.ok(actualizado);
-        } catch (DataIntegrityViolationException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteNotificacion(@PathVariable Long id) {
-        try {
-            Notificacion existente = notificacionService.buscarNotificacionPorId(id);
-            if (existente == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Notificación no encontrada");
-            }
-            notificacionService.eliminarNotificacion(id);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        } catch (Exception e) {
+            log.error("Error al crear notificación", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }

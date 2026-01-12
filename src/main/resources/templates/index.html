@@ -6,6 +6,7 @@
     <title>DeckBuilder - Home</title>
     <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
     <link th:href="@{/css/header.css}" rel="stylesheet">
+    <link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon">
     <style>
         @import url('https://fonts.googleapis.com/css?family=Lato:400,700');
 
@@ -142,7 +143,11 @@
 
         /* Otros estilos que tenías */
         .about-ygo { padding: 4rem 1rem; }
-        .about-ygo .img-left { max-width: 100%; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.12); }
+        .about-ygo .img-left {
+            max-width: 100%;
+            border-radius: 0;    /* Sin bordes */
+            box-shadow: none;    /* Sin sombra */
+        }
         .deckbuilder-section { position: relative; background-size: cover; background-position: center; padding: 6rem 1rem; color: #222; }
         .deckbuilder-overlay { position: absolute; inset: 0; background: rgba(25, 118, 210, 0.55); }
         .deckbuilder-card { position: relative; z-index: 2; max-width: 900px; margin: 0 auto; background: #ffffff; padding: 2rem; border-radius: 12px; box-shadow: 0 12px 40px rgba(0,0,0,0.15); }
@@ -159,8 +164,6 @@
 
         @media (min-width: 992px){ .banner-title{ font-size: 4rem; } }
     </style>
-
-
 </head>
 <body>
 <div th:replace="fragments/header :: header"></div>

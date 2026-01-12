@@ -2,8 +2,11 @@ package com.example.deckbuilder.controller.templete;
 
 import com.example.deckbuilder.domain.Usuario;
 import com.example.deckbuilder.service.UsuarioService;
+import com.example.deckbuilder.utility.UsuarioDetails;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -102,4 +105,21 @@ public class UsuarioController {
         model.addAttribute("usuario", usuario);
         return "ventanasUsuario/mis-favoritas";
     }
+
+    @GetMapping("/notificaciones")
+    public String mostrarNotificaciones(Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (auth != null && auth.getPrincipal() instanceof UsuarioDetails usuarioDetails) {
+            Usuario usuario = usuarioDetails.getUsuario();
+            model.addAttribute("usuario", usuario); // paso completo
+        } else {
+            return "redirect:/login";
+        }
+
+        return "ventanasUsuario/notificaciones";
+    }
+
+
+
 }

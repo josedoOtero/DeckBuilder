@@ -1,6 +1,5 @@
 // @ts-nocheck
-// ...existing code...
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+var __awaiter = function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -21,6 +20,10 @@ document.addEventListener("DOMContentLoaded", () => __awaiter(this, void 0, void
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const res = yield fetch(`/UsuarioAPI/favoritos/${ID}`);
+                if (!res.ok) {
+                    manejarError("Error al comprobar favorito", new Error("Respuesta no OK"));
+                    return;
+                }
                 const esFavorito = yield res.json();
                 if (esFavorito) {
                     btnSave.textContent = "Quitar de favoritos";
@@ -35,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => __awaiter(this, void 0, void
                 return esFavorito;
             }
             catch (e) {
-                console.error("Error al comprobar favorito", e);
+                manejarError("Error al comprobar favorito", e);
             }
         });
     }
@@ -45,7 +48,7 @@ document.addEventListener("DOMContentLoaded", () => __awaiter(this, void 0, void
             const metodo = esFavorito ? "DELETE" : "POST";
             const res = yield fetch(`/UsuarioAPI/favoritos/${ID}`, { method: metodo });
             if (!res.ok)
-                throw new Error("Error al actualizar favorito");
+                alert("No se pudo actualizar favoritos");
             yield actualizarBotonFavorito();
         }
         catch (e) {
@@ -61,8 +64,10 @@ document.addEventListener("DOMContentLoaded", () => __awaiter(this, void 0, void
             var _a, _b, _c, _d, _e, _f, _g, _h;
             try {
                 const res = yield fetch(`/MazoAPI/${ID}`);
-                if (!res.ok)
-                    throw new Error("No se pudo cargar el mazo");
+                if (!res.ok) {
+                    console.error("No se pudo cargar el mazo");
+                    return;
+                }
                 const mazo = yield res.json();
                 const idsMain = ((_b = (_a = mazo.mainDeck) === null || _a === void 0 ? void 0 : _a.cartas) === null || _b === void 0 ? void 0 : _b.map(c => c.idKonami)) || [];
                 const idsExtra = ((_d = (_c = mazo.extraDeck) === null || _c === void 0 ? void 0 : _c.cartas) === null || _d === void 0 ? void 0 : _d.map(c => c.idKonami)) || [];
@@ -87,7 +92,8 @@ document.addEventListener("DOMContentLoaded", () => __awaiter(this, void 0, void
                 document.querySelector("#btnVerUser").href = `/login/verUser/${((_h = mazo.creador) === null || _h === void 0 ? void 0 : _h.id) || ""}`;
             }
             catch (e) {
-                console.error(e);
+                console.error("Error al cargar el mazo:", e);
+                alert("No se pudo cargar el mazo");
             }
         });
     }
@@ -107,7 +113,7 @@ document.addEventListener("DOMContentLoaded", () => __awaiter(this, void 0, void
                 <div class="card border-0 text-center w-100" style="background:transparent;">
                     <div style="height:240px; width:100%; flex-shrink:0;">
                         <img src="${info.card_images[0].image_url}"
-                             alt="${info.name}"
+                             alt="Imagen de la carta ${info.name}"
                              style="width:100%; height:100%; object-fit:contain; cursor:pointer;">
                     </div>
                 </div>
@@ -146,7 +152,7 @@ document.addEventListener("DOMContentLoaded", () => __awaiter(this, void 0, void
 
                         <div class="col-md-4 d-flex justify-content-center align-self-start">
                             <img src="${carta.card_images[0].image_url}" class="img-fluid rounded"
-                                 style="object-fit:contain; max-height:240px;">
+                                 style="object-fit:contain; max-height:240px;" alt="Imagen de la carta ${carta.name}">
                         </div>
 
                         <div class="col-md-8" style="text-align: left;">
@@ -232,8 +238,10 @@ document.addEventListener("DOMContentLoaded", () => __awaiter(this, void 0, void
                     lista.innerHTML = `<div class="p-3 text-center text-muted">Cargando...</div>`;
                     try {
                         const res = yield fetch(`/ComentarioAPI/mazo/${ID}`);
-                        if (!res.ok)
-                            throw new Error('Error al obtener comentarios');
+                        if (!res.ok) {
+                            manejarError("Error al obtener comentarios", new Error("Respuesta no OK"));
+                            return;
+                        }
                         const comentarios = yield res.json();
                         if (!Array.isArray(comentarios) || comentarios.length === 0) {
                             lista.innerHTML = `<div class="p-3 text-center text-muted">Aún no hay comentarios.</div>`;
@@ -278,7 +286,7 @@ document.addEventListener("DOMContentLoaded", () => __awaiter(this, void 0, void
                                         try {
                                             const r = yield fetch(`/ComentarioAPI/${c.id}`, { method: 'DELETE' });
                                             if (!r.ok)
-                                                throw new Error('Error al eliminar');
+                                                console.error('Error al eliminar');
                                             cargarYRenderizar();
                                         }
                                         catch (e) {
@@ -337,7 +345,8 @@ document.addEventListener("DOMContentLoaded", () => __awaiter(this, void 0, void
                                     });
                                     if (!res.ok) {
                                         const txt = yield res.text();
-                                        throw new Error(txt || 'Error al crear comentario');
+                                        console.error(txt || 'Error al crear comentario');
+                                        return;
                                     }
                                     form.querySelector('#nuevoMensaje').value = '';
                                     ratingWrapper.dataset.value = 0;
@@ -398,7 +407,7 @@ document.addEventListener("DOMContentLoaded", () => __awaiter(this, void 0, void
                             body: JSON.stringify(payload)
                         });
                         if (!res.ok)
-                            throw new Error('Error al guardar');
+                            console.error('Error al guardar');
                         recargar();
                     }
                     catch (e) {
@@ -423,3 +432,8 @@ document.addEventListener("DOMContentLoaded", () => __awaiter(this, void 0, void
     }
     btnComentario.addEventListener('click', abrirModalComentarios);
 }));
+
+function manejarError(mensaje, error) {
+    console.error(mensaje, error);
+    alert(mensaje);
+}

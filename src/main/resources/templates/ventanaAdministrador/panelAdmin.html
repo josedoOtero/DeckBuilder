@@ -1,11 +1,39 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Panel Admin</title>
     <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
     <link th:href="@{/css/header.css}" rel="stylesheet">
 
+    <style>
+        .crear-notif-box {
+            background: linear-gradient(135deg, #0d6efd, #6610f2);
+            color: white;
+            border-radius: 12px;
+            padding: 24px 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .crear-notif-text {
+            font-size: 1.25rem;
+            font-weight: 500;
+        }
+
+        .btn-crear {
+            background-color: #ffffff;
+            color: #0d6efd;
+            font-weight: 600;
+            border-radius: 50px;
+            padding: 10px 22px;
+            transition: all 0.25s ease;
+        }
+
+        .btn-crear:hover {
+            background-color: #e9ecef;
+            transform: translateY(-2px);
+        }
+    </style>
 </head>
 <body>
 
@@ -13,10 +41,20 @@
 <div th:replace="fragments/headerAdmin :: headerAdmin"></div>
 
 <div class="container mt-4">
-    <h1>Bienvenido al Panel de Administración</h1>
-    <p>Selecciona una sección desde el menú.</p>
+
+    <div class="crear-notif-box d-flex align-items-center justify-content-between">
+        <div class="crear-notif-text">
+            Crear notificaciones para todos los usuarios
+        </div>
+
+        <a th:href="@{/admin/crearNotificacion}" class="btn btn-crear">
+            Nueva notificación
+        </a>
+    </div>
+
 </div>
 
 <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>
+

@@ -1,5 +1,4 @@
 // @ts-nocheck
-// ...existing code...
 document.addEventListener("DOMContentLoaded", () => {
     console.log("JS verUsuario.js cargado!");
     if (!window.ID_USUARIO) {
@@ -13,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
 //      DATOS USUARIO
 // ====================
 function cargarDatosUsuario(idUsuario) {
-    fetch(`/UsuarioAPI/${idUsuario}`)
+    fetch(`${window.location.origin}/UsuarioAPI/${idUsuario}`)
         .then(r => {
         if (!r.ok)
             throw new Error("Error al obtener datos del usuario");
@@ -72,35 +71,40 @@ function cargarDatosUsuario(idUsuario) {
 //      MAZOS PÚBLICOS
 // ==============================
 function cargarMazosPublicos(idUsuario) {
-    fetch(`/MazoAPI/publicos/${idUsuario}`)
-        .then(r => {
-        if (!r.ok)
-            throw new Error("Error al cargar los mazos públicos");
-        return r.json();
-    })
+    fetch(`${window.location.origin}/MazoAPI/publicos/${idUsuario}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Error al cargar los mazos públicos");
+            }
+            return response.json();
+        })
         .then(mazos => {
-        const contenedor = document.getElementById("lista_mazos");
-        contenedor.innerHTML = "";
-        if (mazos.length === 0) {
-            contenedor.innerHTML = `
+            const contenedor = document.getElementById("lista_mazos");
+            contenedor.innerHTML = "";
+            if (mazos.length === 0) {
+                contenedor.innerHTML = `
                     <p class="text-muted text-center">
                         Este usuario no tiene mazos públicos.
                     </p>`;
-            return;
-        }
-        mazos.forEach(mazo => {
-            const imagen = mazo.imagenCartaDestacada || "/img/cartaDorso.jpg";
-            const div = document.createElement("div");
-            div.classList.add("mazo-card");
-            div.innerHTML = `
+                return;
+            }
+            mazos.forEach(mazo => {
+                const imagen = mazo.imagenCartaDestacada || "/img/cartaDorso.jpg";
+                const div = document.createElement("div");
+                div.classList.add("mazo-card");
+                div.innerHTML = `
                     <h5>${mazo.nombre || "Mazo sin título"}</h5>
 
                     <a href="/user/visualizadorMazos/${mazo.id}">
                         <img src="${imagen}" alt="Mazo ${mazo.id}" class="mazo-img">
                     </a>
                 `;
-            contenedor.appendChild(div);
+                contenedor.appendChild(div);
+            });
+        })
+        .catch(err => {
+            console.error("Error cargando mazos públicos:", err);
+            const contenedor = document.getElementById("lista_mazos");
+            contenedor.innerHTML = `<p class='text-danger text-center'>Error cargando mazos públicos.</p>`;
         });
-    })
-        .catch(err => console.error("Error cargando mazos públicos:", err));
 }

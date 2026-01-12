@@ -1,124 +1,108 @@
-// @ts-nocheck
-// ...existing code...
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 let cartasFiltradas = [];
 let paginaActual = 1;
 const cartasPorPagina = 180;
 let listaCartas;
+
 document.addEventListener("DOMContentLoaded", () => {
     console.log("Script verCartas cargado");
+
     const filtros = document.querySelector("#filtros_cartas");
     listaCartas = document.querySelector("#lista_cartas .row");
     const detalles = document.querySelector("#detalles_carta");
-    filtros.addEventListener("submit", (e) => __awaiter(this, void 0, void 0, function* () {
+
+    filtros.addEventListener("submit", async (e) => {
         e.preventDefault();
+
         const formData = new FormData(filtros);
         const params = new URLSearchParams();
+
         let atkMin = null, atkMax = null, defMin = null, defMax = null;
+
         for (const [key, value] of formData.entries()) {
-            if (!value.trim())
-                continue;
+            if (!value.trim()) continue;
             const val = value.trim();
+
             switch (key) {
-                case "q":
-                    params.append("fname", val);
-                    break;
-                case "tipo":
-                    params.append("type", val);
-                    break;
-                case "tipoCarta":
-                    params.append("race", val);
-                    break;
-                case "arquetipo":
-                    params.append("archetype", val);
-                    break;
-                case "atributo":
-                    params.append("attribute", val);
-                    break;
-                case "nivel":
-                    params.append("level", val);
-                    break;
-                case "familia":
-                    params.append("race", val);
-                    break;
-                case "atkMin":
-                    atkMin = parseInt(val);
-                    break;
-                case "atkMax":
-                    atkMax = parseInt(val);
-                    break;
-                case "defMin":
-                    defMin = parseInt(val);
-                    break;
-                case "defMax":
-                    defMax = parseInt(val);
-                    break;
-                default:
-                    params.append(key, val);
-                    break;
+                case "q": params.append("fname", val); break;
+                case "tipo": params.append("type", val); break;
+                case "tipoCarta": params.append("race", val); break;
+                case "arquetipo": params.append("archetype", val); break;
+                case "atributo": params.append("attribute", val); break;
+                case "nivel": params.append("level", val); break;
+                case "familia": params.append("race", val); break;
+
+                case "atkMin": atkMin = parseInt(val); break;
+                case "atkMax": atkMax = parseInt(val); break;
+                case "defMin": defMin = parseInt(val); break;
+                case "defMax": defMax = parseInt(val); break;
+
+                default: params.append(key, val); break;
             }
         }
+
         const url = `https://db.ygoprodeck.com/api/v7/cardinfo.php?${params.toString()}`;
+
         try {
-            const response = yield fetch(url);
+            const response = await fetch(url);
+
             if (!response.ok) {
                 listaCartas.innerHTML = `<p class="text-center text-muted mt-3">No cards found.</p>`;
                 return;
             }
-            const data = yield response.json();
+
+            const data = await response.json();
             let cartas = data.data;
+
             cartas = cartas.filter(c => {
-                if (atkMin !== null && c.atk < atkMin)
-                    return false;
-                if (atkMax !== null && c.atk > atkMax)
-                    return false;
-                if (defMin !== null && c.def < defMin)
-                    return false;
-                if (defMax !== null && c.def > defMax)
-                    return false;
+                if (atkMin !== null && c.atk < atkMin) return false;
+                if (atkMax !== null && c.atk > atkMax) return false;
+                if (defMin !== null && c.def < defMin) return false;
+                if (defMax !== null && c.def > defMax) return false;
                 return true;
             });
+
             if (cartas.length === 0) {
                 listaCartas.innerHTML = `<p class="text-center text-muted mt-3">No cards found.</p>`;
                 return;
             }
+
             cartasFiltradas = cartas;
             paginaActual = 1;
+
             mostrarPagina();
-        }
-        catch (error) {
+
+        } catch (error) {
             console.error("Error loading cards:", error);
             listaCartas.innerHTML = `<p class="text-center text-danger">Error loading cards.</p>`;
         }
-    }));
+    });
 });
+
 function mostrarPagina() {
     const inicio = (paginaActual - 1) * cartasPorPagina;
     const fin = inicio + cartasPorPagina;
+
     const cartasPagina = cartasFiltradas.slice(inicio, fin);
+
     mostrarCartas(cartasPagina, listaCartas);
     renderizarPaginacion();
 }
+
 function renderizarPaginacion() {
     let cont = document.getElementById("paginacion");
+
     if (!cont) {
         cont = document.createElement("div");
         cont.id = "paginacion";
         cont.className = "mt-3 text-center";
         listaCartas.parentElement.appendChild(cont);
     }
+
     cont.innerHTML = "";
+
     const totalPaginas = Math.ceil(cartasFiltradas.length / cartasPorPagina);
-    if (totalPaginas <= 1)
-        return;
+    if (totalPaginas <= 1) return;
+
     const btnPrev = document.createElement("button");
     btnPrev.className = "btn btn-secondary mx-1";
     btnPrev.textContent = "« Prev";
@@ -129,19 +113,24 @@ function renderizarPaginacion() {
         window.scrollTo(0, 0);
     };
     cont.appendChild(btnPrev);
+
     let inicio = Math.max(1, paginaActual - 3);
     let fin = Math.min(totalPaginas, paginaActual + 3);
+
     for (let i = inicio; i <= fin; i++) {
         const btn = document.createElement("button");
         btn.className = `btn mx-1 ${i === paginaActual ? "btn-primary" : "btn-outline-primary"}`;
         btn.textContent = i;
+
         btn.onclick = () => {
             paginaActual = i;
             mostrarPagina();
             window.scrollTo(0, 0);
         };
+
         cont.appendChild(btn);
     }
+
     const btnNext = document.createElement("button");
     btnNext.className = "btn btn-secondary mx-1";
     btnNext.textContent = "Next »";
@@ -153,19 +142,26 @@ function renderizarPaginacion() {
     };
     cont.appendChild(btnNext);
 }
+
 function mostrarCartas(cartas, listaCartas) {
     listaCartas.className = "row row-cols-2 row-cols-md-6 g-1";
     listaCartas.innerHTML = "";
+
     if (!cartas || cartas.length === 0) {
         listaCartas.innerHTML = "<p class='text-center text-muted'>No cards found</p>";
         return;
     }
+
     cartas.forEach(carta => {
-        var _a, _b, _c, _d;
         const col = document.createElement("div");
         col.classList.add("col", "d-flex", "justify-content-center");
+
         // ✔ FIX FINAL: idKonami siempre existe
-        const idKonami = (_d = (_a = carta.konami_id) !== null && _a !== void 0 ? _a : (_c = (_b = carta.misc_info) === null || _b === void 0 ? void 0 : _b[0]) === null || _c === void 0 ? void 0 : _c.konami_id) !== null && _d !== void 0 ? _d : carta.id;
+        const idKonami =
+            carta.konami_id ??
+            carta.misc_info?.[0]?.konami_id ??
+            carta.id;
+
         col.innerHTML = `
             <div class="card border-0 text-center w-100" style="background:transparent;">
                 <div style="height:240px; width:100%; flex-shrink:0;">
@@ -175,29 +171,35 @@ function mostrarCartas(cartas, listaCartas) {
                 </div>
             </div>
         `;
+
         listaCartas.appendChild(col);
+
         col.querySelector("img").addEventListener("click", () => {
             mostrarDetallesCarta(carta.id, idKonami, document.querySelector("#zona_info"));
         });
     });
 }
-function mostrarDetallesCarta(id, idKonami, zonaDetalles) {
-    return __awaiter(this, void 0, void 0, function* () {
-        var _a, _b, _c, _d, _e;
-        try {
-            const response = yield fetch(`https://db.ygoprodeck.com/api/v7/cardinfo.php?id=${id}`);
-            if (!response.ok)
-                throw new Error("Failed to get card info.");
-            const data = yield response.json();
-            const carta = data.data[0];
-            // Datos seguros
-            const precios = (_b = (_a = carta.card_prices) === null || _a === void 0 ? void 0 : _a[0]) !== null && _b !== void 0 ? _b : {};
-            const sets = (_c = carta.card_sets) !== null && _c !== void 0 ? _c : [];
-            // Función auxiliar para mostrar solo precio válido
-            const mostrarPrecio = (titulo, valor) => valor && valor !== "0.00"
+
+
+async function mostrarDetallesCarta(id, idKonami, zonaDetalles) {
+    try {
+        const response = await fetch(`https://db.ygoprodeck.com/api/v7/cardinfo.php?id=${id}`);
+        if (!response.ok) throw new Error("Failed to get card info.");
+
+        const data = await response.json();
+        const carta = data.data[0];
+
+        // Datos seguros
+        const precios = carta.card_prices?.[0] ?? {};
+        const sets = carta.card_sets ?? [];
+
+        // Función auxiliar para mostrar solo precio válido
+        const mostrarPrecio = (titulo, valor) =>
+            valor && valor !== "0.00"
                 ? `<p class="mb-1"><strong>${titulo}:</strong> ${valor} €</p>`
                 : "";
-            let html = `
+
+        let html = `
         <div class="card shadow-lg mb-4 border-0" style="max-width: 900px;">
           <div class="card-header bg-dark text-white text-center py-3 rounded-top">
             <h4 class="mb-0">${carta.name}</h4>
@@ -221,8 +223,8 @@ function mostrarDetallesCarta(id, idKonami, zonaDetalles) {
                 ${carta.level ? `<p><strong>Nivel / Rango:</strong> ${carta.level}</p>` : ""}
                 ${carta.linkval ? `<p><strong>Link:</strong> ${carta.linkval}</p>` : ""}
                 ${(carta.atk != null || carta.def != null)
-                ? `<p><strong>ATK / DEF:</strong> ${(_d = carta.atk) !== null && _d !== void 0 ? _d : ""} / ${(_e = carta.def) !== null && _e !== void 0 ? _e : ""}</p>`
-                : ""}
+            ? `<p><strong>ATK / DEF:</strong> ${carta.atk ?? ""} / ${carta.def ?? ""}</p>`
+            : ""}
                 ${carta.archetype ? `<p><strong>Arquetipo:</strong> ${carta.archetype}</p>` : ""}
               </div>
             </div>
@@ -261,45 +263,51 @@ function mostrarDetallesCarta(id, idKonami, zonaDetalles) {
           </div>
         </div>
         `;
-            zonaDetalles.innerHTML = html;
-            // -------------------------------
-            // FAVORITAS: NO TOCO TU LÓGICA
-            // -------------------------------
-            try {
-                const favResponse = yield fetch("/UsuarioAPI/cartasFavoritas");
-                if (!favResponse.ok)
-                    throw new Error("Usuario no autenticado");
-                const cartasFavoritas = yield favResponse.json();
-                const esFavorita = cartasFavoritas.includes(idKonami);
-                const favBtn = document.createElement("button");
-                favBtn.className = "btn mt-2";
-                if (esFavorita) {
-                    favBtn.textContent = "Quitar de favoritas";
-                    favBtn.classList.add("btn-danger");
-                    favBtn.onclick = () => __awaiter(this, void 0, void 0, function* () {
-                        yield fetch(`/UsuarioAPI/cartasFavoritas/${idKonami}`, { method: "DELETE" });
-                        favBtn.textContent = "Agregar a favoritas";
-                        favBtn.classList.replace("btn-danger", "btn-success");
-                    });
-                }
-                else {
+
+        zonaDetalles.innerHTML = html;
+
+        // -------------------------------
+        // FAVORITAS: NO TOCO TU LÓGICA
+        // -------------------------------
+        try {
+            const favResponse = await fetch("/UsuarioAPI/cartasFavoritas");
+            if (!favResponse.ok) throw new Error("Usuario no autenticado");
+
+            const cartasFavoritas = await favResponse.json();
+            const esFavorita = cartasFavoritas.includes(idKonami);
+
+            const favBtn = document.createElement("button");
+            favBtn.className = "btn mt-2";
+
+            if (esFavorita) {
+                favBtn.textContent = "Quitar de favoritas";
+                favBtn.classList.add("btn-danger");
+
+                favBtn.onclick = async () => {
+                    await fetch(`/UsuarioAPI/cartasFavoritas/${idKonami}`, { method: "DELETE" });
                     favBtn.textContent = "Agregar a favoritas";
-                    favBtn.classList.add("btn-success");
-                    favBtn.onclick = () => __awaiter(this, void 0, void 0, function* () {
-                        yield fetch(`/UsuarioAPI/cartasFavoritas/${idKonami}`, { method: "POST" });
-                        favBtn.textContent = "Quitar de favoritas";
-                        favBtn.classList.replace("btn-success", "btn-danger");
-                    });
-                }
-                zonaDetalles.appendChild(favBtn);
+                    favBtn.classList.replace("btn-danger", "btn-success");
+                };
+
+            } else {
+                favBtn.textContent = "Agregar a favoritas";
+                favBtn.classList.add("btn-success");
+
+                favBtn.onclick = async () => {
+                    await fetch(`/UsuarioAPI/cartasFavoritas/${idKonami}`, { method: "POST" });
+                    favBtn.textContent = "Quitar de favoritas";
+                    favBtn.classList.replace("btn-success", "btn-danger");
+                };
             }
-            catch (e) {
-                console.log("Usuario no autenticado, oculto botón de favoritas");
-            }
+
+            zonaDetalles.appendChild(favBtn);
+
+        } catch (e) {
+            console.log("Usuario no autenticado, oculto botón de favoritas");
         }
-        catch (error) {
-            console.error(error);
-            zonaDetalles.innerHTML = "<p class='text-danger'>Error al cargar los detalles de la carta.</p>";
-        }
-    });
+
+    } catch (error) {
+        console.error(error);
+        zonaDetalles.innerHTML = "<p class='text-danger'>Error al cargar los detalles de la carta.</p>";
+    }
 }
