@@ -8,9 +8,6 @@
     <link th:href="@{/css/header.css}" rel="stylesheet">
 
     <style>
-        /* ==============================
-   Layout general
-=============================== */
         html, body {
             height: 100%;
             margin: 0;
@@ -33,9 +30,8 @@
         }
 
         #filtros_cartas_div {
-            flex: 1;
             border-bottom: 2px solid #dee2e6;
-            padding: 0.75rem 1rem;
+            padding: 0.75rem 0.5rem;
             background-color: #f1f3f5;
             box-shadow: inset 0 -2px 4px rgba(0,0,0,0.05);
             border-radius: 8px;
@@ -85,11 +81,13 @@
             margin: 0;
         }
 
-        #lista_cartas::-webkit-scrollbar, #zona_mazo::-webkit-scrollbar {
+        #lista_cartas::-webkit-scrollbar,
+        #zona_mazo::-webkit-scrollbar {
             width: 6px;
         }
 
-        #lista_cartas::-webkit-scrollbar-thumb, #zona_mazo::-webkit-scrollbar-thumb {
+        #lista_cartas::-webkit-scrollbar-thumb,
+        #zona_mazo::-webkit-scrollbar-thumb {
             background-color: #ccc;
             border-radius: 10px;
         }
@@ -110,9 +108,7 @@
             transform: translateY(-2px);
         }
 
-        /* ==============================
-           Botones inclinados modernos
-        =============================== */
+        /* Botones inclinados modernos */
         .boton1 {
             position: relative;
             display: inline-block;
@@ -122,49 +118,54 @@
             color: #fff;
             border: none;
             cursor: pointer;
-
-            /* Forma inclinada */
             clip-path: polygon(12% 0%, 100% 0%, 88% 100%, 0% 100%);
-
-            /* Sombra sutil */
             box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-
-            /* Transición suave para hover */
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
-        /* Hover moderno para todos los botones */
         .boton1:hover {
             transform: translateY(-3px) scale(1.05);
             box-shadow: 0 6px 12px rgba(0,0,0,0.25);
         }
 
-        /* Colores individuales de cada botón */
-        .boton1-secondary { background-color: #6c757d; } /* Export gris */
-        .boton1-danger { background-color: #dc3545; }     /* Delete rojo */
-        .boton1-success { background-color: #198754; }    /* Save verde */
-        .boton1-default { background-color: #0d6efd; }    /* Ordenar azul */
-
-        /* Mantener texto blanco */
+        .boton1-secondary { background-color: #6c757d; }
+        .boton1-danger { background-color: #dc3545; }
+        .boton1-success { background-color: #198754; }
+        .boton1-default { background-color: #0d6efd; }
         .boton1-secondary,
         .boton1-danger,
         .boton1-success,
-        .boton1-default {
-            color: #fff;
-        }
+        .boton1-default { color: #fff; }
 
-        /* Full width y tamaños pequeños */
+        #paginacion { display: none; }
         .w-100 { width: 100%; }
         .btn-sm { font-size: 0.75rem; padding: 0.25rem 0.5rem; }
 
-        /* ==============================
-           Botones clásicos (sin clip) para filtros y main/side deck
-        =============================== */
-        .boton-clasico {
-            border-radius: 6px;
-            transition: all 0.25s ease;
+        .boton-clasico { border-radius: 6px; transition: all 0.25s ease; }
+
+        /* Botones zona mazo */
+        #zona_mazo .btn { transition: all 0.25s ease; }
+        #btnMainExtra:hover, #btnMainExtra.active-zone {
+            background-color: #0d6efd !important; color: #fff !important;
+            border-color: #0d6efd !important; box-shadow: 0 4px 10px rgba(13,110,253,0.35);
+            transform: translateY(-2px);
+        }
+        #btnSide:hover, #btnSide.active-zone {
+            background-color: #dc3545 !important; color: #fff !important;
+            border-color: #dc3545 !important; box-shadow: 0 4px 10px rgba(220,53,69,0.35);
+            transform: translateY(-2px);
         }
 
+        .menu-carta {
+            z-index: 10;
+            min-width: 120px;
+        }
+        .menu-carta button { font-size: 0.8rem; }
+
+        /* Contador al lado del título */
+        .contador-cartas {
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -175,7 +176,7 @@
     <div id="zona_cartas">
         <div id="filtros_cartas_div" class="p-3 rounded">
             <form id="filtros_cartas">
-
+                <!-- filtros: buscador, tipo, atributos, etc. -->
                 <div class="row g-2 mb-2">
                     <div class="col-md-6">
                         <input type="text" class="form-control" name="q" placeholder="Search by text">
@@ -201,7 +202,6 @@
                     <div class="col-md-4">
                         <select class="form-select" name="tipoCarta">
                             <option value="">Monster Race</option>
-                            <!-- Opciones -->
                         </select>
                     </div>
                     <div class="col-md-4">
@@ -210,7 +210,6 @@
                     <div class="col-md-4">
                         <select class="form-select" name="atributo">
                             <option value="">Attribute</option>
-                            <!-- Opciones -->
                         </select>
                     </div>
                 </div>
@@ -230,20 +229,22 @@
                     <div class="col-md-3">
                         <select class="form-select" name="familia">
                             <option value="">Race</option>
-                            <!-- Opciones -->
                         </select>
                     </div>
                 </div>
 
                 <div class="row g-2">
                     <div class="col-2">
-                        <button id="btnFavoritos" type="button" class="btn btn-warning boton-clasico w-100">Cartas Favoritas</button>
+                        <button id="btnFavoritos" type="button" class="text-white btn btn-warning boton-clasico w-100">
+                            <i class="bi bi-star-fill"></i> Cartas Favoritas
+                        </button>
                     </div>
                     <div class="col-10">
-                        <button name="botonFiltro" type="submit" class="btn btn-primary boton-clasico w-100">Apply Filters</button>
+                        <button name="botonFiltro" type="submit" class="btn btn-primary boton-clasico w-100">
+                            <i class="bi bi-funnel-fill"></i> Apply Filters
+                        </button>
                     </div>
                 </div>
-
             </form>
         </div>
 
@@ -255,24 +256,20 @@
              style="width:100%; gap:5px; background-color:#f1f3f5;">
             <div class="d-flex align-items-center" style="gap:5px;">
                 <input type="text" id="nombreMazo" class="form-control form-control-sm mx-2" placeholder="Deck name" style="width:250px; height:30px;">
-
                 <select id="estadoMazo" class="form-select form-select-sm mx-2" style="width:150px; height:30px;">
                     <option value="publico">Public</option>
                     <option value="privado">Private</option>
                     <option value="incompleto">Incomplete</option>
                 </select>
-
                 <div style="display:flex; flex-direction:column; align-items:center;" class="mx-2">
-                    <img id="cartaDestacadaPreview"
-                         src="/img/cartaDorso.jpg"
+                    <img id="cartaDestacadaPreview" src="/img/cartaDorso.jpg"
                          style="width:50px; height:65px; cursor:pointer; border:2px solid #444; border-radius:3px;"
                          title="Click to change featured card">
-
                     <input type="hidden" id="cartaDestacada" value="/img/cartaDorso.jpg">
                 </div>
             </div>
 
-            <div id="paginacion" class="d-flex justify-content-center align-items-center mt-3 gap-2 border-top py-2 px-3 rounded bg-light shadow-sm"></div>
+            <div id="paginacion" class="justify-content-center align-items-center mt-3 gap-2 border-top py-2 px-3 rounded bg-light shadow-sm"></div>
 
             <div class="d-flex align-items-center" style="gap:5px;">
                 <button id="btnExport" class="boton1 boton1-secondary btn-sm px-2 w-auto">Export</button>
@@ -281,34 +278,45 @@
                 <button id="btnSave" class="boton1 boton1-success btn-sm px-2 w-auto">Save</button>
             </div>
         </div>
-
     </div>
 
     <div id="zona_mazo" class="p-3">
-
         <div class="d-flex justify-content-around mb-3">
             <button id="btnMainExtra" class="btn btn-outline-primary boton-clasico btn-sm w-auto">Main / Extra Deck</button>
             <button id="btnSide" class="btn btn-outline-danger boton-clasico btn-sm w-auto">Side Deck</button>
         </div>
 
+        <!-- Main Deck con contador -->
         <div id="main_deck" class="mb-3 flex-grow-2">
-            <h6 class="text-center text-muted">Main Deck</h6>
+            <h6 class="text-muted d-flex justify-content-between align-items-center">
+                <span>Main Deck</span>
+                <span class="contador-cartas">0/60</span>
+            </h6>
             <div class="row row-cols-5 g-1"></div>
         </div>
 
+        <!-- Extra Deck con contador -->
         <div id="extra_deck" class="mb-3 flex-grow-1">
-            <h6 class="text-center text-muted">Extra Deck</h6>
+            <h6 class="text-muted d-flex justify-content-between align-items-center">
+                <span>Extra Deck</span>
+                <span class="contador-cartas">0/15</span>
+            </h6>
             <div class="row row-cols-5 g-1"></div>
         </div>
 
+        <!-- Side Deck con contador -->
         <div id="side_deck" class="flex-grow-1">
-            <h6 class="text-center text-muted">Side Deck</h6>
+            <h6 class="text-muted d-flex justify-content-between align-items-center">
+                <span>Side Deck</span>
+                <span class="contador-cartas">0/15</span>
+            </h6>
             <div class="row row-cols-5 g-1"></div>
         </div>
     </div>
 
 </div>
 
+<!-- Modales -->
 <div class="modal fade" id="modalCarta" tabindex="-1" aria-labelledby="modalCartaLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content bg-dark text-white border-0">
@@ -327,16 +335,13 @@
 <div class="modal fade" id="modalDestacada" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content bg-dark text-white border-0">
-
             <div class="modal-header border-0">
                 <h5 class="modal-title text-white">Select Featured Card</h5>
                 <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-
             <div class="modal-body">
                 <div id="destacadaSelector" style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;"></div>
             </div>
-
         </div>
     </div>
 </div>

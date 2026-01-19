@@ -14,8 +14,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     const estadoSelect = document.querySelector("#estadoMazo");
 
     const currentUrl = window.location.pathname;
-    const match = currentUrl.match(/\/constructorMazos\/(\d+)/i);
-    const ID_MAZO = match ? match[1] : null;
+    let match = currentUrl.match(/\/constructorMazos\/(\d+)/i);
+    let ID_MAZO = match ? match[1] : null;
 
     let cartasFiltradas = [];
     let zonaSeleccionada = "mainExtra";
@@ -26,6 +26,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     let cartasMazoInfo = {};
     let _actualizandoInfoMazo = false;
 
+    // =======================
+    // Cargar mazo existente
+    // =======================
     async function cargarMazoExistente() {
         if (!ID_MAZO) return;
         try {
@@ -49,16 +52,16 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
+    // =======================
+    // Botón cartas favoritas
+    // =======================
     btnFavoritos.addEventListener("click", async e => {
         e.preventDefault();
         try {
             const response = await fetch("/UsuarioAPI/cartasFavoritas", { method: "GET", credentials: "include" });
             if (!response.ok) throw new Error();
             const idsFavoritas = await response.json();
-            if (idsFavoritas.length === 0) {
-                alert("No tienes cartas favoritas.");
-                return;
-            }
+            if (!idsFavoritas.length) { alert("No tienes cartas favoritas."); return; }
 
             const url = `https://db.ygoprodeck.com/api/v7/cardinfo.php?id=${idsFavoritas.join(",")}`;
             const res = await fetch(url);
@@ -72,6 +75,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     });
 
+    // =======================
+    // Exportar mazo
+    // =======================
     function exportDeck() {
         const nombreMazoVal = nombreMazo.value || 'mi_mazo';
         const estadoMazoVal = estadoSelect.value;
@@ -115,6 +121,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     document.getElementById('btnExport').addEventListener('click', exportDeck);
 
+    // =======================
+    // Ordenar mazo
+    // =======================
     function ordenarMazo() {
         const prioridadTipo = {
             "Normal Monster": 1, "Effect Monster": 1, "Flip Effect Monster": 1, "Tuner Monster": 1, "Ritual Monster": 1,
@@ -149,6 +158,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (zonaSeleccionada === "side") document.querySelector("#btnSide").classList.add("active-zone");
     }
 
+    // =======================
+    // Mostrar selector carta destacada
+    // =======================
     function mostrarSelectorDestacada() {
         const cont = document.getElementById("destacadaSelector");
         cont.innerHTML = "";
@@ -163,7 +175,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const todas = [...mazo.main, ...mazo.extra, ...mazo.side];
         const idsUnicos = [...new Set(todas.map(c => c.idKonami))];
 
-        if (idsUnicos.length === 0) return;
+        if (!idsUnicos.length) return;
 
         fetch(`https://db.ygoprodeck.com/api/v7/cardinfo.php?id=${idsUnicos.join(",")}`)
             .then(res => res.json())
@@ -199,6 +211,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         bootstrap.Modal.getInstance(document.getElementById("modalDestacada")).hide();
     }
 
+    // =======================
+    // Filtros cartas
+    // =======================
     filtros.addEventListener("submit", async e => {
         e.preventDefault();
         const formData = new FormData(filtros);
@@ -257,10 +272,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         cartas.forEach(carta => {
             const col = document.createElement("div");
             col.classList.add("col", "d-flex", "justify-content-center");
+            const imgSrc = carta.card_images?.[0]?.image_url || "https://via.placeholder.com/150x210?text=No+Image";
             col.innerHTML = `
                 <div class="card border-0 text-center w-100" style="background:transparent;">
                     <div style="height:240px; width:100%;">
-                        <img src="${carta.card_images[0].image_url}" alt="${carta.name}" style="width:100%; height:100%; object-fit:contain; cursor:pointer;">
+                        <img src="${imgSrc}" alt="${carta.name}" style="width:100%; height:100%; object-fit:contain; cursor:pointer;">
                     </div>
                 </div>
             `;
@@ -269,11 +285,16 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
+    // =======================
+    // Renderizar paginacion
+    // =======================
     function renderizarPaginacion() {
         const cont = document.getElementById("paginacion");
         cont.innerHTML = "";
         const totalPaginas = Math.ceil(cartasFiltradas.length / cartasPorPagina);
-        if (totalPaginas <= 1) return;
+
+        if (totalPaginas <= 1) { cont.style.display = "none"; return; }
+        cont.style.display = "flex";
 
         const btnPrev = document.createElement("button");
         btnPrev.className = "btn btn-secondary mx-1";
@@ -303,6 +324,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         cont.appendChild(btnNext);
     }
 
+    // =======================
+    // Agregar carta al mazo
+    // =======================
     async function agregarCartaAlMazo(carta, zona) {
         const idKonami = carta.id;
         const totalCopias = [...mazo.main, ...mazo.extra, ...mazo.side].filter(c => c.idKonami === idKonami).length;
@@ -326,6 +350,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         mostrarMazo();
     }
 
+    // =======================
+    // Actualizar info mazo
+    // =======================
     async function actualizarInfoMazo() {
         if (_actualizandoInfoMazo) return;
         _actualizandoInfoMazo = true;
@@ -342,17 +369,27 @@ document.addEventListener("DOMContentLoaded", async () => {
             (data.data || []).forEach(c => { cartasMazoInfo[c.id] = c; });
         } catch (err) {
             console.error(err);
-        } finally {
-            _actualizandoInfoMazo = false;
-        }
+        } finally { _actualizandoInfoMazo = false; }
     }
 
+    // =======================
+    // Click global cerrar menus
+    // =======================
+    document.addEventListener("click", (e) => {
+        if (e.target.closest(".menu-carta") || e.target.closest(".card img")) return;
+        document.querySelectorAll(".menu-carta").forEach(m => m.remove());
+    });
+
+    // =======================
+    // Renderizar zona con contador
+    // =======================
     function renderZona(container, cartas, zona) {
         const row = container.querySelector(".row");
         row.innerHTML = "";
+
         cartas.forEach((carta, index) => {
             const cartaInfo = cartasMazoInfo[carta.idKonami];
-            const imgSrc = cartaInfo ? cartaInfo.card_images[0].image_url : "img/noimage.jpg";
+            const imgSrc = cartaInfo?.card_images?.[0]?.image_url || "https://via.placeholder.com/150x210?text=No+Image";
             const name = cartaInfo ? cartaInfo.name : `Carta ${carta.idKonami}`;
 
             const col = document.createElement("div");
@@ -360,34 +397,64 @@ document.addEventListener("DOMContentLoaded", async () => {
             col.innerHTML = `
                 <div class="card border-0 text-center w-100" style="background:transparent;">
                     <div style="height:120px; width:100%;">
-                        <img src="${imgSrc}" alt="${name}" style="width:100%; height:100%; object-fit:contain;">
-                    </div>
-                    <div class="card-body p-0 d-flex justify-content-start">
-                        <button class="btn btn-sm btn-primary ver-carta" data-index="${index}" style="font-size:0.9rem; border-radius:0;">
-                            <i class="bi bi-eye"></i>
-                        </button>
-                        <button class="btn btn-sm btn-danger quitar-carta" data-zona="${zona}" data-index="${index}" style="font-size:0.9rem; border-radius:0;">
-                            <i class="bi bi-trash"></i>
-                        </button>
+                        <img src="${imgSrc}" alt="${name}" style="width:100%; height:100%; object-fit:contain; cursor:pointer;">
                     </div>
                 </div>
             `;
             row.appendChild(col);
 
-            col.querySelector(".ver-carta").addEventListener("click", () => mostrarCartaModal(cartaInfo));
-            col.querySelector(".quitar-carta").addEventListener("click", () => {
-                mazo[zona] = mazo[zona].filter((_, i) => i !== index);
-                mostrarMazo();
+            col.querySelector("img").addEventListener("click", (e) => {
+                e.stopPropagation();
+                document.querySelectorAll(".menu-carta").forEach(m => m.remove());
+
+                const menu = document.createElement("div");
+                menu.className = "menu-carta position-absolute bg-white border shadow p-1 rounded";
+                menu.style.top = "0";
+                menu.style.left = "0";
+                menu.innerHTML = `
+                    <button class="btn btn-sm btn-primary w-100 mb-1">Ver detalles</button>
+                    <button class="btn btn-sm btn-danger w-100">Quitar carta</button>
+                `;
+
+                const btnVer = menu.children[0];
+                const btnQuitar = menu.children[1];
+
+                btnVer.addEventListener("click", () => mostrarCartaModal(cartaInfo));
+                btnQuitar.addEventListener("click", () => {
+                    mazo[zona] = mazo[zona].filter((_, i) => i !== index);
+                    mostrarMazo();
+                });
+
+                col.style.position = "relative";
+                col.appendChild(menu);
             });
         });
+
+        // Agregar contador al final
+        let maxCartas = 60;
+        if (zona === "extra" || zona === "side") maxCartas = 15;
+        let contador = container.querySelector(".contador-cartas");
+        if (!contador) {
+            contador = document.createElement("div");
+            contador.className = "contador-cartas text-end text-muted mt-1";
+            container.appendChild(contador);
+        }
+        contador.textContent = `${cartas.length}/${maxCartas}`;
     }
 
+    // =======================
+    // Mostrar mazo completo
+    // =======================
     function mostrarMazo() {
         renderZona(mainDeck, mazo.main, "main");
         renderZona(extraDeck, mazo.extra, "extra");
         renderZona(sideDeck, mazo.side, "side");
+        actualizarEstadoSelect();
     }
 
+    // =======================
+    // Modal carta
+    // =======================
     function mostrarCartaModal(cartaInfo) {
         if (!cartaInfo) return;
         const modalImg = document.getElementById("imgCartaModal");
@@ -402,14 +469,17 @@ document.addEventListener("DOMContentLoaded", async () => {
         new bootstrap.Modal(document.getElementById("modalCarta")).show();
     }
 
+    // =======================
+    // Guardar mazo
+    // =======================
     async function guardarMazo() {
         const payload = {
             nombre: nombreMazo.value,
             estado: estadoSelect.value,
             imagenCartaDestacada: cartaDestacada.value,
-            mainDeck: { cartas: mazo.main },
-            extraDeck: { cartas: mazo.extra },
-            sideDeck: { cartas: mazo.side }
+            mainDeck: { cartas: mazo.main.map(c => ({ idKonami: c.idKonami })) },
+            extraDeck: { cartas: mazo.extra.map(c => ({ idKonami: c.idKonami })) },
+            sideDeck: { cartas: mazo.side.map(c => ({ idKonami: c.idKonami })) }
         };
 
         const options = {
@@ -420,28 +490,93 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         const url = ID_MAZO ? `/MazoAPI/${ID_MAZO}` : `/MazoAPI`;
 
-        const resp = await fetch(url, options);
-        if (!resp.ok) {
+        try {
+            const resp = await fetch(url, options);
+            if (!resp.ok) { alert("Error guardando el mazo"); return; }
+            const data = await resp.json();
+            alert("Mazo guardado correctamente");
+
+            if (!ID_MAZO) ID_MAZO = data.id;
+        } catch (err) {
+            console.error(err);
             alert("Error guardando el mazo");
-            return;
-        }
-
-        const data = await resp.json();
-        alert("Mazo guardado correctamente");
-
-        if (!ID_MAZO) {
-            window.location.href = `/user/constructorMazos/${data.id}`;
         }
     }
 
     btnSave.addEventListener("click", guardarMazo);
 
-    btnDelete.addEventListener("click", () => {
+    btnDelete.addEventListener("click", async () => {
         if (!confirm("¿Estás seguro que deseas eliminar el mazo?")) return;
         if (!ID_MAZO) { alert("No hay mazo para eliminar"); return; }
-        fetch(`/MazoAPI/${ID_MAZO}`, { method: "DELETE" })
-            .then(r => { if (r.ok) { alert("Mazo eliminado"); window.location.href = "/constructorMazos"; } });
+        try {
+            const resp = await fetch(`/MazoAPI/${ID_MAZO}`, { method: "DELETE" });
+            if (resp.ok) {
+                alert("Mazo eliminado");
+                window.location.href = "http://localhost:8080/user/misMazos"; // ← URL nueva
+            }
+        } catch (err) {
+            alert("Error eliminando el mazo");
+        }
     });
 
+    function actualizarEstadoSelect() {
+        const mainCount = mazo.main.length;
+
+        for (const option of estadoSelect.options) {
+            if (option.value !== "incompleto") {
+                option.disabled = mainCount < 40;
+            }
+        }
+
+        if (mainCount < 40 && estadoSelect.value !== "incompleto") {
+            estadoSelect.value = "incompleto";
+        }
+    }
+
+    async function cargarFiltrosDinamicos() {
+        try {
+            // Traemos todas las cartas para extraer los valores únicos
+            const response = await fetch("https://db.ygoprodeck.com/api/v7/cardinfo.php");
+            if (!response.ok) throw new Error("Error cargando cartas");
+
+            const data = await response.json();
+            const cartas = data.data || [];
+
+            // Helper para llenar select con valores únicos usando name en lugar de id
+            function llenarSelect(selectName, valores) {
+                const select = document.querySelector(`[name="${selectName}"]`);
+                if (!select) return;
+                // Limpiar opciones existentes excepto la primera (placeholder)
+                select.querySelectorAll("option:not(:first-child)").forEach(opt => opt.remove());
+
+                valores.sort().forEach(val => {
+                    if (!val) return;
+                    const option = document.createElement("option");
+                    option.value = val;
+                    option.textContent = val;
+                    select.appendChild(option);
+                });
+            }
+
+            // Extraemos valores únicos de los filtros
+            const tipos = [...new Set(cartas.map(c => c.type).filter(v => v))];
+            const razas = [...new Set(cartas.map(c => c.race).filter(v => v))];
+            const atributos = [...new Set(cartas.map(c => c.attribute).filter(v => v))];
+            const arquetipos = [...new Set(cartas.map(c => c.archetype).filter(v => v))];
+            const niveles = [...new Set(cartas.map(c => c.level).filter(v => v !== undefined && v !== null))];
+
+            // Llenamos los selects usando name
+            llenarSelect("tipo", tipos);
+            llenarSelect("tipoCarta", razas);       // Monster Race
+            llenarSelect("familia", razas);         // Race
+            llenarSelect("atributo", atributos);
+            llenarSelect("arquetipo", arquetipos);
+            llenarSelect("nivel", niveles.map(n => n.toString()));
+        } catch (err) {
+            console.error("Error cargando filtros dinámicos:", err);
+        }
+    }
+
+    cargarFiltrosDinamicos();
     cargarMazoExistente();
 });

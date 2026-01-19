@@ -6,13 +6,11 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const response = await fetch("/MazoAPI/usuario");
             if (!response.ok) {
-                console.error("Error al obtener mazos del usuario");
                 listaMazos.innerHTML = '<p class="text-center text-danger">No se pudieron cargar tus mazos.</p>';
                 return [];
             }
             return await response.json();
         } catch (error) {
-            console.error("Error al obtener mazos del usuario:", error);
             listaMazos.innerHTML = '<p class="text-center text-danger">No se pudieron cargar tus mazos.</p>';
             return [];
         }
@@ -22,15 +20,22 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const response = await fetch("/UsuarioAPI/favoritos");
             if (!response.ok) {
-                console.error("Error al obtener mazos guardados");
                 listaMazosGuardados.innerHTML = '<p class="text-center text-danger">No se pudieron cargar los mazos guardados.</p>';
                 return [];
             }
             return await response.json();
         } catch (error) {
-            console.error("Error al obtener mazos guardados:", error);
             listaMazosGuardados.innerHTML = '<p class="text-center text-danger">No se pudieron cargar los mazos guardados.</p>';
             return [];
+        }
+    }
+
+    function obtenerClaseEstado(estado) {
+        switch (estado) {
+            case "publico": return "estado-publico";
+            case "privado": return "estado-privado";
+            case "incompleto": return "estado-incompleto";
+            default: return "estado-privado";
         }
     }
 
@@ -40,18 +45,28 @@ document.addEventListener("DOMContentLoaded", () => {
             contenedor.innerHTML = '<p class="text-center text-muted">No hay mazos.</p>';
             return;
         }
+
         const row = document.createElement("div");
         row.classList.add("row", "g-4");
+
         mazos.forEach(mazo => {
             const col = document.createElement("div");
             col.classList.add("col-12", "col-sm-6", "col-md-4", "col-lg-3", "text-center");
+
             const imagen = mazo.imagenCartaDestacada || "/IMG/cartaDorso.jpg";
             const url = contenedor.id === "lista_mazos"
                 ? `/user/constructorMazos/${mazo.id}`
                 : `/login/visualizadorMazos/${mazo.id}`;
+            const estado = mazo.estado || "privado";
+            const claseEstado = obtenerClaseEstado(estado);
+
             col.innerHTML = `
-                <div class="card border-0" style="background: none;">
-                    <h5 class="mb-2">${mazo.nombre || "Mazo sin título"}</h5>
+                <div class="mazo-card">
+                    <h5 class="mb-1">${mazo.nombre || "Mazo sin título"}</h5>
+                    <div class="estado-mazo">
+                        <span class="estado-pelotita ${claseEstado}"></span>
+                        <span>${estado.charAt(0).toUpperCase() + estado.slice(1)}</span>
+                    </div>
                     <a href="${url}">
                         <img src="${imagen}" class="mazo-img" alt="Mazo ${mazo.id}">
                     </a>
@@ -59,6 +74,7 @@ document.addEventListener("DOMContentLoaded", () => {
             `;
             row.appendChild(col);
         });
+
         contenedor.appendChild(row);
     }
 
