@@ -177,4 +177,19 @@ public class UsuarioControllerAPI {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body("No se pudo obtener ID del usuario");
     }
+
+    @GetMapping("/por-nombre/{nombre}")
+    public ResponseEntity<Long> getIdPorNombre(@PathVariable String nombre) {
+        try {
+            Usuario usuario = usuarioService.findByNombre(nombre);
+            if (usuario == null) {
+                log.warn("Usuario no encontrado: {}", nombre);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            }
+            return ResponseEntity.ok(usuario.getId());
+        } catch (Exception e) {
+            log.error("Error al buscar usuario por nombre: {}", nombre, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
 }

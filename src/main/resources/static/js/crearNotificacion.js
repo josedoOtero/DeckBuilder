@@ -40,7 +40,7 @@ function crearNotificacion(e) {
         .then(data => {
             mostrarAlerta("Notificación creada correctamente ✔", "success");
             document.getElementById("form-notificacion").reset();
-            if (typeof cargarNotificaciones === "function") cargarNotificaciones();
+            if (typeof cargarNotificacionesMensajes === "function") cargarNotificacionesMensajes();
         })
         .catch(err => {
             mostrarAlerta("Error al crear la notificación: " + err.message, "danger");

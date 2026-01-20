@@ -33,4 +33,10 @@ public class AdministradorController {
         model.addAttribute("currentUri", request.getRequestURI());
         return "ventanaAdministrador/crear-notificacion";
     }
+
+    @GetMapping("/crearMensaje")
+    public String crearMensaje(Model model, HttpServletRequest request) {
+        model.addAttribute("currentUri", request.getRequestURI());
+        return "ventanaAdministrador/crear-mensaje";
+    }
 }

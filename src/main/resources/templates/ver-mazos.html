@@ -3,22 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <title>Buscar mazos</title>
+
     <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
     <link th:href="@{/css/header.css}" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
     <style>
         body {
-            background-color: #f8f9fa;
+            background-color: #f4f7fb;
             height: 100vh;
             display: flex;
             flex-direction: column;
         }
 
+        /* CONTENEDOR PRINCIPAL */
         #contenedorMazos1 {
-            background-color: #fff;
-            border-radius: 20px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            padding: 1.5rem;
+            background-color: #ffffff;
+            box-shadow: 0 6px 18px rgba(13, 110, 253, 0.12);
+            padding: 1.8rem;
             overflow-y: auto;
             width: 100%;
         }
@@ -27,35 +29,92 @@
             width: 100%;
         }
 
-        h2 {
-            text-align: center;
-            font-weight: 700;
-            margin-bottom: 1rem;
+        /* ===== BARRA DE BÚSQUEDA AZUL PERSONALIZADA ===== */
+        .barra-busqueda {
+            display: flex;
+            align-items: center;
+            max-width: 640px;
+            border: 2px solid #0d6efd;
+            background-color: #ffffff;
         }
 
+        .barra-busqueda input {
+            flex: 1;
+            border: none;
+            padding: 12px 14px;
+            font-size: 0.95rem;
+            outline: none;
+            background-color: transparent;
+            color: #212529;
+        }
+
+        .barra-busqueda input::placeholder {
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        .barra-busqueda input:not(:last-of-type) {
+            border-right: 1px solid #cfe2ff;
+        }
+
+        .barra-busqueda button {
+            border: none;
+            background-color: #0d6efd;
+            color: #ffffff;
+            padding: 0 22px;
+            height: 100%;
+            font-size: 1.1rem;
+            transition: background-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .barra-busqueda button:hover {
+            background-color: #0b5ed7;
+            box-shadow: inset 0 -2px 0 rgba(0,0,0,0.15);
+        }
+
+        .barra-busqueda:focus-within {
+            box-shadow: 0 0 0 2px rgba(13,110,253,0.25);
+        }
+
+        /* MAZOS */
         .mazo-img {
             height: 200px;
-            border-radius: 15px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            transition: transform 0.3s ease;
+            box-shadow: 0 6px 14px rgba(13,110,253,0.2);
+            transition: transform 0.25s ease;
         }
 
         .mazo-img:hover {
             transform: scale(1.05);
         }
+
     </style>
 </head>
+
 <body>
+
 <div th:replace="fragments/header :: header"></div>
 
-<div class="container-fluid p-3">
+<div class="container-fluid p-4">
 
-    <div class="d-flex justify-content-center mb-4 gap-2 flex-wrap">
-        <input type="text" id="busquedaNombreMazo" class="form-control" placeholder="Buscar por nombre del mazo" style="max-width:250px;">
-        <input type="text" id="busquedaNombreCreador" class="form-control" placeholder="Buscar por creador" style="max-width:250px;">
-        <button id="btnBuscar" class="btn btn-primary">Buscar</button>
+    <div class="mb-4 d-flex justify-content-end">
+        <div class="barra-busqueda">
+
+            <input type="text"
+                   id="busquedaNombreMazo"
+                   placeholder="Nombre del mazo">
+
+            <input type="text"
+                   id="busquedaNombreCreador"
+                   placeholder="Creador">
+
+            <button id="btnBuscar" title="Buscar">
+                <i class="bi bi-search"></i>
+            </button>
+
+        </div>
     </div>
 
+    <!-- LISTADO DE MAZOS -->
     <div id="contenedorMazos1">
         <div id="lista_mazos"></div>
     </div>
@@ -64,6 +123,6 @@
 
 <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 <script th:src="@{/js/verMazos.js}"></script>
-</body>
 
+</body>
 </html>

@@ -1,17 +1,24 @@
 document.addEventListener("DOMContentLoaded", () => {
     const filtroTipo = document.getElementById("filtro-tipo");
     if (filtroTipo) {
-        filtroTipo.addEventListener("change", cargarNotificaciones);
+        filtroTipo.addEventListener("change", cargarNotificacionesMensajes);
     }
 
-    cargarNotificaciones();
+    cargarNotificacionesMensajes();
 });
 
-function cargarNotificaciones() {
+function cargarNotificacionesMensajes() {
     const filtro = document.getElementById("filtro-tipo");
     const tipo = filtro ? filtro.value : "todo";
 
-    const usuarioId = document.getElementById("usuario-id")?.value || 0;
+    // Obtener ID del usuario logueado desde el div oculto
+    const usuarioDiv = document.getElementById("usuario-logueado");
+    const usuarioId = usuarioDiv?.getAttribute("data-usuario-id");
+    if (!usuarioId) {
+        console.error("No se pudo obtener el ID del usuario logueado.");
+        return;
+    }
+
     fetch(`${window.location.origin}/NotificacionAPI/todos/${usuarioId}`)
         .then(response => {
             if (!response.ok) {
@@ -25,9 +32,9 @@ function cargarNotificaciones() {
             let filtrados = data;
 
             if (tipo === "mensajes") {
-                filtrados = data.filter(item => item.categoria === "mensaje");
+                filtrados = data.filter(item => item.tipo === "mensaje");
             } else if (tipo === "notificaciones") {
-                filtrados = data.filter(item => item.categoria === "notificacion");
+                filtrados = data.filter(item => item.tipo === "notificacion");
             }
 
             mostrarNotificaciones(filtrados);
@@ -66,8 +73,9 @@ function mostrarNotificaciones(lista) {
         const card = document.createElement("div");
         card.className = "card notificacion-card shadow-sm mb-2";
 
-        const mensajeCorto = item.mensaje.length > 100 ? item.mensaje.slice(0, 100) + "..." : item.mensaje;
-        const tieneMas = item.mensaje.length > 100;
+        const mensaje = item.mensaje || "";
+        const mensajeCorto = mensaje.length > 100 ? mensaje.slice(0, 100) + "..." : mensaje;
+        const tieneMas = mensaje.length > 100;
 
         card.innerHTML = `
             <div class="card-body">
@@ -75,8 +83,12 @@ function mostrarNotificaciones(lista) {
                 <h5 class="card-title mt-2">${item.titulo || "Sin título"}</h5>
                 <p class="card-text">
                     <span class="mensaje-corto">${mensajeCorto}</span>
-                    ${tieneMas ? `<span class="mensaje-completo" style="display:none">${item.mensaje.slice(100)}</span>
-                    <button class="btn-ver-mas btn btn-link p-0">Ver más</button>` : ""}
+                    ${
+            tieneMas
+                ? `<span class="mensaje-completo" style="display:none">${mensaje.slice(100)}</span>
+                               <button class="btn-ver-mas btn btn-link p-0">Ver más</button>`
+                : ""
+        }
                 </p>
             </div>
             <div class="card-footer bg-white border-0 text-end">

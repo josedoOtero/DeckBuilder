@@ -27,28 +27,24 @@ public class NotificacionControllerAPI {
         this.mensajeService = mensajeService;
     }
 
-    // 1️⃣ Listar todos los mensajes
     @GetMapping("/mensajes")
     public ResponseEntity<List<Mensaje>> listarMensajes() {
         List<Mensaje> mensajes = mensajeService.findAll();
         return ResponseEntity.ok(mensajes);
     }
 
-    // 2️⃣ Listar mensajes de un usuario
     @GetMapping("/mensajes/usuario/{usuarioId}")
     public ResponseEntity<List<Mensaje>> mensajesPorUsuario(@PathVariable Long usuarioId) {
         List<Mensaje> mensajes = mensajeService.findByUsuarioId(usuarioId);
         return ResponseEntity.ok(mensajes);
     }
 
-    // 3️⃣ Listar todas las notificaciones
     @GetMapping("/notificaciones")
     public ResponseEntity<List<Notificacion>> listarNotificaciones() {
         List<Notificacion> notificaciones = notificacionService.findAll();
         return ResponseEntity.ok(notificaciones);
     }
 
-    // 4️⃣ Listar mensajes de un usuario y todas las notificaciones
     @GetMapping("/todos/{usuarioId}")
     public ResponseEntity<List<Object>> listarMensajesYNotificaciones(@PathVariable Long usuarioId) {
         List<Mensaje> mensajes = mensajeService.findByUsuarioId(usuarioId);
@@ -82,7 +78,6 @@ public class NotificacionControllerAPI {
         return ResponseEntity.ok(combinados);
     }
 
-    // 5️⃣ Crear mensaje
     @PostMapping("/mensajes")
     public ResponseEntity<?> crearMensaje(@RequestBody Mensaje mensaje) {
         try {
@@ -98,7 +93,6 @@ public class NotificacionControllerAPI {
         }
     }
 
-    // 6️⃣ Crear notificación
     @PostMapping("/notificaciones")
     public ResponseEntity<?> crearNotificacion(@RequestBody Notificacion notificacion) {
         try {
