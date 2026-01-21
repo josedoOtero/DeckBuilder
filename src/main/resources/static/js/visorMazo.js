@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => __awaiter(this, void 0, void
     const ID = pageData ? pageData.dataset.id : null;
     const btnSave = document.querySelector("#btnSave");
     if (!ID) {
-        console.error("Falta el ID del mazo");
+        console.error("The deck ID is missing.");
         return;
     }
     function actualizarBotonFavorito() {
@@ -21,24 +21,24 @@ document.addEventListener("DOMContentLoaded", () => __awaiter(this, void 0, void
             try {
                 const res = yield fetch(`/UsuarioAPI/favoritos/${ID}`);
                 if (!res.ok) {
-                    manejarError("Error al comprobar favorito", new Error("Respuesta no OK"));
+                    manejarError("Failed to check favorite", new Error("no OK"));
                     return;
                 }
                 const esFavorito = yield res.json();
                 if (esFavorito) {
-                    btnSave.textContent = "Quitar de favoritos";
+                    btnSave.textContent = "Remove from favorites";
                     btnSave.classList.remove("btn-success");
                     btnSave.classList.add("btn-danger");
                 }
                 else {
-                    btnSave.textContent = "Guardar en favoritos";
+                    btnSave.textContent = "Save to favorites";
                     btnSave.classList.remove("btn-danger");
                     btnSave.classList.add("btn-success");
                 }
                 return esFavorito;
             }
             catch (e) {
-                manejarError("Error al comprobar favorito", e);
+                manejarError("Failed to check favorite", e);
             }
         });
     }
@@ -48,12 +48,12 @@ document.addEventListener("DOMContentLoaded", () => __awaiter(this, void 0, void
             const metodo = esFavorito ? "DELETE" : "POST";
             const res = yield fetch(`/UsuarioAPI/favoritos/${ID}`, { method: metodo });
             if (!res.ok)
-                alert("No se pudo actualizar favoritos");
+                alert("Favorites could not be updated");
             yield actualizarBotonFavorito();
         }
         catch (e) {
             console.error(e);
-            alert("No se pudo actualizar favoritos");
+            alert("Favorites could not be updated");
         }
     }));
     const mainCont = document.querySelector("#main_deck .row");
@@ -65,7 +65,7 @@ document.addEventListener("DOMContentLoaded", () => __awaiter(this, void 0, void
             try {
                 const res = yield fetch(`/MazoAPI/${ID}`);
                 if (!res.ok) {
-                    console.error("No se pudo cargar el mazo");
+                    console.error("The deck could not be loaded");
                     return;
                 }
                 const mazo = yield res.json();
@@ -87,13 +87,13 @@ document.addEventListener("DOMContentLoaded", () => __awaiter(this, void 0, void
                 cargarSeccion(idsMain, mainCont, dic);
                 cargarSeccion(idsExtra, extraCont, dic);
                 cargarSeccion(idsSide, sideCont, dic);
-                document.querySelector("#inputNombreMazo").value = mazo.nombre || "Sin nombre";
-                document.querySelector("#inputCreador").value = ((_g = mazo.creador) === null || _g === void 0 ? void 0 : _g.nombre) || "Desconocido";
+                document.querySelector("#inputNombreMazo").value = mazo.nombre || "Unnamed";
+                document.querySelector("#inputCreador").value = ((_g = mazo.creador) === null || _g === void 0 ? void 0 : _g.nombre) || "unknown";
                 document.querySelector("#btnVerUser").href = `/login/verUser/${((_h = mazo.creador) === null || _h === void 0 ? void 0 : _h.id) || ""}`;
             }
             catch (e) {
-                console.error("Error al cargar el mazo:", e);
-                alert("No se pudo cargar el mazo");
+                console.error("Error loading deck:", e);
+                alert("The deck could not be loaded");
             }
         });
     }
@@ -175,9 +175,6 @@ document.addEventListener("DOMContentLoaded", () => __awaiter(this, void 0, void
     }
     yield cargarMazo();
     yield actualizarBotonFavorito();
-    // ------------------
-    // Comentarios (modal)
-    // ------------------
     const btnComentario = document.getElementById('btnComentario');
     const modalContainer = document.getElementById('comentariosModalContainer');
     const usuarioMeta = document.getElementById('usuarioMeta');
@@ -198,7 +195,6 @@ document.addEventListener("DOMContentLoaded", () => __awaiter(this, void 0, void
             s.dataset.value = i;
             s.innerText = '★';
             s.addEventListener('click', () => {
-                // marcar estrellas
                 const siblings = wrapper.querySelectorAll('.star-btn');
                 siblings.forEach(sp => sp.classList.remove('filled'));
                 for (let j = 0; j < i; j++)
@@ -212,13 +208,12 @@ document.addEventListener("DOMContentLoaded", () => __awaiter(this, void 0, void
     }
     function abrirModalComentarios() {
         return __awaiter(this, void 0, void 0, function* () {
-            // construir modal
             modalContainer.innerHTML = `
             <div class="modal fade" id="modalComentarios" tabindex="-1" aria-hidden="true">
               <div class="modal-dialog modal-lg modal-dialog-scrollable">
                 <div class="modal-content">
                   <div class="modal-header">
-                    <h5 class="modal-title">Comentarios</h5>
+                    <h5 class="modal-title">Comments</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                   </div>
                   <div class="modal-body" style="padding:0;">
@@ -235,7 +230,7 @@ document.addEventListener("DOMContentLoaded", () => __awaiter(this, void 0, void
                 return __awaiter(this, void 0, void 0, function* () {
                     var _a;
                     const lista = modalContainer.querySelector('#listaComentarios');
-                    lista.innerHTML = `<div class="p-3 text-center text-muted">Cargando...</div>`;
+                    lista.innerHTML = `<div class="p-3 text-center text-muted">Charging...</div>`;
                     try {
                         const res = yield fetch(`/ComentarioAPI/mazo/${ID}`);
                         if (!res.ok) {
@@ -244,7 +239,7 @@ document.addEventListener("DOMContentLoaded", () => __awaiter(this, void 0, void
                         }
                         const comentarios = yield res.json();
                         if (!Array.isArray(comentarios) || comentarios.length === 0) {
-                            lista.innerHTML = `<div class="p-3 text-center text-muted">Aún no hay comentarios.</div>`;
+                            lista.innerHTML = `<div class="p-3 text-center text-muted">There are no comments yet.</div>`;
                         }
                         else {
                             lista.innerHTML = '';
@@ -286,12 +281,12 @@ document.addEventListener("DOMContentLoaded", () => __awaiter(this, void 0, void
                                         try {
                                             const r = yield fetch(`/ComentarioAPI/${c.id}`, { method: 'DELETE' });
                                             if (!r.ok)
-                                                console.error('Error al eliminar');
+                                                console.error('Delete error');
                                             cargarYRenderizar();
                                         }
                                         catch (e) {
                                             console.error(e);
-                                            alert('No se pudo eliminar');
+                                            alert('Could not delete');
                                         }
                                     }));
                                     botonesDiv.appendChild(btnDel);
@@ -299,7 +294,7 @@ document.addEventListener("DOMContentLoaded", () => __awaiter(this, void 0, void
                                 if (metaId && parseInt(metaId) === ((_f = c.usuario) === null || _f === void 0 ? void 0 : _f.id)) {
                                     const btnEdit = document.createElement('button');
                                     btnEdit.className = 'btn btn-sm btn-outline-secondary ms-2';
-                                    btnEdit.innerText = 'Editar';
+                                    btnEdit.innerText = 'edit';
                                     btnEdit.addEventListener('click', () => iniciarEdicion(c, item, cargarYRenderizar));
                                     botonesDiv.appendChild(btnEdit);
                                 }
@@ -315,11 +310,11 @@ document.addEventListener("DOMContentLoaded", () => __awaiter(this, void 0, void
                             const form = document.createElement('div');
                             form.className = 'w-100 p-3';
                             form.innerHTML = `
-                        <div class="mb-2"><strong>Escribe un comentario</strong></div>
+                        <div class="mb-2"><strong>Write a comment</strong></div>
                         <div id="nuevoRating" class="mb-2"></div>
-                        <div class="mb-2"><textarea id="nuevoMensaje" class="form-control" rows="3" placeholder="Tu comentario..."></textarea></div>
+                        <div class="mb-2"><textarea id="nuevoMensaje" class="form-control" rows="3" placeholder="Your comment..."></textarea></div>
                         <div class="d-flex justify-content-end">
-                            <button id="btnEnviarComentario" class="btn btn-success btn-sm">Enviar</button>
+                            <button id="btnEnviarComentario" class="btn btn-success btn-sm">Send</button>
                         </div>
                     `;
                             footer.appendChild(form);
@@ -329,11 +324,11 @@ document.addEventListener("DOMContentLoaded", () => __awaiter(this, void 0, void
                                 const valoracion = parseInt(ratingWrapper.dataset.value) || 0;
                                 const mensaje = form.querySelector('#nuevoMensaje').value.trim();
                                 if (valoracion < 1 || valoracion > 5) {
-                                    alert('Selecciona una valoración entre 1 y 5');
+                                    alert('Select a rating between 1 and 5');
                                     return;
                                 }
                                 if (!mensaje) {
-                                    alert('Escribe un mensaje');
+                                    alert('Write a message');
                                     return;
                                 }
                                 try {
@@ -345,7 +340,7 @@ document.addEventListener("DOMContentLoaded", () => __awaiter(this, void 0, void
                                     });
                                     if (!res.ok) {
                                         const txt = yield res.text();
-                                        console.error(txt || 'Error al crear comentario');
+                                        console.error(txt || 'Error creating comment');
                                         return;
                                     }
                                     form.querySelector('#nuevoMensaje').value = '';
@@ -356,20 +351,20 @@ document.addEventListener("DOMContentLoaded", () => __awaiter(this, void 0, void
                                 }
                                 catch (e) {
                                     console.error(e);
-                                    alert('No se pudo crear el comentario');
+                                    alert('The comment could not be created');
                                 }
                             }));
                         }
                         else {
                             const footerMsg = document.createElement('div');
                             footerMsg.className = 'w-100 p-3 text-muted text-center';
-                            footerMsg.innerHTML = 'Inicia sesión para poder comentar.';
+                            footerMsg.innerHTML = 'Log in to comment.';
                             modalContainer.querySelector('#modalFooter').appendChild(footerMsg);
                         }
                     }
                     catch (e) {
                         console.error(e);
-                        lista.innerHTML = `<div class="p-3 text-center text-danger">Error al cargar comentarios</div>`;
+                        lista.innerHTML = `<div class="p-3 text-center text-danger">Error loading comments</div>`;
                     }
                 });
             }
@@ -392,11 +387,11 @@ document.addEventListener("DOMContentLoaded", () => __awaiter(this, void 0, void
                     const nuevaVal = parseInt(ratingWrapper.dataset.value) || 0;
                     const nuevoMsg = txt.value.trim();
                     if (nuevaVal < 1 || nuevaVal > 5) {
-                        alert('Selecciona una valoración entre 1 y 5');
+                        alert('Select a rating between 1 and 5');
                         return;
                     }
                     if (!nuevoMsg) {
-                        alert('Escribe un mensaje');
+                        alert('\n' + 'Write a message');
                         return;
                     }
                     try {
@@ -407,17 +402,17 @@ document.addEventListener("DOMContentLoaded", () => __awaiter(this, void 0, void
                             body: JSON.stringify(payload)
                         });
                         if (!res.ok)
-                            console.error('Error al guardar');
+                            console.error('Error saving');
                         recargar();
                     }
                     catch (e) {
                         console.error(e);
-                        alert('No se pudo guardar');
+                        alert('Could not save');
                     }
                 }));
                 const btnCancelar = document.createElement('button');
                 btnCancelar.className = 'btn btn-sm btn-secondary';
-                btnCancelar.innerText = 'Cancelar';
+                btnCancelar.innerText = 'Cancel';
                 btnCancelar.addEventListener('click', () => recargar());
                 acciones.appendChild(btnGuardar);
                 acciones.appendChild(btnCancelar);

@@ -21,20 +21,20 @@ document.addEventListener("DOMContentLoaded", function () {
             try {
                 const response = yield fetch(url, { credentials: "same-origin" });
                 if (!response.ok)
-                    throw new Error("Error al obtener mazos");
+                    throw new Error("Error obtaining decks");
                 const mazos = yield response.json();
                 renderMazos(mazos);
             }
             catch (error) {
                 console.error(error);
-                tablaBody.innerHTML = `<tr><td colspan="5" class="text-danger">No se pudo cargar los mazos</td></tr>`;
+                tablaBody.innerHTML = `<tr><td colspan="5" class="text-danger">The decks could not be loaded</td></tr>`;
             }
         });
     }
     function renderMazos(mazos) {
         tablaBody.innerHTML = "";
         if (!mazos || mazos.length === 0) {
-            tablaBody.innerHTML = `<tr><td colspan="5">No hay mazos</td></tr>`;
+            tablaBody.innerHTML = `<tr><td colspan="5">There are no decks</td></tr>`;
             return;
         }
         mazos.forEach(mazo => {
@@ -42,32 +42,32 @@ document.addEventListener("DOMContentLoaded", function () {
             const tr = document.createElement("tr");
             tr.innerHTML = `
                 <td>${mazo.id}</td>
-                <td>${mazo.nombre || "Sin nombre"}</td>
-                <td>${((_a = mazo.creador) === null || _a === void 0 ? void 0 : _a.nombre) || "Desconocido"}</td>
-                <td>${mazo.estado || "Desconocido"}</td>
+                <td>${mazo.nombre || "Unnamed"}</td>
+                <td>${((_a = mazo.creador) === null || _a === void 0 ? void 0 : _a.nombre) || "unknown"}</td>
+                <td>${mazo.estado || "unknown"}</td>
                 <td class="">
-                    <button class="btn btn-sm btn-warning btnEditar me-1" data-id="${mazo.id}" title="Editar">
+                    <button class="btn btn-sm btn-warning btnEditar me-1 text-white" data-id="${mazo.id}" title="edit">
                         <i class="bi bi-pencil"></i>
                     </button>
-                    <button class="btn btn-sm btn-danger btnEliminar me-1" data-id="${mazo.id}" title="Eliminar">
+                    <button class="btn btn-sm btn-danger btnEliminar me-1" data-id="${mazo.id}" title="delete">
                         <i class="bi bi-trash"></i>
                     </button>
-                    <button class="btn btn-sm btn-primary btnVer" data-id="${mazo.id}" title="Ver Mazos">
+                    <button class="btn btn-sm btn-primary btnVer" data-id="${mazo.id}" title="view deck">
                         <i class="bi bi-eye"></i>
                     </button>
                 </td>
             `;
             tr.querySelector(".btnEliminar").addEventListener("click", () => __awaiter(this, void 0, void 0, function* () {
-                if (confirm(`¿Seguro que quieres eliminar el mazo "${mazo.nombre}"?`)) {
+                if (confirm(`Are you sure you want to delete the deck "${mazo.nombre}"?`)) {
                     try {
                         const res = yield fetch(`/MazoAPI/${mazo.id}`, { method: "DELETE", credentials: "same-origin" });
                         if (!res.ok)
-                            throw new Error("Error al eliminar mazo");
+                            throw new Error("Error when deleting deck");
                         cargarMazos(inputNombreMazo.value, inputCreador.value);
                     }
                     catch (err) {
                         console.error(err);
-                        alert("No se pudo eliminar el mazo");
+                        alert("The deck could not be removed");
                     }
                 }
             }));

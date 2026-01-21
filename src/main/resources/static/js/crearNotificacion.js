@@ -13,12 +13,12 @@ function crearNotificacion(e) {
     const mensaje = document.getElementById("mensaje").value.trim();
 
     if (!titulo || !categoria || !mensaje) {
-        mostrarAlerta("Todos los campos son obligatorios.", "warning");
+        mostrarAlerta("All fields are required.", "warning");
         return;
     }
 
     const ahora = new Date();
-    const creadoEn = ahora.toISOString().slice(0, 19); // ⚡ Formato compatible con LocalDateTime
+    const creadoEn = ahora.toISOString().slice(0, 19);
 
     const notificacion = { titulo, categoria, mensaje, creadoEn };
 
@@ -33,17 +33,17 @@ function crearNotificacion(e) {
         .then(async res => {
             if (!res.ok) {
                 const text = await res.text();
-                throw new Error(text || "Error desconocido al crear la notificación");
+                throw new Error(text || "Unknown error creating notification");
             }
             return res.json();
         })
         .then(data => {
-            mostrarAlerta("Notificación creada correctamente ✔", "success");
+            mostrarAlerta("Notification created successfully", "success");
             document.getElementById("form-notificacion").reset();
             if (typeof cargarNotificacionesMensajes === "function") cargarNotificacionesMensajes();
         })
         .catch(err => {
-            mostrarAlerta("Error al crear la notificación: " + err.message, "danger");
+            mostrarAlerta("Error creating notification: " + err.message, "danger");
             console.error(err);
         });
 }

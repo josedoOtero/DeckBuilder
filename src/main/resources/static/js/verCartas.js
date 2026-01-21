@@ -4,7 +4,6 @@ const cartasPorPagina = 180;
 let listaCartas;
 
 document.addEventListener("DOMContentLoaded", () => {
-    console.log("Script verCartas cargado");
 
     const filtros = document.querySelector("#filtros_cartas");
     listaCartas = document.querySelector("#lista_cartas .row");
@@ -156,7 +155,6 @@ function mostrarCartas(cartas, listaCartas) {
         const col = document.createElement("div");
         col.classList.add("col", "d-flex", "justify-content-center");
 
-        // ✔ FIX FINAL: idKonami siempre existe
         const idKonami =
             carta.konami_id ??
             carta.misc_info?.[0]?.konami_id ??
@@ -207,7 +205,6 @@ async function mostrarDetallesCarta(id, idKonami, zonaDetalles) {
 
           <div class="card-body bg-light">
 
-            <!-- FILA PRINCIPAL -->
             <div class="row g-4">
               <div class="col-md-4 text-center">
                 <img src="${carta.card_images[0].image_url}" class="img-fluid rounded shadow" style="max-height:260px; object-fit:contain;">
@@ -215,30 +212,28 @@ async function mostrarDetallesCarta(id, idKonami, zonaDetalles) {
 
               <div class="col-md-8">
 
-                <h5 class="border-bottom pb-2">Información</h5>
+                <h5 class="border-bottom pb-2">Information</h5>
 
-                ${carta.type ? `<p><strong>Tipo:</strong> ${carta.type}</p>` : ""}
-                ${carta.race ? `<p><strong>Tipo de Carta:</strong> ${carta.race}</p>` : ""}
-                ${carta.attribute ? `<p><strong>Atributo:</strong> ${carta.attribute}</p>` : ""}
-                ${carta.level ? `<p><strong>Nivel / Rango:</strong> ${carta.level}</p>` : ""}
+                ${carta.type ? `<p><strong>Type:</strong> ${carta.type}</p>` : ""}
+                ${carta.race ? `<p><strong>Type card:</strong> ${carta.race}</p>` : ""}
+                ${carta.attribute ? `<p><strong>Atribute:</strong> ${carta.attribute}</p>` : ""}
+                ${carta.level ? `<p><strong>Level / Range:</strong> ${carta.level}</p>` : ""}
                 ${carta.linkval ? `<p><strong>Link:</strong> ${carta.linkval}</p>` : ""}
                 ${(carta.atk != null || carta.def != null)
             ? `<p><strong>ATK / DEF:</strong> ${carta.atk ?? ""} / ${carta.def ?? ""}</p>`
             : ""}
-                ${carta.archetype ? `<p><strong>Arquetipo:</strong> ${carta.archetype}</p>` : ""}
+                ${carta.archetype ? `<p><strong>Archetype:</strong> ${carta.archetype}</p>` : ""}
               </div>
             </div>
 
             <hr>
 
-            <!-- DESCRIPCIÓN -->
             ${carta.desc ? `
-            <h5 class="mt-3">Descripción</h5>
+            <h5 class="mt-3">Description</h5>
             <p class="bg-white p-3 rounded shadow-sm">${carta.desc}</p>
             ` : ""}
 
-            <!-- PRECIOS -->
-            <h5 class="mt-4">Precios de mercado</h5>
+            <h5 class="mt-4">Market prices</h5>
             <div class="p-3 bg-white rounded shadow-sm">
               ${mostrarPrecio("Cardmarket", precios.cardmarket_price)}
               ${mostrarPrecio("TCGPlayer", precios.tcgplayer_price)}
@@ -246,9 +241,8 @@ async function mostrarDetallesCarta(id, idKonami, zonaDetalles) {
               ${mostrarPrecio("Amazon", precios.amazon_price)}
             </div>
 
-            <!-- SETS -->
             ${sets.length > 0 ? `
-            <h5 class="mt-4">Sets disponibles</h5>
+            <h5 class="mt-4">Sets available</h5>
             <ul class="list-group mb-3">
               ${sets.map(s => `
                 <li class="list-group-item">
@@ -266,12 +260,9 @@ async function mostrarDetallesCarta(id, idKonami, zonaDetalles) {
 
         zonaDetalles.innerHTML = html;
 
-        // -------------------------------
-        // FAVORITAS: NO TOCO TU LÓGICA
-        // -------------------------------
         try {
             const favResponse = await fetch("/UsuarioAPI/cartasFavoritas");
-            if (!favResponse.ok) throw new Error("Usuario no autenticado");
+            if (!favResponse.ok) throw new Error("Unauthenticated user");
 
             const cartasFavoritas = await favResponse.json();
             const esFavorita = cartasFavoritas.includes(idKonami);
@@ -280,22 +271,22 @@ async function mostrarDetallesCarta(id, idKonami, zonaDetalles) {
             favBtn.className = "btn mt-2";
 
             if (esFavorita) {
-                favBtn.textContent = "Quitar de favoritas";
+                favBtn.textContent = "Remove from favorites";
                 favBtn.classList.add("btn-danger");
 
                 favBtn.onclick = async () => {
                     await fetch(`/UsuarioAPI/cartasFavoritas/${idKonami}`, { method: "DELETE" });
-                    favBtn.textContent = "Agregar a favoritas";
+                    favBtn.textContent = "Add to favorites";
                     favBtn.classList.replace("btn-danger", "btn-success");
                 };
 
             } else {
-                favBtn.textContent = "Agregar a favoritas";
+                favBtn.textContent = "Add to favorites";
                 favBtn.classList.add("btn-success");
 
                 favBtn.onclick = async () => {
                     await fetch(`/UsuarioAPI/cartasFavoritas/${idKonami}`, { method: "POST" });
-                    favBtn.textContent = "Quitar de favoritas";
+                    favBtn.textContent = "Remove from favorites";
                     favBtn.classList.replace("btn-success", "btn-danger");
                 };
             }
@@ -303,11 +294,11 @@ async function mostrarDetallesCarta(id, idKonami, zonaDetalles) {
             zonaDetalles.appendChild(favBtn);
 
         } catch (e) {
-            console.log("Usuario no autenticado, oculto botón de favoritas");
+            console.log("Unauthenticated user, favorites button hidden");
         }
 
     } catch (error) {
         console.error(error);
-        zonaDetalles.innerHTML = "<p class='text-danger'>Error al cargar los detalles de la carta.</p>";
+        zonaDetalles.innerHTML = "<p class='text-danger'>Error loading letter details.</p>";
     }
 }

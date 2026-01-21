@@ -1,10 +1,12 @@
 package com.example.deckbuilder.controller.templete;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.ui.Model;
 import com.example.deckbuilder.domain.Usuario;
 import com.example.deckbuilder.service.UsuarioService;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
 
@@ -33,16 +35,19 @@ public class LoginController {
     }
 
     @PostMapping("/crearCuenta")
-    public String registrarUsuario(@ModelAttribute Usuario usuario, Model model) {
-        if (usuarioService.exitByNombre(usuario.getNombre())) {
-            model.addAttribute("error", "El nombre de usuario ya existe");
+    public String procesarRegistro(
+            @Valid @ModelAttribute("usuario") Usuario usuario,
+            BindingResult result,
+            Model model) {
+
+        if (result.hasErrors()) {
             return "register";
         }
 
-        usuarioService.registrarUsuario(usuario);
-        model.addAttribute("exito", "Cuenta creada correctamente, ahora inicia sesión");
-        return "redirect:/login/iniciarSesion";
+        model.addAttribute("exito", "Cuenta creada correctamente");
+        return "register";
     }
+
 
 
     @GetMapping("/home")

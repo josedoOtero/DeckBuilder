@@ -7,22 +7,85 @@
     <link th:href="@{/css/header.css}" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <style>
-        #zona_usuarios_crud .form-control {
-            max-width: 200px;
+        /* ===========================
+           Zona de búsqueda y botones
+        =========================== */
+        #zona_usuarios_crud {
+            display: flex;
+            align-items: end;
+            justify-content: end;
+            gap: 0;
+            margin-bottom: 1rem;
         }
+
+        #zona_usuarios_crud .form-control {
+            height: 38px;
+            border-radius: 0;
+            border: 1px solid #ced4da;
+            border-right: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        #zona_usuarios_crud .form-control:first-child {
+            border-top-left-radius: 0.25rem;
+            border-bottom-left-radius: 0.25rem;
+        }
+
+        #zona_usuarios_crud .form-control:last-child {
+            border-right: 1px solid #ced4da;
+        }
+
+        #zona_usuarios_crud input::placeholder {
+            font-size: 0.85rem;
+        }
+
         #zona_usuarios_crud .btn {
+            width: 38px;
+            height: 38px;
+            padding: 0;
+            border-radius: 0;
             display: flex;
             align-items: center;
-            gap: 0.3rem;
+            justify-content: center;
+            transition: background-color 0.2s, transform 0.1s;
         }
+
+        #zona_usuarios_crud .btn:first-of-type {
+            border-left: 1px solid #ced4da;
+        }
+
+        #zona_usuarios_crud .btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* ===========================
+           Tabla de usuarios
+        =========================== */
         table th, table td {
             vertical-align: middle;
         }
+
         table .btn i {
             font-size: 1rem;
         }
+
         .table-striped tbody tr:hover {
             background-color: #f1f1f1;
+        }
+
+        /* ===========================
+           Mejoras visuales generales
+        =========================== */
+        body {
+            background-color: #f8f9fa;
+        }
+
+        h3 {
+            font-weight: 600;
+        }
+
+        .card {
+            border-radius: 0.35rem;
         }
     </style>
 </head>
@@ -33,37 +96,21 @@
 
 <div class="container-fluid mt-4 my-4">
 
-    <h3 class="text-center mb-4">Gestión de Usuarios</h3>
-
-    <div class="d-flex align-items-center justify-content-center gap-3 flex-wrap mb-3">
-        <input
-                type="text"
-                id="buscarNombre"
-                placeholder="Nombre del usuario"
-                class="form-control form-control-sm w-auto"
-                style="min-width: 200px;"
-        >
-
-        <input
-                type="text"
-                id="buscarEmail"
-                placeholder="Email del usuario"
-                class="form-control form-control-sm w-auto"
-                style="min-width: 200px;"
-        >
-
-        <button id="btnBuscarUsuarios" class="btn btn-primary btn-sm d-flex align-items-center">
-            <i class="bi bi-search me-1"></i> Buscar
+    <!-- ===== Zona de búsqueda y botones ===== -->
+    <div id="zona_usuarios_crud">
+        <input type="text" id="buscarNombre" placeholder="Nombre" class="form-control" style="width: 180px;">
+        <input type="text" id="buscarEmail" placeholder="Email" class="form-control" style="width: 180px;">
+        <button id="btnBuscarUsuarios" class="btn btn-primary">
+            <i class="bi bi-search"></i>
         </button>
-
-        <button id="btnCrearUsuario" class="btn btn-success btn-sm d-flex align-items-center">
-            <i class="bi bi-plus-circle me-1"></i> Crear Usuario
+        <button id="btnCrearUsuario" class="btn btn-success">
+            <i class="bi bi-plus-circle"></i>
         </button>
     </div>
 
-
+    <!-- ===== Tabla de usuarios ===== -->
     <div class="table-responsive">
-        <table class="table table-striped table-hover align-middle">
+        <table class="table table-striped table-hover align-middle shadow-sm">
             <thead class="table-dark">
             <tr>
                 <th>ID</th>
@@ -73,6 +120,7 @@
             </tr>
             </thead>
             <tbody id="tabla-usuarios-body">
+            <!-- Contenido dinámico desde JS -->
             </tbody>
         </table>
     </div>

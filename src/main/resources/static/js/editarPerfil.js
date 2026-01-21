@@ -15,21 +15,21 @@ document.addEventListener("DOMContentLoaded", () => {
     const imgPerfil = document.querySelector("#fotoPerfil");
     const usuarioId = imgPerfil.getAttribute("data-usuario-id");
     if (!usuarioId) {
-        console.error("No se encontró el ID del usuario.");
+        console.error("User ID not found.");
         return;
     }
     filtro.addEventListener("submit", (e) => __awaiter(this, void 0, void 0, function* () {
         e.preventDefault();
         const nombre = new FormData(filtro).get("q").trim();
         if (!nombre) {
-            listaCartas.innerHTML = "<p class='text-muted'>Escribe un nombre.</p>";
+            listaCartas.innerHTML = "<p class='text-muted'>Write a name.</p>";
             return;
         }
         const url = `https://db.ygoprodeck.com/api/v7/cardinfo.php?fname=${encodeURIComponent(nombre)}`;
         try {
             const response = yield fetch(url);
             if (!response.ok) {
-                listaCartas.innerHTML = "<p class='text-muted'>No se encontraron cartas.</p>";
+                listaCartas.innerHTML = "<p class='text-muted'>No letters were found.</p>";
                 return;
             }
             const data = yield response.json();
@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         catch (e) {
             console.error(e);
-            listaCartas.innerHTML = "<p class='text-danger'>Error cargando cartas.</p>";
+            listaCartas.innerHTML = "<p class='text-danger'>Error loading cards.</p>";
         }
     }));
     function mostrarCartas(cartas) {
@@ -67,18 +67,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
                 if (response.ok) {
                     imgPerfil.src = urlImagen;
-                    alert("Imagen actualizada correctamente.");
+                    alert("Image updated successfully.");
                     bootstrap.Modal.getInstance(document.querySelector("#modalSeleccionarCarta")).hide();
                 }
                 else {
                     const errorText = yield response.text();
-                    console.error("ERROR del servidor: ", errorText);
+                    console.error("Server error: ", errorText);
                     alert("Error: " + errorText);
                 }
             }
             catch (e) {
                 console.error(e);
-                alert("Error al actualizar la imagen.");
+                alert("Error updating the image.");
             }
         });
     }

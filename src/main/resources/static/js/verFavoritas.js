@@ -45,10 +45,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 });
 
-/* =============================
-   PAGINACIÓN
-============================= */
-
 function mostrarPagina() {
     listaCartas.innerHTML = "";
 
@@ -124,10 +120,6 @@ function renderizarPaginacion() {
     cont.appendChild(btnNext);
 }
 
-/* =============================
-   DETALLES DE CARTA
-============================= */
-
 async function mostrarDetallesCarta(id) {
     try {
         zonaDetalles.innerHTML = "<p class='text-center text-muted'>Loading...</p>";
@@ -138,6 +130,7 @@ async function mostrarDetallesCarta(id) {
         const carta = data.data[0];
         const precios = carta.card_prices?.[0] || {};
         const sets = carta.card_sets || [];
+        const idKonami = carta.konami_id ?? carta.id;
 
         zonaDetalles.innerHTML = `
             <div class="card shadow-lg border-0">
@@ -160,8 +153,7 @@ async function mostrarDetallesCarta(id) {
                             ${carta.attribute ? `<p><strong>Attribute:</strong> ${carta.attribute}</p>` : ""}
                             ${carta.level ? `<p><strong>Level:</strong> ${carta.level}</p>` : ""}
                             ${(carta.atk != null || carta.def != null)
-            ? `<p><strong>ATK / DEF:</strong> ${carta.atk ?? ""} / ${carta.def ?? ""}</p>`
-            : ""}
+            ? `<p><strong>ATK / DEF:</strong> ${carta.atk ?? ""} / ${carta.def ?? ""}</p>` : ""}
                             ${carta.archetype ? `<p><strong>Archetype:</strong> ${carta.archetype}</p>` : ""}
                         </div>
                     </div>
@@ -194,8 +186,83 @@ async function mostrarDetallesCarta(id) {
                 </div>
             </div>
         `;
+
+        try {
+            const favResp = await fetch(`${window.location.origin}/UsuarioAPI/cartasFavoritas`);
+            if (!favResp.ok) throw new Error("Usuario no autenticado");
+
+            let favoritas = await favResp.json();
+            let esFavorita = favoritas.includes(idKonami);
+
+            const favBtn = document.createElement("button");
+            favBtn.className = "btn mt-2";
+
+            const actualizarBoton = (favorita) => {
+                if (favorita) {
+                    favBtn.textContent = "Quitar de favoritas";
+                    favBtn.classList.replace("btn-success", "btn-danger");
+                    if (!favBtn.classList.contains("btn-danger")) favBtn.classList.add("btn-danger");
+                } else {
+                    favBtn.textContent = "Agregar a favoritas";
+                    favBtn.classList.replace("btn-danger", "btn-success");
+                    if (!favBtn.classList.contains("btn-success")) favBtn.classList.add("btn-success");
+                }
+            };
+
+            actualizarBoton(esFavorita);
+
+            favBtn.onclick = async () => {
+                if (esFavorita) {
+                    await fetch(`${window.location.origin}/UsuarioAPI/cartasFavoritas/${idKonami}`, { method: "DELETE" });
+                    esFavorita = false;
+                } else {
+                    await fetch(`${window.location.origin}/UsuarioAPI/cartasFavoritas/${idKonami}`, { method: "POST" });
+                    esFavorita = true;
+                }
+                actualizarBoton(esFavorita);
+                await recargarFavoritas();
+            };
+
+            zonaDetalles.appendChild(favBtn);
+
+        } catch (err) {
+            console.log("Unauthenticated user, favorites button hidden");
+        }
+
     } catch (e) {
         console.error(e);
         zonaDetalles.innerHTML = "<p class='text-danger'>Error loading card details.</p>";
+    }
+}
+
+async function recargarFavoritas() {
+    try {
+        const resp = await fetch(`${window.location.origin}/UsuarioAPI/cartasFavoritas`);
+        if (!resp.ok) return;
+        cartasFavoritasIDs = await resp.json();
+
+        if (cartasFavoritasIDs.length === 0) {
+            cartasCargadas = [];
+            listaCartas.innerHTML = "<p class='text-center text-muted mt-3'>No favorite cards yet.</p>";
+            return;
+        }
+
+        const peticiones = cartasFavoritasIDs.map(id =>
+            fetch(`https://db.ygoprodeck.com/api/v7/cardinfo.php?id=${id}`)
+                .then(r => r.ok ? r.json() : null)
+                .catch(() => null)
+        );
+
+        const resultados = await Promise.all(peticiones);
+
+        cartasCargadas = resultados
+            .filter(r => r && r.data && r.data[0])
+            .map(r => r.data[0]);
+
+        paginaActual = 1;
+        mostrarPagina();
+
+    } catch (err) {
+        console.error("Error reloading favorites:", err);
     }
 }

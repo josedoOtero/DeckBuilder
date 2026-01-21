@@ -8,14 +8,12 @@ document.addEventListener("DOMContentLoaded", () => {
     cargarDatosUsuario(window.ID_USUARIO);
     cargarMazosPublicos(window.ID_USUARIO);
 });
-// ====================
-//      DATOS USUARIO
-// ====================
+
 function cargarDatosUsuario(idUsuario) {
     fetch(`${window.location.origin}/UsuarioAPI/${idUsuario}`)
         .then(r => {
         if (!r.ok)
-            throw new Error("Error al obtener datos del usuario");
+            throw new Error("Error retrieving user data");
         return r.json();
     })
         .then(usuario => {
@@ -43,7 +41,7 @@ function cargarDatosUsuario(idUsuario) {
                          ">
 
                     <div style="text-align: left; width: 100%;">
-                        <p style="margin: 0;"><strong>Nombre:</strong> ${usuario.nombre}${esAdmin}</p>
+                        <p style="margin: 0;"><strong>Name:</strong> ${usuario.nombre}${esAdmin}</p>
                         <p style="margin: 2px 0 0 0;"><strong>Email:</strong> ${usuario.email}</p>
                     </div>
                 </div>
@@ -55,26 +53,24 @@ function cargarDatosUsuario(idUsuario) {
                     padding: 10px;
                 ">
                     <p style="margin: 0;">
-                        <strong>Descripción:</strong><br>
+                        <strong>Description:</strong><br>
                         <span style="color: #444;">
                             ${usuario.descripcion && usuario.descripcion.trim() !== ""
             ? usuario.descripcion
-            : "<em>Este usuario no ha añadido una descripción.</em>"}
+            : "<em>This user has not added a description.</em>"}
                         </span>
                     </p>
                 </div>
             `;
     })
-        .catch(err => console.error("Error cargando datos del usuario:", err));
+        .catch(err => console.error("Error loading user data:", err));
 }
-// ==============================
-//      MAZOS PÚBLICOS
-// ==============================
+
 function cargarMazosPublicos(idUsuario) {
     fetch(`${window.location.origin}/MazoAPI/publicos/${idUsuario}`)
         .then(response => {
             if (!response.ok) {
-                throw new Error("Error al cargar los mazos públicos");
+                throw new Error("Error loading public decks");
             }
             return response.json();
         })
@@ -84,7 +80,7 @@ function cargarMazosPublicos(idUsuario) {
             if (mazos.length === 0) {
                 contenedor.innerHTML = `
                     <p class="text-muted text-center">
-                        Este usuario no tiene mazos públicos.
+                        This user does not have any public decks.
                     </p>`;
                 return;
             }
@@ -93,9 +89,9 @@ function cargarMazosPublicos(idUsuario) {
                 const div = document.createElement("div");
                 div.classList.add("mazo-card");
                 div.innerHTML = `
-                    <h5>${mazo.nombre || "Mazo sin título"}</h5>
+                    <h5>${mazo.nombre || "Untitled deck"}</h5>
 
-                    <a href="/user/visualizadorMazos/${mazo.id}">
+                    <a href="/login/visualizadorMazos/${mazo.id}">
                         <img src="${imagen}" alt="Mazo ${mazo.id}" class="mazo-img">
                     </a>
                 `;
@@ -103,8 +99,8 @@ function cargarMazosPublicos(idUsuario) {
             });
         })
         .catch(err => {
-            console.error("Error cargando mazos públicos:", err);
+            console.error("Error loading public decks:", err);
             const contenedor = document.getElementById("lista_mazos");
-            contenedor.innerHTML = `<p class='text-danger text-center'>Error cargando mazos públicos.</p>`;
+            contenedor.innerHTML = `<p class='text-danger text-center'>Error loading public decks.</p>`;
         });
 }

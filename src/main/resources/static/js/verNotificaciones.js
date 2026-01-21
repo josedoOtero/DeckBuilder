@@ -11,18 +11,17 @@ function cargarNotificacionesMensajes() {
     const filtro = document.getElementById("filtro-tipo");
     const tipo = filtro ? filtro.value : "todo";
 
-    // Obtener ID del usuario logueado desde el div oculto
     const usuarioDiv = document.getElementById("usuario-logueado");
     const usuarioId = usuarioDiv?.getAttribute("data-usuario-id");
     if (!usuarioId) {
-        console.error("No se pudo obtener el ID del usuario logueado.");
+        console.error("The ID of the logged-in user could not be obtained.");
         return;
     }
 
     fetch(`${window.location.origin}/NotificacionAPI/todos/${usuarioId}`)
         .then(response => {
             if (!response.ok) {
-                throw new Error("Error al obtener las notificaciones");
+                throw new Error("Error getting notifications");
             }
             return response.json();
         })
@@ -40,12 +39,12 @@ function cargarNotificacionesMensajes() {
             mostrarNotificaciones(filtrados);
         })
         .catch(error => {
-            console.error("Error cargando notificaciones:", error);
+            console.error("Error loading notifications:", error);
             const cont = document.getElementById("cont-notificaciones");
             if (cont) {
                 cont.innerHTML = `
                     <div class="text-center text-danger">
-                        No se pudieron cargar las notificaciones.
+                        Notifications could not be loaded.
                     </div>
                 `;
             }
@@ -61,7 +60,7 @@ function mostrarNotificaciones(lista) {
     if (!lista || lista.length === 0) {
         cont.innerHTML = `
             <div class="text-center text-muted">
-                No hay datos disponibles.
+                No data available.
             </div>
         `;
         return;
@@ -79,14 +78,14 @@ function mostrarNotificaciones(lista) {
 
         card.innerHTML = `
             <div class="card-body">
-                <span class="badge bg-primary categoria">${item.categoria || "Sin categoría"}</span>
-                <h5 class="card-title mt-2">${item.titulo || "Sin título"}</h5>
+                <span class="badge bg-primary categoria">${item.categoria || "Uncategorized"}</span>
+                <h5 class="card-title mt-2">${item.titulo || "Untitled"}</h5>
                 <p class="card-text">
                     <span class="mensaje-corto">${mensajeCorto}</span>
                     ${
             tieneMas
                 ? `<span class="mensaje-completo" style="display:none">${mensaje.slice(100)}</span>
-                               <button class="btn-ver-mas btn btn-link p-0">Ver más</button>`
+                               <button class="btn-ver-mas btn btn-link p-0">See more</button>`
                 : ""
         }
                 </p>

@@ -26,9 +26,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     let cartasMazoInfo = {};
     let _actualizandoInfoMazo = false;
 
-    // =======================
-    // Cargar mazo existente
-    // =======================
     async function cargarMazoExistente() {
         if (!ID_MAZO) return;
         try {
@@ -52,9 +49,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
-    // =======================
-    // Botón cartas favoritas
-    // =======================
     btnFavoritos.addEventListener("click", async e => {
         e.preventDefault();
         try {
@@ -75,9 +69,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     });
 
-    // =======================
-    // Exportar mazo
-    // =======================
     function exportDeck() {
         const nombreMazoVal = nombreMazo.value || 'mi_mazo';
         const estadoMazoVal = estadoSelect.value;
@@ -121,9 +112,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     document.getElementById('btnExport').addEventListener('click', exportDeck);
 
-    // =======================
-    // Ordenar mazo
-    // =======================
     function ordenarMazo() {
         const prioridadTipo = {
             "Normal Monster": 1, "Effect Monster": 1, "Flip Effect Monster": 1, "Tuner Monster": 1, "Ritual Monster": 1,
@@ -158,9 +146,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (zonaSeleccionada === "side") document.querySelector("#btnSide").classList.add("active-zone");
     }
 
-    // =======================
-    // Mostrar selector carta destacada
-    // =======================
     function mostrarSelectorDestacada() {
         const cont = document.getElementById("destacadaSelector");
         cont.innerHTML = "";
@@ -211,9 +196,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         bootstrap.Modal.getInstance(document.getElementById("modalDestacada")).hide();
     }
 
-    // =======================
-    // Filtros cartas
-    // =======================
     filtros.addEventListener("submit", async e => {
         e.preventDefault();
         const formData = new FormData(filtros);
@@ -285,9 +267,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
-    // =======================
-    // Renderizar paginacion
-    // =======================
     function renderizarPaginacion() {
         const cont = document.getElementById("paginacion");
         cont.innerHTML = "";
@@ -324,24 +303,21 @@ document.addEventListener("DOMContentLoaded", async () => {
         cont.appendChild(btnNext);
     }
 
-    // =======================
-    // Agregar carta al mazo
-    // =======================
     async function agregarCartaAlMazo(carta, zona) {
         const idKonami = carta.id;
         const totalCopias = [...mazo.main, ...mazo.extra, ...mazo.side].filter(c => c.idKonami === idKonami).length;
-        if (totalCopias >= 3) { alert("No puedes tener más de 3 copias de la misma carta en tu mazo."); return; }
+        if (totalCopias >= 3) { alert("You cannot have more than 3 copies of the same card in your deck."); return; }
 
         if (zona === "side") {
-            if (mazo.side.length >= 15) { alert("Side Deck no puede tener más de 15 cartas."); return; }
+            if (mazo.side.length >= 15) { alert("The Side Deck cannot have more than 15 cards."); return; }
             mazo.side.push({ idKonami });
         } else {
             const tiposExtra = ["Fusion Monster", "Synchro Monster", "XYZ Monster", "Link Monster", "Pendulum Monster"];
             if (tiposExtra.includes(carta.type)) {
-                if (mazo.extra.length >= 15) { alert("Extra Deck no puede tener más de 15 cartas."); return; }
+                if (mazo.extra.length >= 15) { alert("The Extra Deck cannot have more than 15 cards."); return; }
                 mazo.extra.push({ idKonami });
             } else {
-                if (mazo.main.length >= 60) { alert("Main Deck no puede tener más de 60 cartas."); return; }
+                if (mazo.main.length >= 60) { alert("The Main Deck cannot have more than 60 cards."); return; }
                 mazo.main.push({ idKonami });
             }
         }
@@ -350,9 +326,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         mostrarMazo();
     }
 
-    // =======================
-    // Actualizar info mazo
-    // =======================
     async function actualizarInfoMazo() {
         if (_actualizandoInfoMazo) return;
         _actualizandoInfoMazo = true;
@@ -372,17 +345,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         } finally { _actualizandoInfoMazo = false; }
     }
 
-    // =======================
-    // Click global cerrar menus
-    // =======================
     document.addEventListener("click", (e) => {
         if (e.target.closest(".menu-carta") || e.target.closest(".card img")) return;
         document.querySelectorAll(".menu-carta").forEach(m => m.remove());
     });
 
-    // =======================
-    // Renderizar zona con contador
-    // =======================
     function renderZona(container, cartas, zona) {
         const row = container.querySelector(".row");
         row.innerHTML = "";
@@ -430,7 +397,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             });
         });
 
-        // Agregar contador al final
         let maxCartas = 60;
         if (zona === "extra" || zona === "side") maxCartas = 15;
         let contador = container.querySelector(".contador-cartas");
@@ -442,9 +408,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         contador.textContent = `${cartas.length}/${maxCartas}`;
     }
 
-    // =======================
-    // Mostrar mazo completo
-    // =======================
     function mostrarMazo() {
         renderZona(mainDeck, mazo.main, "main");
         renderZona(extraDeck, mazo.extra, "extra");
@@ -452,9 +415,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         actualizarEstadoSelect();
     }
 
-    // =======================
-    // Modal carta
-    // =======================
     function mostrarCartaModal(cartaInfo) {
         if (!cartaInfo) return;
         const modalImg = document.getElementById("imgCartaModal");
@@ -469,9 +429,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         new bootstrap.Modal(document.getElementById("modalCarta")).show();
     }
 
-    // =======================
-    // Guardar mazo
-    // =======================
     async function guardarMazo() {
         const payload = {
             nombre: nombreMazo.value,
@@ -492,14 +449,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         try {
             const resp = await fetch(url, options);
-            if (!resp.ok) { alert("Error guardando el mazo"); return; }
+            if (!resp.ok) { alert("Error saving the deck"); return; }
             const data = await resp.json();
-            alert("Mazo guardado correctamente");
+            alert("Successfully saved deck");
 
             if (!ID_MAZO) ID_MAZO = data.id;
         } catch (err) {
             console.error(err);
-            alert("Error guardando el mazo");
+            alert("Error saving the deck");
         }
     }
 
@@ -512,10 +469,10 @@ document.addEventListener("DOMContentLoaded", async () => {
             const resp = await fetch(`/MazoAPI/${ID_MAZO}`, { method: "DELETE" });
             if (resp.ok) {
                 alert("Mazo eliminado");
-                window.location.href = "http://localhost:8080/user/misMazos"; // ← URL nueva
+                window.location.href = "http://localhost:8080/user/misMazos";
             }
         } catch (err) {
-            alert("Error eliminando el mazo");
+            alert("Error removing the deck");
         }
     });
 
@@ -535,18 +492,16 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     async function cargarFiltrosDinamicos() {
         try {
-            // Traemos todas las cartas para extraer los valores únicos
             const response = await fetch("https://db.ygoprodeck.com/api/v7/cardinfo.php");
-            if (!response.ok) throw new Error("Error cargando cartas");
+            if (!response.ok) throw new Error("\n" +
+                "Error loading card");
 
             const data = await response.json();
             const cartas = data.data || [];
 
-            // Helper para llenar select con valores únicos usando name en lugar de id
             function llenarSelect(selectName, valores) {
                 const select = document.querySelector(`[name="${selectName}"]`);
                 if (!select) return;
-                // Limpiar opciones existentes excepto la primera (placeholder)
                 select.querySelectorAll("option:not(:first-child)").forEach(opt => opt.remove());
 
                 valores.sort().forEach(val => {
@@ -558,17 +513,15 @@ document.addEventListener("DOMContentLoaded", async () => {
                 });
             }
 
-            // Extraemos valores únicos de los filtros
             const tipos = [...new Set(cartas.map(c => c.type).filter(v => v))];
             const razas = [...new Set(cartas.map(c => c.race).filter(v => v))];
             const atributos = [...new Set(cartas.map(c => c.attribute).filter(v => v))];
             const arquetipos = [...new Set(cartas.map(c => c.archetype).filter(v => v))];
             const niveles = [...new Set(cartas.map(c => c.level).filter(v => v !== undefined && v !== null))];
 
-            // Llenamos los selects usando name
             llenarSelect("tipo", tipos);
-            llenarSelect("tipoCarta", razas);       // Monster Race
-            llenarSelect("familia", razas);         // Race
+            llenarSelect("tipoCarta", razas);
+            llenarSelect("familia", razas);
             llenarSelect("atributo", atributos);
             llenarSelect("arquetipo", arquetipos);
             llenarSelect("nivel", niveles.map(n => n.toString()));

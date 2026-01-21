@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,17 +27,21 @@ public class Usuario {
     @EqualsAndHashCode.Include
     private Long id;
 
-    @NotBlank(message = "El nombre de usuario no puede estar vacío")
-    @Size(min = 3, message = "El nombre de usuario debe tener al menos 3 caracteres")
+    @NotBlank(message = "Username cannot be empty")
+    @Size(min = 3, message = "Username must have at least 3 characters")
     @Column(unique = true)
     @EqualsAndHashCode.Include
     private String nombre;
 
-    @NotBlank
+    @NotBlank(message = "Password cannot be empty")
+    @Pattern(
+            regexp = "^(?=.*[A-Za-z])(?=.*\\d).{8,}$",
+            message = "Password must have at least 8 characters, one letter and one number"
+    )
     private String password;
 
-    @NotBlank(message = "El email no puede estar vacío")
-    @Email(message = "El email no tiene un formato válido")
+    @NotBlank(message = "Email cannot be empty")
+    @Email(message = "Email format is not valid")
     @Column(unique = true)
     private String email;
 
@@ -60,7 +65,7 @@ public class Usuario {
 
     private String rol;
 
-    @Size(max = 300, message = "La descripción no puede tener más de 300 caracteres")
+    @Size(max = 300, message = "Description cannot be longer than 300 characters")
     private String descripcion;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)

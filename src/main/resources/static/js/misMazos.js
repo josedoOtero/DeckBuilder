@@ -6,12 +6,12 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const response = await fetch("/MazoAPI/usuario");
             if (!response.ok) {
-                listaMazos.innerHTML = '<p class="text-center text-danger">No se pudieron cargar tus mazos.</p>';
+                listaMazos.innerHTML = '<p class="text-center text-danger">Your decks could not be loaded.</p>';
                 return [];
             }
             return await response.json();
         } catch (error) {
-            listaMazos.innerHTML = '<p class="text-center text-danger">No se pudieron cargar tus mazos.</p>';
+            listaMazos.innerHTML = '<p class="text-center text-danger">Your decks could not be loaded.</p>';
             return [];
         }
     }
@@ -20,12 +20,12 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const response = await fetch("/UsuarioAPI/favoritos");
             if (!response.ok) {
-                listaMazosGuardados.innerHTML = '<p class="text-center text-danger">No se pudieron cargar los mazos guardados.</p>';
+                listaMazosGuardados.innerHTML = '<p class="text-center text-danger">The saved decks could not be loaded.</p>';
                 return [];
             }
             return await response.json();
         } catch (error) {
-            listaMazosGuardados.innerHTML = '<p class="text-center text-danger">No se pudieron cargar los mazos guardados.</p>';
+            listaMazosGuardados.innerHTML = '<p class="text-center text-danger">The saved decks could not be loaded.</p>';
             return [];
         }
     }
@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function mostrarMazosEnContenedor(mazos, contenedor) {
         contenedor.innerHTML = "";
         if (mazos.length === 0) {
-            contenedor.innerHTML = '<p class="text-center text-muted">No hay mazos.</p>';
+            contenedor.innerHTML = '<p class="text-center text-muted">There are no decks.</p>';
             return;
         }
 
@@ -62,13 +62,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
             col.innerHTML = `
                 <div class="mazo-card">
-                    <h5 class="mb-1">${mazo.nombre || "Mazo sin título"}</h5>
+                    <h5 class="mb-1">${mazo.nombre || "Untitled deck"}</h5>
                     <div class="estado-mazo">
                         <span class="estado-pelotita ${claseEstado}"></span>
                         <span>${estado.charAt(0).toUpperCase() + estado.slice(1)}</span>
                     </div>
                     <a href="${url}">
-                        <img src="${imagen}" class="mazo-img" alt="Mazo ${mazo.id}">
+                        <img src="${imagen}" class="mazo-img" alt="Deck ${mazo.id}">
                     </a>
                 </div>
             `;

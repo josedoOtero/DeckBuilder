@@ -14,12 +14,11 @@ async function crearMensaje(e) {
     const nombreUsuario = document.getElementById("nombre-usuario").value.trim();
 
     if (!titulo || !categoria || !mensajeTexto || !nombreUsuario) {
-        mostrarAlerta("Todos los campos son obligatorios.", "warning");
+        mostrarAlerta("All fields are required.", "warning");
         return;
     }
 
     try {
-        // 1️⃣ Obtener ID del usuario destino
         const resUsuario = await fetch(
             `${window.location.origin}/UsuarioAPI/por-nombre/${encodeURIComponent(nombreUsuario)}`,
             { credentials: "include" }
@@ -27,16 +26,15 @@ async function crearMensaje(e) {
 
         if (!resUsuario.ok) {
             if (resUsuario.status === 404) {
-                throw new Error(`El usuario "${nombreUsuario}" no existe`);
+                throw new Error(`User "${nombreUsuario}" no exits`);
             } else {
                 const text = await resUsuario.text();
-                throw new Error(text || "Error al obtener el usuario");
+                throw new Error(text || "Error retrieving user");
             }
         }
 
         const usuarioId = await resUsuario.json();
 
-        // 2️⃣ Crear mensaje
         const creadoEn = new Date().toISOString().slice(0, 19);
 
         const mensaje = {
@@ -59,10 +57,10 @@ async function crearMensaje(e) {
 
         if (!resMensaje.ok) {
             const text = await resMensaje.text();
-            throw new Error(text || "Error al crear el mensaje");
+            throw new Error(text || "Error creating message");
         }
 
-        mostrarAlerta("Mensaje enviado correctamente ✔", "success");
+        mostrarAlerta("Message sent successfully", "success");
         document.getElementById("form-mensaje").reset();
 
     } catch (err) {

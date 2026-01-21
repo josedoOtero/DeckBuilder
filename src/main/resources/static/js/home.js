@@ -1,18 +1,16 @@
-// Script para la página Home: paginación de arquetipos, búsqueda y carga de imágenes por página
 (function(){
     const grid = document.getElementById('archetypeGrid');
     const pagination = document.getElementById('archetypePagination');
     const searchInput = document.getElementById('archetypeSearch');
     let allArchetypes = [];
-    let filteredArchetypes = []; // lista filtrada usada para paginar y renderizar
+    let filteredArchetypes = [];
 
-    // Paginación: 5 filas por página, asumimos 4 columnas por fila (col-lg-3)
+
     const rowsPerPage = 3;
-    const columnsPerRow = 4; // si quieres que cambie con responsive, lo podemos recalcular
+    const columnsPerRow = 4;
     const itemsPerPage = rowsPerPage * columnsPerRow; // 20
     let currentPage = 1;
 
-    // simple debounce
     function debounce(fn, wait){
         let t;
         return function(...args){ clearTimeout(t); t = setTimeout(()=>fn.apply(this,args), wait); };
@@ -36,10 +34,9 @@
     async function fetchArchetypes(){
         try{
             const res = await fetch('https://db.ygoprodeck.com/api/v7/archetypes.php');
-            if(!res.ok) throw new Error('No se pudo obtener arquetipos');
+            if(!res.ok) throw new Error('Archetypes could not be obtained');
             const data = await res.json();
             allArchetypes = normalizeArchetypes(data);
-            // inicialmente sin filtro
             filteredArchetypes = allArchetypes.slice();
             currentPage = 1;
             renderPage(currentPage);
@@ -47,7 +44,7 @@
             prefetchAdjacentPages(currentPage);
             renderPaginationControls();
         }catch(err){
-            console.error('Error cargando arquetipos:', err);
+            console.error('Error loading archetypes:', err);
             allArchetypes = ['Blue-Eyes','Dark Magician','Elemental HERO','Sky Striker','Salamangreat','Dragunity','Cyber Dragon','Toon'];
             filteredArchetypes = allArchetypes.slice();
             currentPage = 1;
@@ -67,11 +64,9 @@
             if(!res.ok) throw new Error('cardinfo failed');
             const json = await res.json();
             if (json && Array.isArray(json.data) && json.data.length > 0) {
-                // Tomar el primer candidato válido
                 for (const c of json.data) {
                     if (c.card_images && c.card_images[0]) {
                         const imgObj = c.card_images[0];
-                        // Intentar primero cropped (solo arte) → luego full → luego small
                         return imgObj.image_url_cropped
                             || imgObj.image_url
                             || imgObj.image_url_small
@@ -85,8 +80,6 @@
         return '/img/fondo/fondo1.jpg';
     }
 
-
-    // pool de concurrencia simple para cargar imágenes
     async function fillImagesConcurrently(archetypes, concurrency){
         if(!Array.isArray(archetypes) || archetypes.length===0) return;
         const queue = archetypes.slice();
@@ -101,7 +94,6 @@
                         const el = grid ? grid.querySelector(selector) : null;
                         if(el && url) el.style.backgroundImage = `url('${url}')`;
                     }catch(e){
-                        // ignora errores individuales
                     }
                 }
             })());
@@ -109,7 +101,6 @@
         await Promise.all(workers);
     }
 
-    // cargar imágenes para una página concreta (usa filteredArchetypes)
     function loadImagesForPage(page){
         const start = (page - 1) * itemsPerPage;
         const end = Math.min(filteredArchetypes.length, start + itemsPerPage);
@@ -117,7 +108,6 @@
         fillImagesConcurrently(slice, 6).catch(()=>{});
     }
 
-    // prefetch de páginas adyacentes (prev/next)
     function prefetchAdjacentPages(page){
         const total = Math.ceil(filteredArchetypes.length / itemsPerPage);
         const pagesToPrefetch = [];
@@ -131,7 +121,6 @@
         });
     }
 
-    // escape para usar en selector de atributo
     function cssEscape(str){
         return String(str).replace(/"/g,'\\"').replace(/'/g, "\\'").replace(/\[/g,'\\[').replace(/\]/g,'\\]');
     }
@@ -143,7 +132,7 @@
         if(items.length === 0){
             const col = document.createElement('div');
             col.className = 'col-12';
-            col.innerHTML = '<div class="p-4 text-center text-muted">No se encontraron arquetipos que coincidan con la búsqueda.</div>';
+            col.innerHTML = '<div class="p-4 text-center text-muted">No archetypes were found that matched the search.</div>';
             grid.appendChild(col);
             return;
         }
@@ -165,7 +154,6 @@
             const content = document.createElement('div'); content.className='content';
             const title = document.createElement('div'); title.className='archetype-title'; title.textContent = name;
             const btn = document.createElement('a'); btn.className='btn btn-sm btn-light'; btn.textContent='Ver más';
-            // construir la URL de fandom para el arquetipo y abrir en nueva pestaña
             try{
                 const fandomPath = String(name).trim().replace(/\s+/g, '_');
                 const fandomUrl = 'https://yugioh.fandom.com/wiki/' + encodeURIComponent(fandomPath);
@@ -190,14 +178,12 @@
         pagination.innerHTML = '';
         const total = Math.ceil(filteredArchetypes.length / itemsPerPage) || 1;
 
-        // Prev
         const prevLi = document.createElement('li'); prevLi.className = 'page-item' + (currentPage===1 ? ' disabled' : '');
-        const prevA = document.createElement('a'); prevA.className='page-link'; prevA.href='#'; prevA.textContent='Anterior';
+        const prevA = document.createElement('a'); prevA.className='page-link'; prevA.href='#'; prevA.textContent='Back';
         prevA.addEventListener('click', (e)=>{ e.preventDefault(); if(currentPage>1) goToPage(currentPage-1); });
         prevLi.appendChild(prevA); pagination.appendChild(prevLi);
 
-        // páginas (si hay muchas, limitar visualización a ventana razonable)
-        const maxButtons = 7; // mostrar máximo 7 botones de página
+        const maxButtons = 7;
         const half = Math.floor(maxButtons/2);
         let startPage = Math.max(1, currentPage - half);
         let endPage = Math.min(total, startPage + maxButtons - 1);
@@ -210,9 +196,8 @@
             li.appendChild(a); pagination.appendChild(li);
         }
 
-        // Next
         const nextLi = document.createElement('li'); nextLi.className = 'page-item' + (currentPage===total ? ' disabled' : '');
-        const nextA = document.createElement('a'); nextA.className='page-link'; nextA.href='#'; nextA.textContent='Siguiente';
+        const nextA = document.createElement('a'); nextA.className='page-link'; nextA.href='#'; nextA.textContent='Next';
         nextA.addEventListener('click', (e)=>{ e.preventDefault(); if(currentPage<total) goToPage(currentPage+1); });
         nextLi.appendChild(nextA); pagination.appendChild(nextLi);
     }
@@ -227,11 +212,9 @@
         loadImagesForPage(currentPage);
         prefetchAdjacentPages(currentPage);
         renderPaginationControls();
-        // scroll to grid
         if(grid) grid.scrollIntoView({behavior:'smooth', block:'start'});
     }
 
-    // buscar por nombre (filtrado)
     function applySearchFilter(query){
         const q = String(query||'').trim().toLowerCase();
         if(!q){
@@ -246,18 +229,15 @@
         renderPaginationControls();
     }
 
-    // render de página (usa filteredArchetypes)
     function renderPage(page){
         const start = (page - 1) * itemsPerPage;
         const end = Math.min(filteredArchetypes.length, start + itemsPerPage);
         renderGridSlice(start, end);
     }
 
-    // inicialización del input de búsqueda con debounce
     const debouncedSearch = debounce(function(e){ applySearchFilter(e.target.value); }, 300);
     if(searchInput){ searchInput.addEventListener('input', debouncedSearch); }
 
-    // inicialización
     if(document.readyState === 'loading'){
         document.addEventListener('DOMContentLoaded', fetchArchetypes);
     } else {

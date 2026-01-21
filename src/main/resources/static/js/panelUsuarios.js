@@ -21,21 +21,21 @@ document.addEventListener("DOMContentLoaded", function () {
             try {
                 const response = yield fetch(url);
                 if (!response.ok)
-                    throw new Error("Error al obtener usuarios");
+                    throw new Error("Error getting users");
                 const usuarios = yield response.json();
                 renderUsuarios(usuarios);
             }
             catch (error) {
-                console.error("Error cargando usuarios:", error);
+                console.error("Error loading users:", error);
                 tablaBody.innerHTML =
-                    `<tr><td colspan="4" class="text-danger">No se pudo cargar los usuarios</td></tr>`;
+                    `<tr><td colspan="4" class="text-danger">Users could not be loaded</td></tr>`;
             }
         });
     }
     function renderUsuarios(usuarios) {
         tablaBody.innerHTML = "";
         if (!usuarios || usuarios.length === 0) {
-            tablaBody.innerHTML = `<tr><td colspan="4">No hay usuarios</td></tr>`;
+            tablaBody.innerHTML = `<tr><td colspan="4">There are no users</td></tr>`;
             return;
         }
         usuarios.forEach(usuario => {
@@ -45,32 +45,32 @@ document.addEventListener("DOMContentLoaded", function () {
                 <td>${usuario.nombre}</td>
                 <td>${usuario.email}</td>
                 <td>
-                    <button class="btn btn-sm btn-warning btnEditar me-1" data-id="${usuario.id}" title="Editar">
+                    <button class="btn btn-sm btn-warning btnEditar me-1 text-white" data-id="${usuario.id}" title="edit">
                         <i class="bi bi-pencil"></i>
                     </button>
 
-                    <button class="btn btn-sm btn-danger btnEliminar me-1" data-id="${usuario.id}" title="Eliminar">
+                    <button class="btn btn-sm btn-danger btnEliminar me-1" data-id="${usuario.id}" title="delete">
                         <i class="bi bi-trash"></i>
                     </button>
 
-                    <button class="btn btn-sm btn-primary btnVerMazos" data-id="${usuario.id}" title="Ver Mazos">
+                    <button class="btn btn-sm btn-primary btnVerMazos" data-id="${usuario.id}" title="view decks">
                         <i class="bi bi-eye"></i>
                     </button>
                 </td>
             `;
             tr.querySelector(".btnEliminar").addEventListener("click", () => __awaiter(this, void 0, void 0, function* () {
-                if (confirm(`¿Seguro que quieres eliminar al usuario ${usuario.nombre}?`)) {
+                if (confirm(`Are you sure you want to delete the user ${usuario.nombre}?`)) {
                     try {
                         const res = yield fetch(`/UsuarioAPI/${usuario.id}`, {
                             method: "DELETE"
                         });
                         if (!res.ok)
-                            throw new Error("Error al eliminar usuario");
+                            throw new Error("Error deleting user");
                         cargarUsuarios(inputNombre.value, inputEmail.value);
                     }
                     catch (err) {
                         console.error(err);
-                        alert("No se pudo eliminar el usuario");
+                        alert("The user could not be deleted");
                     }
                 }
             }));
