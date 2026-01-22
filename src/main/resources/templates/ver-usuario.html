@@ -21,7 +21,6 @@
             width: 100%;
         }
 
-        /* --- Panel izquierdo --- */
         #zona_usuario {
             flex: 1;
             border-right: 2px solid #dee2e6;
@@ -31,7 +30,6 @@
             flex-direction: column;
         }
 
-        /* --- Panel derecho --- */
         #zona_mazos {
             flex: 3;
             padding: 1rem;
@@ -39,7 +37,6 @@
             background-color: #ffffff;
         }
 
-        /* Contenedor de los mazos */
         #lista_mazos {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -55,8 +52,8 @@
 
         .mazo-img {
             width: 100%;
-            aspect-ratio: 3 / 4;       /* Proporción estándar de cartas */
-            object-fit: contain;       /* NO se recorta */
+            aspect-ratio: 3 / 4;
+            object-fit: contain;
             padding: 10px;
             border-radius: 12px;
             transition: transform 0.3s ease;
@@ -74,18 +71,17 @@
 </head>
 
 <body>
-
 <div th:replace="fragments/header :: header"></div>
 
 <div id="pantalla" class="container-fluid">
 
     <div id="zona_usuario">
-        <h4 class="text-center mb-2">Datos de usuario</h4>
+        <h4 class="text-center mb-2">User Information</h4>
         <div class="text-muted text-center mt-3"></div>
     </div>
 
     <div id="zona_mazos">
-        <h4 class="text-center mb-3">Mazos publicados</h4>
+        <h4 class="text-center mb-3">Published Decks</h4>
         <div id="lista_mazos"></div>
     </div>
 
@@ -93,7 +89,7 @@
 
 <script th:inline="javascript">
     window.ID_USUARIO = /*[[${id}]]*/ null;
-    console.log("ID del usuario recibido:", window.ID_USUARIO);
+    console.log("Received user ID:", window.ID_USUARIO);
 </script>
 
 <script th:src="@{/js/bootstrap.bundle.min.js}"></script>

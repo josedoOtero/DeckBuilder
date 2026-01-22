@@ -7,7 +7,6 @@
     <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
     <link th:href="@{/css/form_login.css}" rel="stylesheet">
 
-    <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 
@@ -25,48 +24,46 @@
 <div class="center-container">
     <div class="auth-card">
 
-        <h2 class="auth-title">Iniciar sesión</h2>
+        <h2 class="auth-title">Login</h2>
 
         <form th:action="@{/login}" method="post">
 
             <div class="form-row">
-                <label>Usuario</label>
+                <label>Username</label>
                 <input type="text" name="username" class="form-control" required>
             </div>
 
             <div class="form-row">
-                <label>Contraseña</label>
+                <label>Password</label>
                 <input type="password" name="password" class="form-control" required>
             </div>
 
             <button type="submit" class="btn btn-primary mt-2 w-100">
-                Entrar
+                Enter
             </button>
         </form>
 
         <p th:if="${param.error}" class="msg-error">
-            Usuario o contraseña incorrectos
+            Incorrect username or password
         </p>
 
         <p th:if="${param.logout}" class="msg-success">
-            Has cerrado sesión correctamente
+            You have successfully logged out
         </p>
 
-        <!-- TEXTO CONTEXTUAL -->
         <p class="text-center text-light small mt-4 mb-2 opacity-75">
-            ¿No tienes cuenta todavía?
+            Don't have an account yet?
         </p>
 
-        <!-- LINKS MEJORADOS -->
         <div class="d-flex justify-content-between align-items-center mt-2">
 
             <a th:href="@{/}" class="text-light text-decoration-none small d-flex align-items-center gap-1 opacity-75">
                 <i class="bi bi-arrow-left"></i>
-                Inicio
+                Home
             </a>
 
             <a th:href="@{/login/crearCuenta}" class="text-white fw-semibold text-decoration-none">
-                Crear cuenta
+                Create Account
             </a>
 
         </div>
@@ -77,4 +74,5 @@
 <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 
 </body>
+
 </html>

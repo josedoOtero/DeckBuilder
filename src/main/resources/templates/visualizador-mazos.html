@@ -150,14 +150,14 @@
                 <div class="row g-2">
 
                     <div class="col-5">
-                        <label class="form-label mb-0"><strong>Nombre del mazo</strong></label>
+                        <label class="form-label mb-0"><strong>Deck Name</strong></label>
                         <input id="inputNombreMazo" type="text"
                                class="form-control form-control-sm"
                                readonly style="background-color:#e9ecef;">
                     </div>
 
                     <div class="col-7">
-                        <label class="form-label mb-0"><strong>Creado por</strong></label>
+                        <label class="form-label mb-0"><strong>Created by</strong></label>
                         <div class="d-flex align-items-center" style="gap:6px;">
                             <input id="inputCreador" type="text" class="form-control form-control-sm" readonly style="background-color:#e9ecef;">
                             <a id="btnVerUser" class="btn btn-primary btn-sm d-flex align-items-center"
@@ -172,11 +172,11 @@
 
                 <div class="d-flex justify-content-end">
                     <button id="btnComentario" class="btn btn-success btn-sm px-3 mx-2" style="height:32px;">
-                        Comentarios
+                        Comments
                     </button>
 
                     <button id="btnSave" class="btn btn-success btn-sm px-3" style="height:32px;">
-                        Guardar en favoritos
+                        Save to Favorites
                     </button>
                 </div>
 
@@ -184,7 +184,6 @@
         </div>
 
     </div>
-
 
     <div id="zona_mazo">
         <div id="main_deck" class="mb-3">
@@ -205,10 +204,8 @@
     </div>
 </div>
 
-<!-- Datos de la página (id del mazo) -->
 <div id="pageData" th:data-id="${id}" style="display:none;"></div>
 
-<!-- Contenedor oculto con metadata del usuario para que JS pueda mostrar el formulario y saber si es admin -->
 <div id="usuarioMeta"
      th:attr="data-id=${usuarioLogueado != null ? usuarioLogueado.id : ''},
                data-isadmin=${usuarioLogueado != null ? (usuarioLogueado.rol == 'ROLE_ADMIN') : false},
@@ -216,11 +213,10 @@
                data-imagen=${usuarioLogueado != null ? usuarioLogueado.imagenUsuario : ''}"
      style="display:none;"></div>
 
-<!-- Contenedor donde inyectaremos el modal de comentarios -->
 <div id="comentariosModalContainer"></div>
-
 
 <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 <script th:src="@{/js/visorMazo.js}"></script>
+
 </body>
 </html>

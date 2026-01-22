@@ -27,7 +27,7 @@
                         <a class="nav-link"
                            th:classappend="${currentUri != null && currentUri.startsWith('/login/cartas')} ? ' active-link' : ''"
                            th:href="@{/login/cartas}">
-                            Cartas
+                            Cards
                         </a>
                     </li>
 
@@ -35,7 +35,7 @@
                         <a class="nav-link"
                            th:classappend="${currentUri != null && currentUri.startsWith('/login/mazos')} ? ' active-link' : ''"
                            th:href="@{/login/mazos}">
-                            Mazos
+                            Decks
                         </a>
                     </li>
 
@@ -43,7 +43,7 @@
                         <a class="nav-link"
                            th:classappend="${currentUri != null && currentUri.startsWith('/user/misMazos')} ? ' active-link' : ''"
                            th:href="@{/user/misMazos}">
-                            Mis Mazos
+                            My Decks
                         </a>
                     </li>
 
@@ -51,7 +51,7 @@
                         <a class="nav-link"
                            th:classappend="${currentUri != null && currentUri.startsWith('/user/constructorMazos')} ? ' active-link' : ''"
                            th:href="@{/user/constructorMazos}">
-                            Constructor de Mazos
+                            Deck Builder
                         </a>
                     </li>
 
@@ -59,7 +59,7 @@
                         <a class="nav-link text-danger admin-link fw-bold"
                            th:classappend="${currentUri != null && currentUri.startsWith('/admin/panel')} ? ' active-link' : ''"
                            th:href="@{/admin/panel}">
-                            Panel Admin
+                            Admin Panel
                         </a>
                     </li>
 
@@ -83,7 +83,7 @@
                         <ul class="dropdown-menu dropdown-menu-end shadow">
                             <li>
                                 <a class="dropdown-item" th:href="@{/user/perfil}">
-                                    Mi Perfil
+                                    My Profile
                                 </a>
                             </li>
 
@@ -91,7 +91,7 @@
 
                             <li>
                                 <a class="dropdown-item" th:href="@{/user/favoritas}">
-                                    Cartas Favoritas
+                                    Favorite Cards
                                 </a>
                             </li>
 
@@ -99,7 +99,7 @@
 
                             <li>
                                 <a class="dropdown-item" th:href="@{/user/notificaciones}">
-                                    Notificaciones
+                                    Notifications
                                 </a>
                             </li>
 
@@ -108,7 +108,7 @@
                             <li>
                                 <form th:action="@{/logout}" method="post">
                                     <button class="dropdown-item text-danger">
-                                        Cerrar sesión
+                                        Log out
                                     </button>
                                 </form>
                             </li>

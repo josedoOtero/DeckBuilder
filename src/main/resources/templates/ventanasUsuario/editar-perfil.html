@@ -22,7 +22,7 @@
                  th:attr="data-usuario-id=${usuario.id}">
 
             <button class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modalSeleccionarCarta">
-                Seleccionar carta como imagen
+                Select card as image
             </button>
 
         </div>
@@ -31,7 +31,7 @@
         <div class="col-md-8">
             <form th:action="@{/user/perfil}" th:object="${usuario}" method="post">
                 <div class="mb-3">
-                    <label class="form-label">Nombre</label>
+                    <label class="form-label">Name</label>
                     <input type="text" th:field="*{nombre}" class="form-control" required>
                 </div>
 
@@ -41,28 +41,28 @@
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label">Descripción</label>
+                    <label class="form-label">Description</label>
                     <textarea th:field="*{descripcion}" class="form-control" rows="3" maxlength="300"></textarea>
                 </div>
 
                 <div class="d-flex gap-2 mb-3">
                     <a th:href="@{/login/verUser/{id}(id=${usuario.id})}" class="btn btn-primary">
-                        Ver mi perfil
+                        View My Profile
                     </a>
 
                     <a th:href="@{/user/favoritas}" class="btn btn-primary">
-                        Cartas Favoritas
+                        Favorite Cards
                     </a>
 
                     <button type="button" class="btn btn-warning text-white" data-bs-toggle="modal" data-bs-target="#modalPassword">
-                        Cambiar Contraseña
+                        Change Password
                     </button>
                 </div>
 
 
                 <br>
-                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                <a href="javascript:history.back()" class="btn btn-secondary">Cancelar</a>
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+                <a href="javascript:history.back()" class="btn btn-secondary">Cancel</a>
             </form>
 
 
@@ -77,26 +77,26 @@
         <div class="modal-content">
             <form id="formCambiarPassword">
                 <div class="modal-header">
-                    <h5 class="modal-title">Cambiar Contraseña</h5>
+                    <h5 class="modal-title">Change Password</h5>
                     <button class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label>Contraseña actual</label>
+                        <label>Current Password</label>
                         <input type="password" id="passwordActual" class="form-control" required>
                     </div>
                     <div class="mb-3">
-                        <label>Nueva contraseña</label>
+                        <label>New Password</label>
                         <input type="password" id="passwordNueva" class="form-control" required>
                     </div>
                     <div class="mb-3">
-                        <label>Repite la nueva contraseña</label>
+                        <label>Repeat New Password</label>
                         <input type="password" id="passwordRepetida" class="form-control" required>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button class="btn btn-primary" type="submit">Cambiar</button>
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button class="btn btn-primary" type="submit">Change</button>
                 </div>
             </form>
         </div>
@@ -107,13 +107,13 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Seleccionar carta como imagen</h5>
+                <h5 class="modal-title">Select card as image</h5>
                 <button class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <form id="filtro_cartas" class="d-flex mb-3">
-                    <input type="text" class="form-control" name="q" placeholder="Buscar por nombre...">
-                    <button class="btn btn-primary ms-2">Buscar</button>
+                    <input type="text" class="form-control" name="q" placeholder="Search by name...">
+                    <button class="btn btn-primary ms-2">Search</button>
                 </form>
                 <div id="lista_cartas" class="row row-cols-2 row-cols-md-6 g-2"></div>
             </div>

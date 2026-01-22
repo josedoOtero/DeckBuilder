@@ -10,7 +10,6 @@
     <style>
         @import url('https://fonts.googleapis.com/css?family=Lato:400,700');
 
-        /* === NUEVOS ESTILOS BOTONES SPLIT === */
         :root {
             --btn-red: #e63946;
             --btn-blue: #1d4ed8;
@@ -34,7 +33,7 @@
             color: #fff;
             text-decoration: none;
             overflow: hidden;
-            isolation: isolate; /* crea contexto propio */
+            isolation: isolate;
         }
 
         .split-btn::before,
@@ -68,8 +67,6 @@
             left: 40%;
             transform: skewX(0deg);
         }
-
-        /* === TUS ESTILOS ORIGINALES === */
 
         .search-modern {
             max-width: 1280px;
@@ -169,7 +166,6 @@
 <div th:replace="fragments/header :: header"></div>
 
 <main>
-    <!-- Apartado 1: Banner con carrusel -->
     <section class="banner-carousel mb-5">
         <div id="homeCarousel" class="carousel slide" data-bs-ride="carousel">
             <div class="carousel-inner">
@@ -177,12 +173,12 @@
                 <div class="carousel-item active" th:style="|background-image: url('@{/img/fondo/fondo1.jpg}')|">
                     <div class="banner-overlay">
                         <div>
-                            <div class="banner-title">Bienvenido a DeckBuilder</div>
-                            <div class="banner-subtitle">Tu herramienta de gestión de mazos de YUGIOH TCG</div>
+                            <div class="banner-title">Welcome to DeckBuilder</div>
+                            <div class="banner-subtitle">Your Yu-Gi-Oh! TCG deck management tool</div>
 
                             <div class="split-container">
-                                <a class="split-btn" th:href="@{/login/iniciarSesion}">Iniciar sesión</a>
-                                <a class="split-btn" th:href="@{/login/crearCuenta}">Crear cuenta</a>
+                                <a class="split-btn" th:href="@{/login/iniciarSesion}">Login</a>
+                                <a class="split-btn" th:href="@{/login/crearCuenta}">Create Account</a>
                             </div>
 
                         </div>
@@ -192,12 +188,12 @@
                 <div class="carousel-item" th:style="|background-image: url('@{/img/fondo/fondo2.jpg}')|">
                     <div class="banner-overlay">
                         <div>
-                            <div class="banner-title">Comparte y mejora tus mazos</div>
-                            <div class="banner-subtitle">Analiza, exporta y comparte con la comunidad</div>
+                            <div class="banner-title">Share and improve your decks</div>
+                            <div class="banner-subtitle">Analyze, export, and share with the community</div>
 
                             <div class="split-container">
-                                <a class="split-btn" th:href="@{/login/iniciarSesion}">Iniciar sesión</a>
-                                <a class="split-btn" th:href="@{/login/crearCuenta}">Crear cuenta</a>
+                                <a class="split-btn" th:href="@{/login/iniciarSesion}">Login</a>
+                                <a class="split-btn" th:href="@{/login/crearCuenta}">Create Account</a>
                             </div>
                         </div>
                     </div>
@@ -206,12 +202,12 @@
                 <div class="carousel-item" th:style="|background-image: url('@{/img/fondo/fondo3.png}')|">
                     <div class="banner-overlay">
                         <div>
-                            <div class="banner-title">Conéctate con otros duelistas</div>
-                            <div class="banner-subtitle">Descubre mazos, cartas y estrategias</div>
+                            <div class="banner-title">Connect with other duelists</div>
+                            <div class="banner-subtitle">Discover decks, cards, and strategies</div>
 
                             <div class="split-container">
-                                <a class="split-btn" th:href="@{/login/iniciarSesion}">Iniciar sesión</a>
-                                <a class="split-btn" th:href="@{/login/crearCuenta}">Crear cuenta</a>
+                                <a class="split-btn" th:href="@{/login/iniciarSesion}">Login</a>
+                                <a class="split-btn" th:href="@{/login/crearCuenta}">Create Account</a>
                             </div>
                         </div>
                     </div>
@@ -221,66 +217,62 @@
 
             <button class="carousel-control-prev" type="button" data-bs-target="#homeCarousel" data-bs-slide="prev">
                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Anterior</span>
+                <span class="visually-hidden">Previous</span>
             </button>
             <button class="carousel-control-next" type="button" data-bs-target="#homeCarousel" data-bs-slide="next">
                 <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Siguiente</span>
+                <span class="visually-hidden">Next</span>
             </button>
         </div>
     </section>
 
-    <!-- Apartado 2: Qué es YugiohTCG -->
     <section class="about-ygo container">
         <div class="row align-items-center">
             <div class="col-lg-6 mb-4 mb-lg-0">
                 <img th:src="@{/img/yugi.jpeg}" alt="Yugioh TCG" class="img-left w-50">
             </div>
             <div class="col-lg-6">
-                <h2>¿Qué es Yu-Gi-Oh! TCG?</h2>
-                <p class="lead">Yu-Gi-Oh! Trading Card Game es un juego de cartas estratégico basado en la popular franquicia. Desde su lanzamiento, millones de jugadores coleccionan y compiten con cartas que representan monstruos, hechizos y trampas.</p>
+                <h2>What is Yu-Gi-Oh! TCG?</h2>
+                <p class="lead">Yu-Gi-Oh! Trading Card Game is a strategic card game based on the popular franchise. Since its release, millions of players collect and compete with cards representing monsters, spells, and traps.</p>
                 <ul>
-                    <li>Año de creación: 1999 (adaptación del manga/anime al TCG durante finales de los 90s).</li>
-                    <li>Más de 10.000 cartas publicadas a lo largo de varias generaciones y expansiones (cifra aproximada y en constante crecimiento).</li>
-                    <li>Formato competitivo con torneos a nivel local, regional e internacional.</li>
+                    <li>Year of creation: 1999 (adaptation of the manga/anime to TCG during the late 90s).</li>
+                    <li>Over 10,000 cards released across several generations and expansions (approximate and growing number).</li>
+                    <li>Competitive format with local, regional, and international tournaments.</li>
                 </ul>
-                <p>Yu-Gi-Oh! mezcla historia, colección y estrategia. Construir un mazo equilibrado y conocer las reglas te da ventaja en cada duelo.</p>
+                <p>Yu-Gi-Oh! combines story, collection, and strategy. Building a balanced deck and knowing the rules gives you an advantage in every duel.</p>
             </div>
         </div>
     </section>
 
-    <!-- Apartado 3: Qué es DeckBuilder (fondo + overlay + tarjeta blanca) -->
     <section class="deckbuilder-section" th:style="|background-image: url('@{/img/fondo/fondo5.jpg}');|">
         <div class="deckbuilder-overlay"></div>
         <div class="deckbuilder-card">
-            <h2>¿Qué es DeckBuilder?</h2>
-            <p>DeckBuilder es una herramienta de gestión de mazos diseñada para jugadores de Yu-Gi-Oh! TCG. Te permite crear, editar y compartir tus mazos, almacenar estadísticas y consultar cartas fácilmente.</p>
-            <p>Además, ofrece utilidades para exportar mazos a formatos populares, comparar listas, y mantener un historial de cambios para que puedas revertir y experimentar sin perder trabajo.</p>
-            <p>Mantente al día con las noticias de Yu-Gi-Oh! TCG, descubre nuevos arquetipos y comparte tus estrategias con la comunidad.</p>
+            <h2>What is DeckBuilder?</h2>
+            <p>DeckBuilder is a deck management tool designed for Yu-Gi-Oh! TCG players. It allows you to create, edit, and share your decks, track statistics, and easily consult cards.</p>
+            <p>It also provides features to export decks in popular formats, compare lists, and maintain a history of changes so you can experiment without losing work.</p>
+            <p>Stay up-to-date with Yu-Gi-Oh! TCG news, discover new archetypes, and share your strategies with the community.</p>
         </div>
     </section>
 
-    <!-- Apartado 4: No sabes jugar -->
     <section class="learn-section">
         <div class="container">
-            <h2>No sabes jugar?</h2>
-            <p class="mb-4">Si estás comenzando en Yu-Gi-Oh! y no sabes por dónde empezar, tenemos recursos para aprender desde cero: reglas básicas, construcción de mazos y consejos de juego.</p>
+            <h2>Don't know how to play?</h2>
+            <p class="mb-4">If you're starting with Yu-Gi-Oh! and don't know where to begin, we have resources to learn from scratch: basic rules, deck building, and gameplay tips.</p>
             <a class="btn btn-danger btn-lg" href="https://www.yugioh-card.com/en/rulebook/" target="_blank" rel="noopener noreferrer" role="button">
-                Aprende aquí
+                Learn here
             </a>
 
         </div>
     </section>
 
-    <!-- Apartado 5: Juega desde tu ordenador (Project Ignis) -->
     <section class="project-section container">
         <div class="row align-items-center">
             <div class="col-lg-6">
-                <h2>Juega desde tu ordenador</h2>
-                <p class="lead">Project Ignis es una herramienta que permite jugar Yu-Gi-Oh! desde tu ordenador contra la IA o con otros jugadores. Reúne simulación de reglas y diversión en partidas rápidas.</p>
-                <p>Puedes descargar la herramienta y empezar a jugar desde tu equipo.</p>
+                <h2>Play from your computer</h2>
+                <p class="lead">Project Ignis is a tool that allows you to play Yu-Gi-Oh! from your computer against AI or other players. It combines rule simulation and fun in quick matches.</p>
+                <p>You can download the tool and start playing from your device.</p>
                 <a class="btn btn-primary btn-lg" href="https://projectignis.github.io/" target="_blank" rel="noopener noreferrer" role="button">
-                    Jugar ahora
+                    Play Now
                 </a>
 
             </div>
@@ -293,27 +285,25 @@
                     </div>
                     <button class="carousel-control-prev" type="button" data-bs-target="#projectCarousel" data-bs-slide="prev">
                         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Anterior</span>
+                        <span class="visually-hidden">Previous</span>
                     </button>
                     <button class="carousel-control-next" type="button" data-bs-target="#projectCarousel" data-bs-slide="next">
                         <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Siguiente</span>
+                        <span class="visually-hidden">Next</span>
                     </button>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Apartado 6: Lista de arquetipos (grid) -->
     <section class="container my-5">
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <h2 class="mb-0">Arquetipos</h2>
-            <!-- Barra de búsqueda en la misma línea -->
+            <h2 class="mb-0">Archetypes</h2>
             <form class="d-flex ms-3" role="search" onsubmit="return false;">
                 <div class="input-group search-modern">
                     <input id="archetypeSearch" type="search" class="form-control search-input"
-                           placeholder="Buscar arquetipo por nombre..." aria-label="Buscar arquetipo">
-                    <button id="searchBtn" class="btn search-btn" type="button" aria-label="Buscar">
+                           placeholder="Search archetype by name..." aria-label="Search archetype">
+                    <button id="searchBtn" class="btn search-btn" type="button" aria-label="Search">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="white" viewBox="0 0 16 16">
                             <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85zm-5.242.656a5 5 0 1 1 0-10 5 5 0 0 1 0 10z"/>
                         </svg>
@@ -323,12 +313,10 @@
         </div>
 
         <div id="archetypeGrid" class="row g-3">
-            <!-- tarjetas generadas por JS -->
         </div>
         <div class="d-flex justify-content-center mt-4">
-            <nav aria-label="Paginación de arquetipos">
+            <nav aria-label="Archetype pagination">
                 <ul id="archetypePagination" class="pagination">
-                    <!-- páginas generadas por JS -->
                 </ul>
             </nav>
         </div>

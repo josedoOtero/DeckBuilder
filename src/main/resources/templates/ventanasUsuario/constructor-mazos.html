@@ -108,7 +108,6 @@
             transform: translateY(-2px);
         }
 
-        /* Botones inclinados modernos */
         .boton1 {
             position: relative;
             display: inline-block;
@@ -143,7 +142,6 @@
 
         .boton-clasico { border-radius: 6px; transition: all 0.25s ease; }
 
-        /* Botones zona mazo */
         #zona_mazo .btn { transition: all 0.25s ease; }
         #btnMainExtra:hover, #btnMainExtra.active-zone {
             background-color: #0d6efd !important; color: #fff !important;
@@ -162,7 +160,6 @@
         }
         .menu-carta button { font-size: 0.8rem; }
 
-        /* Contador al lado del título */
         .contador-cartas {
             font-weight: bold;
         }
@@ -230,7 +227,7 @@
                 <div class="row g-2">
                     <div class="col-2">
                         <button id="btnFavoritos" type="button" class="text-white btn btn-warning boton-clasico w-100">
-                            <i class="bi bi-star-fill"></i> Cartas Favoritas
+                            <i class="bi bi-star-fill"></i> Favorite Cards
                         </button>
                     </div>
                     <div class="col-10">
@@ -267,7 +264,7 @@
 
             <div class="d-flex align-items-center" style="gap:5px;">
                 <button id="btnExport" class="boton1 boton1-secondary btn-sm px-2 w-auto">Export</button>
-                <button id="btnShort" class="boton1 boton1-default btn-sm px-2 w-auto">Ordenar</button>
+                <button id="btnShort" class="boton1 boton1-default btn-sm px-2 w-auto">Sort</button>
                 <button id="btnDelete" class="boton1 boton1-danger btn-sm px-2 w-auto">Delete</button>
                 <button id="btnSave" class="boton1 boton1-success btn-sm px-2 w-auto">Save</button>
             </div>
@@ -280,7 +277,6 @@
             <button id="btnSide" class="btn btn-outline-danger boton-clasico btn-sm w-auto">Side Deck</button>
         </div>
 
-        <!-- Main Deck con contador -->
         <div id="main_deck" class="mb-3 flex-grow-2">
             <h6 class="text-muted d-flex justify-content-between align-items-center">
                 <span>Main Deck</span>
@@ -289,7 +285,6 @@
             <div class="row row-cols-5 g-1"></div>
         </div>
 
-        <!-- Extra Deck con contador -->
         <div id="extra_deck" class="mb-3 flex-grow-1">
             <h6 class="text-muted d-flex justify-content-between align-items-center">
                 <span>Extra Deck</span>
@@ -298,7 +293,6 @@
             <div class="row row-cols-5 g-1"></div>
         </div>
 
-        <!-- Side Deck con contador -->
         <div id="side_deck" class="flex-grow-1">
             <h6 class="text-muted d-flex justify-content-between align-items-center">
                 <span>Side Deck</span>
@@ -310,16 +304,15 @@
 
 </div>
 
-<!-- Modales -->
 <div class="modal fade" id="modalCarta" tabindex="-1" aria-labelledby="modalCartaLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content bg-dark text-white border-0">
             <div class="modal-header border-0">
-                <h5 class="modal-title text-white" id="modalCartaLabel">Carta</h5>
+                <h5 class="modal-title text-white" id="modalCartaLabel">Card</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body d-flex flex-column align-items-center">
-                <img id="imgCartaModal" src="" alt="Carta" style="max-width:100%; max-height:50vh; object-fit:contain; margin-bottom:1rem;">
+                <img id="imgCartaModal" src="" alt="Card" style="max-width:100%; max-height:50vh; object-fit:contain; margin-bottom:1rem;">
                 <div id="infoCartaModal" class="w-100 text-white"></div>
             </div>
         </div>

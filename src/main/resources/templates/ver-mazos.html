@@ -97,32 +97,32 @@
 <div class="container-fluid p-4">
 
     <div class="mb-4 d-flex justify-content-end">
-        <div class="barra-busqueda">
+        <div class="barra-busqueda d-flex gap-2">
 
             <input type="text"
                    id="busquedaNombreMazo"
+                   class="form-control"
                    placeholder="Nombre del mazo">
 
             <input type="text"
                    id="busquedaNombreCreador"
+                   class="form-control"
                    placeholder="Creador">
 
-            <button id="btnBuscar" title="Buscar">
+            <button id="btnBuscar" class="btn btn-primary" title="Buscar">
                 <i class="bi bi-search"></i>
             </button>
 
         </div>
     </div>
 
-    <!-- LISTADO DE MAZOS -->
     <div id="contenedorMazos1">
-        <div id="lista_mazos"></div>
+        <div id="lista_mazos" class="row g-3"></div>
     </div>
 
 </div>
 
 <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 <script th:src="@{/js/verMazos.js}"></script>
-
 </body>
 </html>
