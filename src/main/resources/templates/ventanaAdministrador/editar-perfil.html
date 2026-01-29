@@ -1,107 +1,196 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title>Editar Perfil</title>
+    <title>Edit Profile</title>
+
     <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/css/header.css}" rel="stylesheet">
+    <link th:href="@{/css/editarPerfil.css}" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        h2 {
+            font-weight: 600;
+        }
+
+        .card {
+            border-radius: 1rem;
+        }
+
+        .form-control {
+            border-radius: 0.5rem;
+        }
+
+        #btnToggleRol {
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        #fotoPerfil {
+            transition: transform 0.2s ease;
+        }
+
+        #fotoPerfil:hover {
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 768px) {
+            .border-end {
+                border: none !important;
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
 </head>
+
 <body>
-
 <div th:replace="fragments/header :: header"></div>
-<link th:href="@{/css/header.css}" rel="stylesheet">
 
-<div class="container mt-5">
-    <h2>Edit Profile</h2>
-    <div class="row">
+<div class="container mt-5 d-flex justify-content-center">
+    <div class="card shadow-sm p-4" style="max-width: 900px; width: 100%;">
 
-        <div class="col-md-4 text-center">
-            <img id="fotoPerfil"
-                 th:src="${usuario.imagenUsuario != null ? usuario.imagenUsuario : '/img/fotoPerfil.png'}"
-                 class="img-thumbnail mb-3"
-                 style="width:150px;height:150px;object-fit:contain;"
-                 th:attr="data-usuario-id=${usuario.id}">
+        <h2 class="mb-4 text-center">Edit Profile</h2>
 
-            <button class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modalSeleccionarCarta">
-                Select card as image
-            </button>
+        <div class="row align-items-start">
+
+            <div class="col-md-4 text-center border-end">
+
+                <img id="fotoPerfil"
+                     th:src="${usuario.imagenUsuario != null ? usuario.imagenUsuario : '/img/fotoPerfil.png'}"
+                     class="rounded-circle shadow mb-3"
+                     style="width:150px;height:150px;object-fit:cover;border:3px solid #dee2e6;"
+                     th:attr="data-usuario-id=${usuario.id}">
+
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-secondary btn-sm"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modalSeleccionarCarta">
+                        Select card as image
+                    </button>
+                </div>
+            </div>
+
+            <div class="col-md-8 ps-md-4">
+
+                <form th:action="@{/user/cuenta-editar/{id}(id=${usuario.id})}"
+                      th:object="${usuario}"
+                      method="post">
+
+                    <div class="mb-3">
+                        <label class="form-label">Name</label>
+                        <input type="text" th:field="*{nombre}" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" th:field="*{email}" class="form-control" readonly>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea th:field="*{descripcion}"
+                                  class="form-control"
+                                  rows="3"
+                                  maxlength="300"
+                                  placeholder="Tell something about yourself..."></textarea>
+                    </div>
+
+                    <div class="mb-3 d-flex gap-2 flex-wrap">
+                        <button type="button"
+                                class="btn btn-warning text-white"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modalPassword">
+                            Change Password
+                        </button>
+
+                        <button type="button"
+                                class="btn btn-outline-info"
+                                id="btnToggleRol">
+                            Role: USER
+                        </button>
+                    </div>
+
+                    <div class="d-flex gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary flex-fill">
+                            Save Changes
+                        </button>
+                        <a href="javascript:history.back()"
+                           class="btn btn-outline-secondary flex-fill">
+                            Cancel
+                        </a>
+                    </div>
+
+                </form>
+
+            </div>
         </div>
-
-        <div class="col-md-8">
-            <form th:action="@{/user/cuenta-editar/{id}(id=${usuario.id})}"
-                  th:object="${usuario}"
-                  method="post">
-
-                <div class="mb-3">
-                    <label class="form-label">Name</label>
-                    <input type="text" th:field="*{nombre}" class="form-control" required>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Email</label>
-                    <input type="email" th:field="*{email}" class="form-control" readonly>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Description</label>
-                    <textarea th:field="*{descripcion}" class="form-control" rows="3" maxlength="300"></textarea>
-                </div>
-
-                <button type="button" class="btn btn-warning mb-3" data-bs-toggle="modal" data-bs-target="#modalPassword">
-                    Change Password
-                </button>
-                <br>
-                <button type="submit" class="btn btn-primary">Save Changes</button>
-                <a href="javascript:history.back()" class="btn btn-secondary">Cancel</a>
-            </form>
-        </div>
-
     </div>
 </div>
 
 <div class="modal fade" id="modalPassword" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
+
             <form id="formCambiarPassword">
+
                 <div class="modal-header">
                     <h5 class="modal-title">Change Password</h5>
                     <button class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
+
                 <div class="modal-body">
+
                     <div class="mb-3">
-                        <label>Current password</label>
-                        <input type="password" id="passwordActual" class="form-control" required>
-                    </div>
-                    <div class="mb-3">
-                        <label>New password</label>
+                        <label class="form-label">New password</label>
                         <input type="password" id="passwordNueva" class="form-control" required>
                     </div>
+
                     <div class="mb-3">
-                        <label>Repeat new password</label>
+                        <label class="form-label">Repeat new password</label>
                         <input type="password" id="passwordRepetida" class="form-control" required>
                     </div>
+
                 </div>
+
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button class="btn btn-primary" type="submit">Change</button>
+                    <button class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+                    <button class="btn btn-primary" type="submit">
+                        Change
+                    </button>
                 </div>
+
             </form>
+
         </div>
     </div>
 </div>
 
+
 <div class="modal fade" id="modalSeleccionarCarta" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
+
             <div class="modal-header">
                 <h5 class="modal-title">Select card as image</h5>
                 <button class="btn-close" data-bs-dismiss="modal"></button>
             </div>
+
             <div class="modal-body">
-                <form id="filtro_cartas" class="d-flex mb-3">
+
+                <form id="filtro_cartas" class="d-flex mb-3 gap-2">
                     <input type="text" class="form-control" name="q" placeholder="Search by name...">
-                    <button class="btn btn-primary ms-2">Search</button>
+                    <button class="btn btn-primary">Search</button>
                 </form>
+
                 <div id="lista_cartas" class="row row-cols-2 row-cols-md-6 g-2"></div>
+
             </div>
         </div>
     </div>

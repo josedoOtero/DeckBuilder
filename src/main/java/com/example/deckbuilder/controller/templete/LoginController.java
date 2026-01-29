@@ -44,6 +44,7 @@ public class LoginController {
             return "register";
         }
 
+        usuarioService.registrarUsuario(usuario);
         model.addAttribute("exito", "Cuenta creada correctamente");
         return "register";
     }

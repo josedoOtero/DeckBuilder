@@ -72,4 +72,11 @@ public class Usuario {
     @JsonIgnore
     private Set<Comentario> comentarios = new HashSet<>();
 
+    public void cambiarRol() {
+        if ("ROLE_USER".equals(this.rol)) {
+            this.rol = "ROLE_ADMIN";
+        } else {
+            this.rol = "ROLE_USER";
+        }
+    }
 }

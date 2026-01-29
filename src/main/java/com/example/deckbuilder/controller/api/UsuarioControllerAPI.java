@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Slf4j
@@ -191,5 +192,17 @@ public class UsuarioControllerAPI {
             log.error("Error al buscar usuario por nombre: {}", nombre, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
+    }
+
+    @PutMapping("/cambiarRol/{id}")
+    public ResponseEntity<?> cambiarRol(@PathVariable Long id) {
+        Usuario usuario = usuarioService.findById(id);
+        if (usuario == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Usuario no encontrado"));
+        }
+
+        usuario.cambiarRol();
+        usuarioService.save(usuario);
+        return ResponseEntity.ok(Map.of("message", "Rol cambiado", "nuevoRol", usuario.getRol()));
     }
 }
