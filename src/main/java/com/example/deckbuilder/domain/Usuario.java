@@ -22,6 +22,7 @@ import java.util.Set;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Usuario {
 
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
@@ -30,7 +31,6 @@ public class Usuario {
     @NotBlank(message = "Username cannot be empty")
     @Size(min = 3, message = "Username must have at least 3 characters")
     @Column(unique = true)
-    @EqualsAndHashCode.Include
     private String nombre;
 
     @NotBlank(message = "Password cannot be empty")

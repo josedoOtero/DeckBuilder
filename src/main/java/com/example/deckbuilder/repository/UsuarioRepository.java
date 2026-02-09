@@ -18,4 +18,7 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     List<Usuario> findByMazosFavoritosContaining(Mazo mazo);
     Optional<Usuario> findByNombre(String nombre);
+    boolean existsByNombre(String nombre);
+    boolean existsByEmail(String email);
+
 }

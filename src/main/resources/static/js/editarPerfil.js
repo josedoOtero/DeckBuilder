@@ -1,84 +1,104 @@
-// @ts-nocheck
-// ...existing code...
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 document.addEventListener("DOMContentLoaded", () => {
+    console.log("editarPerfil.js cargado correctamente.");
+
     const listaCartas = document.querySelector("#lista_cartas");
     const filtro = document.querySelector("#filtro_cartas");
     const imgPerfil = document.querySelector("#fotoPerfil");
+    const hiddenInput = document.querySelector("#imagenUsuarioHidden");
+    const btnToggleRol = document.getElementById("btnToggleRol");
     const usuarioId = imgPerfil.getAttribute("data-usuario-id");
-    if (!usuarioId) {
-        console.error("User ID not found.");
+
+    if (!imgPerfil || !hiddenInput || !listaCartas || !filtro) {
+        console.error("editarPerfil.js: elementos no encontrados");
         return;
     }
-    filtro.addEventListener("submit", (e) => __awaiter(this, void 0, void 0, function* () {
+
+    // ----------------------------
+    // Búsqueda de cartas por nombre
+    // ----------------------------
+    filtro.addEventListener("submit", async (e) => {
         e.preventDefault();
+
         const nombre = new FormData(filtro).get("q").trim();
         if (!nombre) {
             listaCartas.innerHTML = "<p class='text-muted'>Write a name.</p>";
             return;
         }
+
         const url = `https://db.ygoprodeck.com/api/v7/cardinfo.php?fname=${encodeURIComponent(nombre)}`;
+
         try {
-            const response = yield fetch(url);
+            const response = await fetch(url);
             if (!response.ok) {
-                listaCartas.innerHTML = "<p class='text-muted'>No letters were found.</p>";
+                listaCartas.innerHTML = "<p class='text-muted'>No cards found.</p>";
                 return;
             }
-            const data = yield response.json();
+
+            const data = await response.json();
             mostrarCartas(data.data);
-        }
-        catch (e) {
+        } catch (e) {
             console.error(e);
             listaCartas.innerHTML = "<p class='text-danger'>Error loading cards.</p>";
         }
-    }));
+    });
+
+    // ----------------------------
+    // Mostrar cartas en la modal
+    // ----------------------------
     function mostrarCartas(cartas) {
         listaCartas.innerHTML = "";
+
         cartas.forEach(carta => {
             const col = document.createElement("div");
             col.classList.add("col");
-            const imagenCropped = carta.card_images[0].image_url_cropped;
+
+            const imagen = carta.card_images[0].image_url_cropped;
+
             col.innerHTML = `
-                <img src="${imagenCropped}"
+                <img src="${imagen}"
                      class="img-fluid img-thumbnail seleccionar-carta"
                      style="cursor:pointer;"
-                     data-url="${imagenCropped}"
+                     alt="Card image"
                      onerror="this.src='/img/fotoPerfil.png'">
             `;
-            listaCartas.appendChild(col);
+
+            // Al hacer click, actualiza la imagen de perfil y el hidden
             col.querySelector("img").addEventListener("click", () => {
-                seleccionarCarta(imagenCropped);
+                imgPerfil.src = imagen;
+                hiddenInput.value = imagen;
+                // Cierra el modal
+                const modal = bootstrap.Modal.getInstance(
+                    document.getElementById("modalSeleccionarCarta")
+                );
+                if (modal) modal.hide();
             });
+
+            listaCartas.appendChild(col);
         });
     }
-    function seleccionarCarta(urlImagen) {
-        return __awaiter(this, void 0, void 0, function* () {
+
+    // ----------------------------
+    // Cambiar rol de usuario
+    // ----------------------------
+    if (btnToggleRol && usuarioId) {
+        btnToggleRol.addEventListener("click", async () => {
             try {
-                const response = yield fetch(`/UsuarioAPI/cambiarImg/${usuarioId}?url=${encodeURIComponent(urlImagen)}`, {
+                const currentRole = btnToggleRol.textContent.includes("ADMIN") ? "ADMIN" : "USER";
+                const newRole = currentRole === "USER" ? "ADMIN" : "USER";
+
+                const response = await fetch(`/UsuarioAPI/cambiarRol/${usuarioId}`, {
                     method: "PUT"
                 });
+
                 if (response.ok) {
-                    imgPerfil.src = urlImagen;
-                    alert("Image updated successfully.");
-                    bootstrap.Modal.getInstance(document.querySelector("#modalSeleccionarCarta")).hide();
+                    btnToggleRol.textContent = `Role: ${newRole}`;
+                    alert(`Role changed to ${newRole}`);
+                } else {
+                    alert("Error changing role");
                 }
-                else {
-                    const errorText = yield response.text();
-                    console.error("Server error: ", errorText);
-                    alert("Error: " + errorText);
-                }
-            }
-            catch (e) {
-                console.error(e);
-                alert("Error updating the image.");
+            } catch (error) {
+                console.error("Error changing role:", error);
+                alert("An error occurred while changing the role.");
             }
         });
     }

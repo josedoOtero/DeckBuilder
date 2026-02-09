@@ -1,15 +1,19 @@
 package com.example.deckbuilder.controller.templete;
 
 import com.example.deckbuilder.domain.Usuario;
+import com.example.deckbuilder.dto.CambioPasswordDTO;
 import com.example.deckbuilder.service.UsuarioService;
 import com.example.deckbuilder.utility.UsuarioDetails;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
@@ -42,28 +46,64 @@ public class UsuarioController {
     }
 
     @GetMapping("/perfil")
-    public String mostrarPerfil(@AuthenticationPrincipal UserDetails userDetails, Model model, HttpServletRequest request) {
+    public String mostrarPerfil(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+
         Usuario usuario = usuarioService.findByNombre(userDetails.getUsername());
         model.addAttribute("usuario", usuario);
+
+        model.addAttribute("passwordDTO", new CambioPasswordDTO());
+
         return "ventanasUsuario/editar-perfil";
     }
 
+
     @PostMapping("/perfil")
-    public String actualizarPerfil(@ModelAttribute Usuario usuario, @AuthenticationPrincipal UserDetails userDetails) {
+    public String actualizarPerfil(
+            @ModelAttribute("usuario") Usuario usuario,
+            @AuthenticationPrincipal UserDetails userDetails,
+            Model model) {
 
         Usuario usuarioActual = usuarioService.findByNombre(userDetails.getUsername());
+        if (usuarioActual == null) {
+            return "redirect:/login";
+        }
 
-        usuarioActual.setNombre(usuario.getNombre());
         usuarioActual.setDescripcion(usuario.getDescripcion());
+        usuarioActual.setImagenUsuario(usuario.getImagenUsuario());
 
         if (usuario.getPassword() != null && !usuario.getPassword().isBlank()) {
-            usuarioActual.setPassword(usuario.getPassword());
+            usuarioActual.setPassword(usuarioService.encodePassword(usuario.getPassword()));
         }
 
         usuarioService.save(usuarioActual);
 
         return "redirect:/login/home";
     }
+
+
+    @PostMapping("/perfil/password")
+    public String cambiarPassword(
+            @Valid @ModelAttribute("passwordDTO") CambioPasswordDTO passwordDTO,
+            BindingResult result,
+            @AuthenticationPrincipal UserDetails userDetails,
+            Model model) {
+
+        if (!passwordDTO.getNueva().equals(passwordDTO.getRepetir())) {
+            result.rejectValue("repetir", "error.password", "Passwords do not match");
+        }
+
+        if (result.hasErrors()) {
+            Usuario usuario = usuarioService.findByNombre(userDetails.getUsername());
+            model.addAttribute("usuario", usuario);
+            return "ventanasUsuario/editar-perfil";
+        }
+
+        usuarioService.cambiarPassword(userDetails.getUsername(), passwordDTO.getNueva());
+
+        return "redirect:/user/perfil";
+    }
+
+
 
 
     @GetMapping("/cuenta-editar/{id}")
@@ -119,7 +159,4 @@ public class UsuarioController {
 
         return "ventanasUsuario/notificaciones";
     }
-
-
-
 }

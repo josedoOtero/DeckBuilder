@@ -37,17 +37,33 @@ public class LoginController {
     @PostMapping("/crearCuenta")
     public String procesarRegistro(
             @Valid @ModelAttribute("usuario") Usuario usuario,
-            BindingResult result,
-            Model model) {
+            BindingResult result) {
+
+        if (usuarioService.existePorNombre(usuario.getNombre())) {
+            result.rejectValue(
+                    "nombre",
+                    "error.usuario",
+                    "Este nombre ya está en uso, prueba con otro"
+            );
+        }
+
+        if (usuarioService.existePorEmail(usuario.getEmail())) {
+            result.rejectValue(
+                    "email",
+                    "error.usuario",
+                    "Este email ya está registrado"
+            );
+        }
 
         if (result.hasErrors()) {
             return "register";
         }
 
         usuarioService.registrarUsuario(usuario);
-        model.addAttribute("exito", "Cuenta creada correctamente");
-        return "register";
+
+        return "redirect:/login/iniciarSesion";
     }
+
 
 
 

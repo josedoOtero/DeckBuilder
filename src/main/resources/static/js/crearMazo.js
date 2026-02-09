@@ -417,17 +417,38 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     function mostrarCartaModal(cartaInfo) {
         if (!cartaInfo) return;
+
+        const modalTitle = document.getElementById("modalCartaLabel");
         const modalImg = document.getElementById("imgCartaModal");
         const modalInfo = document.getElementById("infoCartaModal");
+
+        modalTitle.textContent = cartaInfo.name;
         modalImg.src = cartaInfo.card_images[0].image_url;
+
+        const tipo = cartaInfo.type || 'Unknown';
+        const tipoCarta = cartaInfo.race || 'Unknown';
+        const atributo = cartaInfo.attribute || 'Unknown';
+        const nivel = cartaInfo.level || cartaInfo.rank || 'N/A';
+        const atk = cartaInfo.atk != null ? cartaInfo.atk : 'N/A';
+        const def = cartaInfo.def != null ? cartaInfo.def : 'N/A';
+        const arquetipo = cartaInfo.archetype || 'None';
+        const descripcion = cartaInfo.desc || '';
+
         modalInfo.innerHTML = `
-            <p><strong>${cartaInfo.name}</strong></p>
-            <p>Type: ${cartaInfo.type}</p>
-            <p>ATK/${cartaInfo.atk} DEF/${cartaInfo.def}</p>
-            <p>${cartaInfo.desc}</p>
-        `;
+        <p><span class="label">Type:</span> ${tipo}</p>
+        <p><span class="label">Card Type:</span> ${tipoCarta}</p>
+        <p><span class="label">Attribute:</span> ${atributo}</p>
+        <p><span class="label">Level / Rank:</span> ${nivel}</p>
+        <p><span class="label">ATK / DEF:</span> ${atk} / ${def}</p>
+        <p><span class="label">Archetype:</span> ${arquetipo}</p>
+        <p class="description-title">Description:</p>
+        <p class="description-text">${descripcion}</p>
+    `;
+
         new bootstrap.Modal(document.getElementById("modalCarta")).show();
     }
+
+
 
     async function guardarMazo() {
         const payload = {

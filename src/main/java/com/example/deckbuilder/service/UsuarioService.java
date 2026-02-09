@@ -56,17 +56,34 @@ public class UsuarioService {
     public Usuario replace(Long id, Usuario nuevoUsuario) {
         return usuarioRepository.findById(id)
                 .map(usuarioExistente -> {
-                    usuarioExistente.setNombre(nuevoUsuario.getNombre());
-                    usuarioExistente.setPassword(nuevoUsuario.getPassword());
-                    usuarioExistente.setEmail(nuevoUsuario.getEmail());
-                    usuarioExistente.setMazos(nuevoUsuario.getMazos());
-                    usuarioExistente.setMazosFavoritos(nuevoUsuario.getMazosFavoritos());
-                    usuarioExistente.setImagenUsuario(nuevoUsuario.getImagenUsuario());
-                    usuarioExistente.setRol(nuevoUsuario.getRol());
+                    if (nuevoUsuario.getNombre() != null) {
+                        usuarioExistente.setNombre(nuevoUsuario.getNombre());
+                    }
+                    if (nuevoUsuario.getPassword() != null && !nuevoUsuario.getPassword().isBlank()) {
+                        usuarioExistente.setPassword(passwordEncoder.encode(nuevoUsuario.getPassword()));
+                    }
+                    if (nuevoUsuario.getEmail() != null) {
+                        usuarioExistente.setEmail(nuevoUsuario.getEmail());
+                    }
+                    if (nuevoUsuario.getMazos() != null) {
+                        usuarioExistente.setMazos(nuevoUsuario.getMazos());
+                    }
+                    if (nuevoUsuario.getMazosFavoritos() != null) {
+                        usuarioExistente.setMazosFavoritos(nuevoUsuario.getMazosFavoritos());
+                    }
+                    if (nuevoUsuario.getImagenUsuario() != null) {
+                        usuarioExistente.setImagenUsuario(nuevoUsuario.getImagenUsuario());
+                    }
+                    if (nuevoUsuario.getRol() != null) {
+                        usuarioExistente.setRol(nuevoUsuario.getRol());
+                    }
                     return usuarioRepository.save(usuarioExistente);
                 })
                 .orElseGet(() -> {
                     nuevoUsuario.setId(id);
+                    if (nuevoUsuario.getPassword() != null && !nuevoUsuario.getPassword().isBlank()) {
+                        nuevoUsuario.setPassword(passwordEncoder.encode(nuevoUsuario.getPassword()));
+                    }
                     return usuarioRepository.save(nuevoUsuario);
                 });
     }
@@ -149,4 +166,27 @@ public class UsuarioService {
                 email == null ? "" : email
         );
     }
+
+    public boolean existePorNombre(String nombre) {
+        return usuarioRepository.existsByNombre(nombre);
+    }
+
+    public boolean existePorEmail(String email) {
+        return usuarioRepository.existsByEmail(email);
+    }
+
+    public void cambiarPassword(String nombreUsuario, String nuevaPassword) {
+        Usuario usuario = findByNombre(nombreUsuario);
+        if (usuario == null) {
+            throw new RuntimeException("Usuario no encontrado");
+        }
+        usuario.setPassword(nuevaPassword);
+        save(usuario);
+    }
+
+    public String encodePassword(String rawPassword) {
+        return passwordEncoder.encode(rawPassword);
+    }
+
+
 }

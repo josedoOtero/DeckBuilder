@@ -163,6 +163,35 @@
         .contador-cartas {
             font-weight: bold;
         }
+
+        #infoCartaModal p {
+            margin: 0.3rem 0;
+            font-size: 0.95rem;
+        }
+
+        #infoCartaModal p strong {
+            color: #ffc107;
+            font-size: 1rem;
+        }
+
+        #infoCartaModal .label {
+            font-weight: bold;
+            color: #0dcaf0;
+            min-width: 110px;
+            display: inline-block;
+        }
+
+        #infoCartaModal .description-title {
+            margin-top: 0.5rem;
+            font-weight: bold;
+            color: #ffc107;
+        }
+
+        #infoCartaModal .description-text {
+            font-style: italic;
+            color: #e0e0e0;
+            margin-top: 0.2rem;
+        }
     </style>
 </head>
 <body>
@@ -304,16 +333,19 @@
 
 </div>
 
-<div class="modal fade" id="modalCarta" tabindex="-1" aria-labelledby="modalCartaLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
+<div class="modal fade" id="modalCarta" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
         <div class="modal-content bg-dark text-white border-0">
             <div class="modal-header border-0">
-                <h5 class="modal-title text-white" id="modalCartaLabel">Card</h5>
+                <h3 class="modal-title" id="modalCartaLabel"></h3>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body d-flex flex-column align-items-center">
-                <img id="imgCartaModal" src="" alt="Card" style="max-width:100%; max-height:50vh; object-fit:contain; margin-bottom:1rem;">
-                <div id="infoCartaModal" class="w-100 text-white"></div>
+            <div class="modal-body d-flex flex-column flex-md-row gap-4">
+                <div class="flex-shrink-0 text-center">
+                    <img id="imgCartaModal" src="" alt="Card"
+                         style="max-width:250px; max-height:400px; object-fit:contain; border-radius:10px; box-shadow:0 6px 20px rgba(0,0,0,0.5);">
+                </div>
+                <div class="flex-grow-1" id="infoCartaModal"></div>
             </div>
         </div>
     </div>
