@@ -4,6 +4,8 @@ import com.example.deckbuilder.domain.Mazo;
 import com.example.deckbuilder.domain.Usuario;
 import com.example.deckbuilder.repository.UsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -180,7 +182,7 @@ public class UsuarioService {
         if (usuario == null) {
             throw new RuntimeException("Usuario no encontrado");
         }
-        usuario.setPassword(nuevaPassword);
+        usuario.setPassword(passwordEncoder.encode(nuevaPassword));
         save(usuario);
     }
 
@@ -188,5 +190,7 @@ public class UsuarioService {
         return passwordEncoder.encode(rawPassword);
     }
 
-
+    public boolean passwordMatches(String rawPassword, String encodedPassword) {
+        return passwordEncoder.matches(rawPassword, encodedPassword);
+    }
 }

@@ -12,20 +12,21 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 @ControllerAdvice
+
+/*Mensaje de excepcion*/
+
 public class GlobalExceptionHandler {
 
     private final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(Throwable.class)
     public ResponseEntity<String> handleAll(Throwable ex) {
-        // Log completo con stacktrace
         StringWriter sw = new StringWriter();
         ex.printStackTrace(new PrintWriter(sw));
         String stack = sw.toString();
         log.error("Excepción en el servidor: {}", ex.getMessage());
         log.error(stack);
 
-        // Devolver una respuesta sencilla para evitar respuestas truncadas en el cliente
         String body = "<html><body><h2>Error interno del servidor</h2><pre style=\"white-space:pre-wrap;\">" +
                 escapeHtml(ex.getMessage()) +
                 "</pre><p>Revisa los logs del servidor para más detalles.</p></body></html>";

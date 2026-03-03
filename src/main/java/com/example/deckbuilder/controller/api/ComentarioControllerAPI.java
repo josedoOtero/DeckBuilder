@@ -16,6 +16,9 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/ComentarioAPI")
+
+/*Controlador API comentario*/
+
 public class ComentarioControllerAPI {
 
     private final ComentarioService comentarioService;

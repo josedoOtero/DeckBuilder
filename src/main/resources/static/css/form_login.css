@@ -1,7 +1,3 @@
-/* ============================ */
-/* BACKGROUND CAROUSEL CROSSFADE CON MOVIMIENTO */
-/* ============================ */
-
 body {
     height: 100vh;
     margin: 0;
@@ -9,18 +5,14 @@ body {
     font-family: "Segoe UI", Roboto, sans-serif;
 }
 
-/* ============================ */
-/* CONTENEDOR SLIDESHOW */
 .bg-slideshow {
     position: fixed;
     inset: 0;
     z-index: -2;
     overflow: hidden;
-    background: #000; /* evita cualquier flash blanco */
+    background: #000;
 }
 
-/* ============================ */
-/* SLIDE BASE */
 .slide {
     position: absolute;
     inset: 0;
@@ -33,8 +25,6 @@ body {
     will-change: opacity, transform;
 }
 
-/* ============================ */
-/* IMÁGENES + DELAYS */
 .slide1 {
     background-image: url('/img/fondo/fondo1.jpg');
     animation-delay: 0s;
@@ -60,41 +50,32 @@ body {
     z-index: 1;
 }
 
-/* ============================ */
-/* ANIMACIÓN CROSSFADE + MOVIMIENTO CONTINUO (SIN SALTOS) */
 @keyframes slideFade {
 
-    /* Estado inicial */
     0% {
         opacity: 0;
         transform: scale(1.05) translate(0, 0);
     }
 
-    /* Fade in */
     8% {
         opacity: 1;
     }
 
-    /* Imagen visible con movimiento */
     50% {
         opacity: 1;
         transform: scale(1.15) translate(-3%, -3%);
     }
 
-    /* Fade out */
     75% {
         opacity: 0;
     }
 
-    /* Reset exacto para la siguiente vuelta */
     100% {
         opacity: 0;
         transform: scale(1.05) translate(0, 0);
     }
 }
 
-/* ============================ */
-/* CAPA OSCURA PARA CONTRASTE */
 .bg-dark-layer {
     position: fixed;
     inset: 0;
@@ -102,8 +83,6 @@ body {
     z-index: -1;
 }
 
-/* ============================ */
-/* CONTENEDOR DEL FORMULARIO (GLASS) */
 .auth-card {
     width: 520px;
     padding: 35px;
@@ -117,8 +96,6 @@ body {
     z-index: 10;
 }
 
-/* ============================ */
-/* TÍTULO */
 .auth-title {
     text-align: center;
     margin-bottom: 30px;
@@ -127,8 +104,6 @@ body {
     color: #ffffff;
 }
 
-/* ============================ */
-/* FORM ROW */
 .form-row {
     display: flex;
     align-items: center;
@@ -146,8 +121,6 @@ body {
     border-radius: 10px;
 }
 
-/* ============================ */
-/* BOTÓN */
 .btn-primary {
     width: 100%;
     border-radius: 12px;
@@ -156,8 +129,6 @@ body {
     font-weight: 600;
 }
 
-/* ============================ */
-/* MENSAJES */
 .msg-error,
 .msg-success {
     margin-top: 15px;
@@ -173,8 +144,6 @@ body {
     color: #00e676;
 }
 
-/* ============================ */
-/* LINKS */
 .auth-links {
     margin-top: 18px;
     display: flex;
@@ -193,8 +162,6 @@ body {
     color: #d0e9ff;
 }
 
-/* ============================ */
-/* CENTRAR CONTENIDO */
 .center-container {
     height: 100vh;
     display: flex;

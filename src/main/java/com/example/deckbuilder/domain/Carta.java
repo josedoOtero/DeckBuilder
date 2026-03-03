@@ -10,6 +10,12 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+
+/*Esta se podria sustituir actualmente por el idKonami y punto
+* sin necesidad de tener una clase Carta. Se mantiene porque en un
+* inicio contendria la cantidad de cartas. Ademas de eso en caso
+* de ampliarse y Guardar las cartas en la BD sin API*/
+
 public class Carta {
 
     @Id

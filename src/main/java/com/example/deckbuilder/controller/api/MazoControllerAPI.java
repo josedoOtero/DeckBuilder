@@ -14,6 +14,9 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/MazoAPI")
+
+/*Controlador de mazo API. Gestiona tambien las partes del mazo (main,side,extra)*/
+
 public class MazoControllerAPI {
 
     private final MazoService mazoService;

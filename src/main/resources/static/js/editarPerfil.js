@@ -13,9 +13,6 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     }
 
-    // ----------------------------
-    // Búsqueda de cartas por nombre
-    // ----------------------------
     filtro.addEventListener("submit", async (e) => {
         e.preventDefault();
 
@@ -42,9 +39,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // ----------------------------
-    // Mostrar cartas en la modal
-    // ----------------------------
     function mostrarCartas(cartas) {
         listaCartas.innerHTML = "";
 
@@ -62,7 +56,6 @@ document.addEventListener("DOMContentLoaded", () => {
                      onerror="this.src='/img/fotoPerfil.png'">
             `;
 
-            // Al hacer click, actualiza la imagen de perfil y el hidden
             col.querySelector("img").addEventListener("click", () => {
                 imgPerfil.src = imagen;
                 hiddenInput.value = imagen;
@@ -77,9 +70,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // ----------------------------
-    // Cambiar rol de usuario
-    // ----------------------------
     if (btnToggleRol && usuarioId) {
         btnToggleRol.addEventListener("click", async () => {
             try {

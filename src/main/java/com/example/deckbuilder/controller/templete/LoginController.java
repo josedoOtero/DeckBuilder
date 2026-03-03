@@ -12,6 +12,9 @@ import org.springframework.security.core.Authentication;
 
 @Controller
 @RequestMapping("/login")
+
+/*Rutas que pueden aceder todos hasta sin autentificar*/
+
 public class LoginController {
 
     private final UsuarioService usuarioService;

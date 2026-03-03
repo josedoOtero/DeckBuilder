@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping("/admin")
+
+/*Controlador para el usuario Admin: solo aceden administradores a esta ruta*/
+
 public class AdministradorController {
 
     @GetMapping("/panel")

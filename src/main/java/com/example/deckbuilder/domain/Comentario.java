@@ -46,7 +46,6 @@ public class Comentario {
     @Max(5)
     private Integer valoracion;
 
-    // Fecha y hora en que se creó el comentario. Se asigna en el servicio al crear.
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @Column(name = "creado_en")
     private LocalDateTime creadoEn;

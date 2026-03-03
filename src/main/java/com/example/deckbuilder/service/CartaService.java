@@ -32,7 +32,6 @@ public class CartaService {
         this.sideDeckRepository = sideDeckRepository;
     }
 
-    // Guarda la carta si no existe con el mismo idKonami
     public Carta save(Carta carta) {
         Carta existente = cartaRepository.findByIdKonami(carta.getIdKonami());
         if (existente != null) {

@@ -62,7 +62,6 @@ public class ComentarioService {
         Comentario existente = comentarioRepository.findById(idComentario)
                 .orElseThrow(() -> new EntityNotFoundException("Comentario no encontrado"));
 
-        // Actualizar mensaje y valoracion
         if (cambios.getMensaje() != null) existente.setMensaje(cambios.getMensaje());
         if (cambios.getValoracion() != null) {
             if (cambios.getValoracion() < 1 || cambios.getValoracion() > 5) {

@@ -51,7 +51,6 @@
 
         <div class="row align-items-start">
 
-            <!-- Imagen de perfil y selección de carta -->
             <div class="col-md-4 text-center border-end">
                 <img id="fotoPerfil"
                      th:src="${usuario.imagenUsuario != null ? usuario.imagenUsuario : '/img/fotoPerfil.png'}"
@@ -69,9 +68,7 @@
                 </div>
             </div>
 
-            <!-- Formulario de edición -->
             <div class="col-md-8 ps-md-4">
-                <!-- Este form Thymeleaf envía nombre, descripción e imagen -->
                 <form th:action="@{/user/perfil}" th:object="${usuario}" method="post" novalidate>
                     <input type="hidden" th:field="*{id}" />
                     <input type="hidden" th:field="*{imagenUsuario}" id="imagenUsuarioHidden">
@@ -107,7 +104,6 @@
     </div>
 </div>
 
-<!-- Modal cambiar contraseña -->
 <div class="modal fade" id="modalPassword" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -147,15 +143,12 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <!-- Formulario de búsqueda -->
                 <form id="filtro_cartas" class="d-flex mb-4 gap-2">
                     <input type="text" id="search" class="form-control" name="q" placeholder="Search by name...">
                     <button type="submit" class="btn btn-primary">Search</button>
                 </form>
 
-                <!-- Contenedor de cartas -->
                 <div id="lista_cartas" class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-3">
-                    <!-- Cartas generadas dinámicamente aquí -->
                 </div>
             </div>
             <div class="modal-footer">

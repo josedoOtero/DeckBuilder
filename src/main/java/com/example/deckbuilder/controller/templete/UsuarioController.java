@@ -6,7 +6,6 @@ import com.example.deckbuilder.service.UsuarioService;
 import com.example.deckbuilder.utility.UsuarioDetails;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,6 +17,9 @@ import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/user")
+
+/*Controlador para usuarios auterntificados, puedes entrar user y admin*/
+
 public class UsuarioController {
 
     UsuarioService usuarioService;
@@ -103,6 +105,37 @@ public class UsuarioController {
         return "redirect:/user/perfil";
     }
 
+    @PostMapping("/perfil/passwordUser")
+    public String cambiarPasswordUser(
+            @Valid @ModelAttribute("passwordDTO") CambioPasswordDTO passwordDTO,
+            BindingResult result,
+            @AuthenticationPrincipal UserDetails userDetails,
+            Model model) {
+
+        Usuario usuario = usuarioService.findByNombre(userDetails.getUsername());
+
+        if (usuario == null) {
+            return "redirect:/login";
+        }
+
+        if (!usuarioService.passwordMatches(passwordDTO.getActual(), usuario.getPassword())) {
+            result.rejectValue("actual", "error.password", "Current password is incorrect");
+        }
+
+        if (!passwordDTO.getNueva().equals(passwordDTO.getRepetir())) {
+            result.rejectValue("repetir", "error.password", "Passwords do not match");
+        }
+
+        if (result.hasErrors()) {
+            model.addAttribute("usuario", usuario);
+            model.addAttribute("passwordDTO", passwordDTO);
+            return "ventanasUsuario/editar-perfil";
+        }
+
+        usuarioService.cambiarPassword(usuario.getNombre(), passwordDTO.getNueva());
+
+        return "redirect:/user/perfil?success";
+    }
 
 
 

@@ -17,6 +17,9 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/NotificacionAPI")
+
+/*Controlador api de notificacion*/
+
 public class NotificacionControllerAPI {
 
     private final NotificacionService notificacionService;

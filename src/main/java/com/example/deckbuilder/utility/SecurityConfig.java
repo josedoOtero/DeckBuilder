@@ -25,30 +25,14 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        // Recursos públicos: login, registro, CSS, JS, imágenes
                         .requestMatchers("/", "/login/**", "/crearCuenta/**", "/css/**", "/js/**", "/img/**").permitAll()
-
-                        // APIs públicas de Mazo y Usuario (solo GETs que devuelven info)
                         .requestMatchers("/MazoAPI/**").permitAll()
                         .requestMatchers("/UsuarioAPI/**").permitAll()
-
-                        // Hacer pública la API de Comentarios para que peticiones REST reciban JSON
-                        // (antes las peticiones no autenticadas eran redirigidas a "/" por el entry point)
                         .requestMatchers("/ComentarioAPI/**").permitAll()
-
-                        // Solo usuarios logueados pueden acceder a POST, PUT, DELETE en UsuarioAPI
                         .requestMatchers("/UsuarioAPI/**").hasAnyRole("USER", "ADMIN")
-
-                        // Páginas públicas de mazos (visualizador)
                         .requestMatchers("/user/visualizadorMazos/**", "/user/verUser/**", "/user/mazos", "/user/cartas").permitAll()
-
-                        // Solo usuarios logueados pueden acceder a otras páginas de /user/**
                         .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
-
-                        // Solo admins pueden acceder a /admin/**
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-
-                        // Cualquier otra ruta requiere autenticación
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

@@ -11,6 +11,9 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/CartaAPI")
+
+/*Controlador API de las cartas*/
+
 public class CartaControllerAPI {
 
     private final CartaService cartaService;
