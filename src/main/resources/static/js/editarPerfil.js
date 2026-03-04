@@ -59,7 +59,6 @@ document.addEventListener("DOMContentLoaded", () => {
             col.querySelector("img").addEventListener("click", () => {
                 imgPerfil.src = imagen;
                 hiddenInput.value = imagen;
-                // Cierra el modal
                 const modal = bootstrap.Modal.getInstance(
                     document.getElementById("modalSeleccionarCarta")
                 );

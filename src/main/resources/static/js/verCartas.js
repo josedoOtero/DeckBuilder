@@ -187,11 +187,9 @@ async function mostrarDetallesCarta(id, idKonami, zonaDetalles) {
         const data = await response.json();
         const carta = data.data[0];
 
-        // Datos seguros
         const precios = carta.card_prices?.[0] ?? {};
         const sets = carta.card_sets ?? [];
 
-        // Función auxiliar para mostrar solo precio válido
         const mostrarPrecio = (titulo, valor) =>
             valor && valor !== "0.00"
                 ? `<p class="mb-1"><strong>${titulo}:</strong> ${valor} €</p>`

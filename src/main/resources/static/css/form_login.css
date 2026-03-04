@@ -29,7 +29,7 @@ body {
     background-image: url('/img/fondo/fondo1.jpg');
     animation-delay: 0s;
     z-index: 4;
-    opacity: 1; /* visible desde el primer frame */
+    opacity: 1;
 }
 
 .slide2 {

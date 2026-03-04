@@ -32,12 +32,10 @@ public class ComentarioService {
         Mazo mazo = mazoRepository.findById(idMazo).orElseThrow(() -> new EntityNotFoundException("Mazo no encontrado"));
         Usuario usuario = usuarioRepository.findById(idUsuario).orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
 
-        // comprobar si ya existe
         if (comentarioRepository.findByMazoAndUsuario(mazo, usuario).isPresent()) {
             throw new DataIntegrityViolationException("El usuario ya comentó este mazo");
         }
 
-        // validar valoracion
         if (comentario.getValoracion() == null || comentario.getValoracion() < 1 || comentario.getValoracion() > 5) {
             throw new DataIntegrityViolationException("La valoracion debe estar entre 1 y 5");
         }
