@@ -76,10 +76,13 @@ public class MazoService {
     @Transactional
     public void delete(Long id) {
         Mazo mazo = mazoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("El mazo no existe"));
-        
-        mazo.getCreador().getMazosFavoritos().remove(mazo);
-        mazoRepository.flush();
+                .orElseThrow(() -> new RuntimeException("Deck not exits"));
+
+        List<Usuario> usuarios = usuarioRepository.findAll();
+
+        for (Usuario usuario : usuarios) {
+            usuario.getMazosFavoritos().remove(mazo);
+        }
 
         mazoRepository.delete(mazo);
     }

@@ -75,7 +75,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 window.location.href = `/user/constructorMazos/${mazo.id}`;
             });
             tr.querySelector(".btnVer").addEventListener("click", () => {
-                window.location.href = `/user/visualizadorMazos/${mazo.id}`;
+                window.location.href = `/login/visualizadorMazos/${mazo.id}`;
             });
             tablaBody.appendChild(tr);
         });
