@@ -535,7 +535,34 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
 
             const tipos = [...new Set(cartas.map(c => c.type).filter(v => v))];
-            const razas = [...new Set(cartas.map(c => c.race).filter(v => v))];
+            const razas = [
+                "Aqua",
+                "Beast",
+                "Beast-Warrior",
+                "Creator-God",
+                "Cyberse",
+                "Dinosaur",
+                "Divine-Beast",
+                "Dragon",
+                "Fairy",
+                "Fiend",
+                "Fish",
+                "Illusion",
+                "Insect",
+                "Machine",
+                "Plant",
+                "Psychic",
+                "Pyro",
+                "Reptile",
+                "Rock",
+                "Sea Serpent",
+                "Spellcaster",
+                "Thunder",
+                "Warrior",
+                "Winged Beast",
+                "Wyrm",
+                "Zombie"
+            ];
             const atributos = [...new Set(cartas.map(c => c.attribute).filter(v => v))];
             const arquetipos = [...new Set(cartas.map(c => c.archetype).filter(v => v))];
             const niveles = [...new Set(cartas.map(c => c.level).filter(v => v !== undefined && v !== null))];

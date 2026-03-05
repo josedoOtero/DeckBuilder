@@ -53,10 +53,16 @@ document.addEventListener("DOMContentLoaded", () => {
             let cartas = data.data;
 
             cartas = cartas.filter(c => {
-                if (atkMin !== null && c.atk < atkMin) return false;
-                if (atkMax !== null && c.atk > atkMax) return false;
-                if (defMin !== null && c.def < defMin) return false;
-                if (defMax !== null && c.def > defMax) return false;
+
+                const atk = typeof c.atk === "number" ? c.atk : null;
+                const def = typeof c.def === "number" ? c.def : null;
+
+                if (atkMin !== null && (atk === null || atk < atkMin)) return false;
+                if (atkMax !== null && (atk === null || atk > atkMax)) return false;
+
+                if (defMin !== null && (def === null || def < defMin)) return false;
+                if (defMax !== null && (def === null || def > defMax)) return false;
+
                 return true;
             });
 
